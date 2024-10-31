@@ -20,6 +20,9 @@ class Power:
         detected_points = container.result
         expected_points = container.expected_result
 
+        if not expected_points:
+            return False
+
         for detected in detected_points:
             if any(expected - margin <= detected <= expected + margin for expected in expected_points):
                 return True
