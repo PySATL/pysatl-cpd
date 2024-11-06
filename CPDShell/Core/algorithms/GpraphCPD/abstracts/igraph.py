@@ -31,3 +31,6 @@ class IGraph(ABC):
         :return: Sum of the squares of the degrees of the nodes.
         """
         pass
+
+    def sum_triangle(self, lower_order: int, higher_order: int):
+        pass

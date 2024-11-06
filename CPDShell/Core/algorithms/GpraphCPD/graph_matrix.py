@@ -1,5 +1,6 @@
 from typing import Any
 
+import numpy as np
 from numpy import dtype, ndarray
 
 from CPDShell.Core.algorithms.GpraphCPD.abstracts.igraph import IGraph
@@ -43,3 +44,19 @@ class GraphMatrix(IGraph):
             node_degree = node_degree**2
             sum_squares += node_degree
         return sum_squares
+
+    def sum_triangle(self, lower_order: int, higher_order: int) -> int:
+        # Проверяем, является ли граф временным и задан ли момент времени
+        if higher_order is not None and lower_order is not None:
+            # Берем слой матрицы для указанного времени t
+            # sub_mtx = self.mtx[:time_index, :time_index]
+            sub_mtx = self.mtx[lower_order:higher_order, lower_order:higher_order]
+        else:
+            # Используем обычную матрицу, если временной параметр не задан
+            sub_mtx = self.mtx
+
+        # Считаем количество треугольников по матрице mtx_at_t
+        a2 = np.dot(sub_mtx, sub_mtx)
+        a3 = np.dot(sub_mtx, a2)
+        num_triangles = np.trace(a3) // 6
+        return num_triangles
