@@ -1,13 +1,11 @@
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import scipy
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm
 
 from CPDShell.Core.algorithms.BayesianCPD.detectors.drop_detector import DropDetector
-from CPDShell.Core.algorithms.BayesianCPD.detectors.max_prob_detector import MaxProbDetector
 from CPDShell.Core.algorithms.BayesianCPD.detectors.simple_detector import SimpleDetector
 from CPDShell.Core.algorithms.BayesianCPD.hazards.constant_hazard import ConstantHazard
 from CPDShell.Core.algorithms.BayesianCPD.likelihoods.gaussian_unknown_mean_and_variance import (
@@ -15,7 +13,6 @@ from CPDShell.Core.algorithms.BayesianCPD.likelihoods.gaussian_unknown_mean_and_
 )
 from CPDShell.Core.algorithms.BayesianCPD.localizers.simple_localizer import SimpleLocalizer
 from CPDShell.Core.algorithms.bayesian_algorithm import BayesianAlgorithm
-from CPDShell.labeled_data import LabeledCPData
 from CPDShell.shell import CPDShell
 
 THRESHOLD = 0.0
@@ -111,7 +108,7 @@ def process_normal_data():
     print(data.shape)
 
     for dataset_num in range(data.shape[0]):
-        print(dataset_num)
+        print(dataset_num, " / ", data.shape[0])
 
         gaussian_likelihood = GaussianUnknownMeanAndVariance()
         constant_hazard = ConstantHazard(HAZARD_RATE)
