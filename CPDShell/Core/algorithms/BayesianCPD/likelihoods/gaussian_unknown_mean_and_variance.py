@@ -92,7 +92,7 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
         assert np.count_nonzero(scales_divider) == scales_divider.shape[0]
 
         degrees_of_freedom = 2.0 * self.__alpha_params
-        scales = (self.__beta_params * (self.__k_params + 1.0)) / scales_divider
+        scales = np.sqrt((self.__beta_params * (self.__k_params + 1.0)) / scales_divider)
 
         predictive_probabilities = stats.t.pdf(
             x=observation,
