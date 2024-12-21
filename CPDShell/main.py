@@ -1,12 +1,11 @@
+import csv
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import scipy
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm
 
-from CPDShell.Core.algorithms.BayesianCPD.detectors.drop_detector import DropDetector
 from CPDShell.Core.algorithms.BayesianCPD.detectors.simple_detector import SimpleDetector
 from CPDShell.Core.algorithms.BayesianCPD.hazards.constant_hazard import ConstantHazard
 from CPDShell.Core.algorithms.BayesianCPD.likelihoods.gaussian_unknown_mean_and_variance import (
@@ -22,13 +21,13 @@ NUM_OF_SAMPLES = 1000
 SAMPLE_SIZE = 500
 BERNOULLI_PROB = 1.0 - 0.5 ** (1.0 / SAMPLE_SIZE)
 HAZARD_RATE = 1 / BERNOULLI_PROB
-HAZARD_RATE = 1 / BERNOULLI_PROB
 LEARNING_SAMPLE_SIZE = 50
 
 WORKING_DIR = Path()
 
 CHANGE_POINT = 249
 CHANGE_POINT_TOLERANCE = 25
+
 
 def plot_algorithm_output(
         observations_data, change_points, run_lengths, gap_sizes, distributions, num, result_dir, with_save=False
@@ -164,6 +163,7 @@ def generate_normal_data_for_validation():
 
     print(f'Combined data shape: {combined_data.shape}')
 
+
 def process_samples(distributions, start, end, experiment_base_dir, results_base_dir):
     max_rl_prob_matrix = np.zeros((end - start, 500))
     for sample_num in range(start, end):
@@ -232,31 +232,58 @@ def process_datasets():
     overall_matrix = np.concatenate(max_rl_prob_matrices, axis=0)
     np.save(results_base_dir / "max_rl_probs_with_cp", overall_matrix)
 
+
 def calculate_powers_for_data_configuration(dataframes, configuration_name, thresholds, start, end):
     detection_df, localization_df = dataframes
 
-    dir_path = Path("") / configuration_name
+    all_detected_cps = {}
+    all_detection_times = {}
+
+    results_path = Path(
+        "PySATL-CPD-Module\\CPDShell\\result\\stage_1") / configuration_name
     for threshold in thresholds:
+        all_detection_times[threshold] = []
+        all_detected_cps[threshold] = []
+
         detection_hypothesis_positives = 0
         localization_hypothesis_positives = 0
         for data_num in range(start, end):
-            data_path = dir_path / f"sample_{data_num}"
+            data_path = results_path / f"sample_{data_num}"
             rl_distributions = np.load(data_path / "run_lengths.npy")
             gap_sizes = np.load(data_path / "gap_sizes.npy")
-            cps = analyze_cp(rl_distributions, gap_sizes, threshold)
+            cps, detection_times = analyze_cp(rl_distributions, gap_sizes, threshold)
             if len(cps) > 0:
                 detection_hypothesis_positives += 1
+                all_detected_cps[threshold].append(cps[0])
+                all_detection_times[threshold].append(detection_times[0])
                 # print(cps[0])
                 if cps[0] in range(CHANGE_POINT - CHANGE_POINT_TOLERANCE, CHANGE_POINT + CHANGE_POINT_TOLERANCE + 1):
                     localization_hypothesis_positives += 1
-                else:
-                    print(threshold, f"CHANGE POINT: {cps[0]} |", configuration_name, data_num)
+                # else:
+                #    print(threshold, f"CHANGE POINT: {cps[0]} |", configuration_name, data_num)
 
         detection_df.loc[configuration_name, threshold] = detection_hypothesis_positives / (end - start)
         localization_df.loc[configuration_name, threshold] = localization_hypothesis_positives / (end - start)
 
+    with open(results_path / 'thresholds_change_points.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Threshold', 'Change points'])  # Заголовки столбцов
+
+        for threshold in thresholds:
+            point_values = all_detected_cps[threshold]
+            writer.writerow([threshold] + point_values)
+
+    with open(results_path / 'thresholds_detection_times.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Threshold', 'Detection times'])  # Заголовки столбцов
+
+        for threshold in thresholds:
+            point_values = all_detection_times[threshold]
+            writer.writerow([threshold] + point_values)
+
+
 def calculate_powers(thresholds, start, end):
-    experiment_base_dir = Path("")
+    experiment_base_dir = Path("PySATL-CPD-Module\\CPDShell\\experiment\\stage_1")
 
     experiment_description = pd.read_csv(experiment_base_dir / "experiment_description.csv")
     names = experiment_description["name"].tolist()
@@ -264,15 +291,16 @@ def calculate_powers(thresholds, start, end):
     detection_df = pd.DataFrame(columns=thresholds)
     localization_df = pd.DataFrame(columns=thresholds)
 
-    for name in {"normal", "uniform", "exponential", "weibull", "beta"}:
+    for name in set(names).difference({"normal", "uniform", "exponential", "weibull", "beta"}):
         initial_powers = [0.0] * len(thresholds)
         detection_df.loc[name] = initial_powers
         localization_df.loc[name] = initial_powers
         dfs = (detection_df, localization_df)
-        calculate_powers_for_data_configuration(dfs, f"normal-{name}", thresholds, start, end)
+        calculate_powers_for_data_configuration(dfs, name, thresholds, start, end)
 
     # detection_df.to_csv("detection_powers.csv")
     # localization_df.to_csv("localization_powers.csv")
+
 
 def analyze_cp(rl_distributions, gap_sizes, cp_threshold):
     max_rl_prob = rl_distributions[np.arange(SAMPLE_SIZE), gap_sizes.astype(int)]
@@ -289,16 +317,17 @@ def analyze_cp(rl_distributions, gap_sizes, cp_threshold):
         cp = int(first_cp_detection_time - correct_run_length)
         cps.append(cp)
 
-        if cps[0] not in range(CHANGE_POINT - CHANGE_POINT_TOLERANCE, CHANGE_POINT + CHANGE_POINT_TOLERANCE + 1):
-            print("FIRST CP DETECTION TIME: ", first_cp_detection_time)
+        # if cps[0] not in range(CHANGE_POINT - CHANGE_POINT_TOLERANCE, CHANGE_POINT + CHANGE_POINT_TOLERANCE + 1):
+        #     print("FIRST CP DETECTION TIME: ", first_cp_detection_time)
 
-    return cps
+    return cps, cp_detection_times
+
 
 def calculate_significance_levels():
     result_base_dir = Path("")
     for name in {"normal", "uniform", "exponential", "weibull", "beta"}:
         max_rl_probs_matrix = np.zeros((1000, 500))
-        for sample_num in range (0, 1000):
+        for sample_num in range(0, 1000):
             data_path = result_base_dir / name / f"sample_{sample_num}"
             rl_distributions = np.load(data_path / "run_lengths.npy")
             gap_sizes = np.load(data_path / "gap_sizes.npy")
@@ -343,6 +372,7 @@ def calculate_significance_levels():
         # Закрыть текущую фигуру (если не нужно показывать график)
         plt.close()
 
+
 def build_bad_plots():
     save_path = Path("")
     cases = [
@@ -379,6 +409,221 @@ def build_bad_plots():
         )
 
 
+def plot_hists():
+    experiment_base_dir = Path("PySATL-CPD-Module\\CPDShell\\experiment\\stage_1")
+    result_base_dit = Path("PySATL-CPD-Module\\CPDShell\\result\\stage_1")
+
+    experiment_description = pd.read_csv(experiment_base_dir / "experiment_description.csv")
+    names = experiment_description["name"].tolist()
+
+    for name in set(names).difference({"normal", "uniform", "exponential", "weibull", "beta"}):
+        all_detected_cps = {}
+        all_detection_times = {}
+
+        output_path = result_base_dit / name
+
+        with open(output_path / 'thresholds_change_points.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)
+
+            for row in reader:
+                threshold = float(row[0])
+                point_values = list(map(float, row[1:]))
+                all_detected_cps[threshold] = point_values
+
+        with open(output_path / 'thresholds_detection_times.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)
+
+            for row in reader:
+                threshold = float(row[0])
+                point_values = list(map(float, row[1:]))
+                all_detection_times[threshold] = point_values
+
+        # =================================================
+
+        fig, ax = plt.subplots(nrows=4, figsize=(20, 10))
+        thresholds = list(all_detected_cps.keys())
+
+        plt.suptitle(f"Change points and detection times hist: {name}", fontsize=18)
+        plt.tight_layout()
+
+        for row in range(4):
+            ax[row].set_xlim(0, 500)
+
+            ax[row].hist(all_detected_cps[thresholds[row]], 100, range=(0, 500), ec='red', fc='none', lw=1.5,
+                         histtype='step', label='change points', density=True)
+            ax[row].hist(all_detection_times[thresholds[row]], 100, range=(0, 500), ec='green', fc='none', lw=1.5,
+                         histtype='step', label='detection times', density=True)
+            ax[row].legend(loc='upper left')
+
+            ax[row].text(450, 0.8 * ax[row].get_ylim()[1], f"Threshold = {thresholds[row]}")
+
+            ax[row].axvline(250, c="blue", ls="dotted", label='change point')
+
+            ax[row].set_xlabel("Time")
+            ax[row].set_ylabel("Normed num of points")
+
+        plt.savefig(
+            Path("PySATL-CPD-Module\\CPDShell\\cps_detection_times_hists") / f"{name}.png")
+        plt.close(fig)
+
+        # =================================================
+
+        fig, ax = plt.subplots(nrows=4, figsize=(20, 10))
+        thresholds = list(all_detected_cps.keys())
+
+        plt.suptitle(f"Change points detection delays hist: {name}", fontsize=18)
+        plt.tight_layout()
+
+        for row in range(4):
+            ax[row].set_xlim(0, 500)
+
+            detection_delays = np.array(all_detection_times[thresholds[row]]) - np.array(all_detected_cps[thresholds[row]])
+
+            ax[row].hist(detection_delays, 100, range=(0, 500), ec='red', fc='none', lw=1.5,
+                         histtype='step', label='detection delays', density=True)
+            ax[row].legend(loc='upper left')
+
+            ax[row].text(450, 0.8 * ax[row].get_ylim()[1], f"Threshold = {thresholds[row]}")
+
+            ax[row].set_xlabel("Detection delay")
+            ax[row].set_ylabel("Normed num of delays")
+
+        plt.savefig(
+            Path("PySATL-CPD-Module\\CPDShell\\detection_delays_hists") / f"{name}.png")
+        plt.close(fig)
+
+        # ==================================================
+
+        fig, ax = plt.subplots(nrows=4, figsize=(20, 10))
+        thresholds = list(all_detected_cps.keys())
+
+        plt.suptitle(f"Change points, detected after actual CP: {name}", fontsize=18)
+        plt.tight_layout()
+
+        for row in range(4):
+            ax[row].set_xlim(0, 500)
+
+            after_actual_cp_mask = np.array(all_detection_times[thresholds[row]]) >= 250
+            cps_after_actual = np.array(all_detected_cps[thresholds[row]])[after_actual_cp_mask]
+            detections_after_actual = np.array(all_detection_times[thresholds[row]])[after_actual_cp_mask]
+
+            ax[row].hist(cps_after_actual, 100, range=(0, 500), ec='red', fc='none', lw=1.5,
+                         histtype='step', label='change points', density=True)
+            ax[row].hist(detections_after_actual, 100, range=(0, 500), ec='green', fc='none', lw=1.5,
+                         histtype='step', label='detection times', density=True)
+            ax[row].legend(loc='upper left')
+
+            ax[row].text(450, 0.8 * ax[row].get_ylim()[1], f"Threshold = {thresholds[row]}")
+
+            ax[row].axvline(250, c="blue", ls="dotted", label='change point')
+
+            ax[row].set_xlabel("Time")
+            ax[row].set_ylabel("Normed num of points")
+
+        plt.savefig(
+            Path("PySATL-CPD-Module\\CPDShell\\filtered_hists") / f"{name}.png")
+        plt.close(fig)
+        # ==================================================
+
+        fig, ax = plt.subplots(nrows=4, figsize=(20, 10))
+        thresholds = list(all_detected_cps.keys())
+
+        plt.suptitle(f"Change points detection delays after actual CP: {name}", fontsize=18)
+        plt.tight_layout()
+
+        for row in range(4):
+            ax[row].set_xlim(0, 500)
+
+            after_actual_cp_mask = np.array(all_detection_times[thresholds[row]]) >= 250
+            cps_after_actual = np.array(all_detected_cps[thresholds[row]])[after_actual_cp_mask]
+            detections_after_actual = np.array(all_detection_times[thresholds[row]])[after_actual_cp_mask]
+            detection_delays = detections_after_actual - cps_after_actual
+
+            ax[row].hist(detection_delays, 100, range=(0, 500), ec='red', fc='none', lw=1.5,
+                         histtype='step', label='detection delays', density=True)
+            ax[row].legend(loc='upper left')
+
+            ax[row].text(215, 0.8 * ax[row].get_ylim()[1], f"Threshold = {thresholds[row]}")
+
+            ax[row].set_xlabel("Detection delay")
+            ax[row].set_ylabel("Normed num of delays")
+
+        plt.savefig(
+            Path("PySATL-CPD-Module\\CPDShell\\filtered_delays_hists") / f"{name}.png")
+        plt.close(fig)
+
+        # ==================================================
+
+        fig, ax = plt.subplots(nrows=4, figsize=(20, 10))
+        thresholds = list(all_detected_cps.keys())
+
+        plt.suptitle(f"Change points detection delays for correct CPs: {name}", fontsize=18)
+        plt.tight_layout()
+
+        for row in range(4):
+            ax[row].set_xlim(0, 300)
+
+            after_actual_cp_mask = np.array(all_detection_times[thresholds[row]]) >= 250
+            correct_cps_mask = ((np.array(all_detected_cps[thresholds[row]]) > 225)
+                                & (np.array(all_detected_cps[thresholds[row]]) < 275))
+            mask = after_actual_cp_mask & correct_cps_mask
+
+            cps_after_actual = np.array(all_detected_cps[thresholds[row]])[mask]
+            detections_after_actual = np.array(all_detection_times[thresholds[row]])[mask]
+            detection_delays = detections_after_actual - cps_after_actual
+
+            ax[row].hist(detection_delays, 100, range=(0, 300), ec='red', fc='none', lw=1.5,
+                         histtype='step', label='detection delays', density=True)
+            ax[row].legend(loc='upper left')
+
+            ax[row].text(215, 0.8 * ax[row].get_ylim()[1], f"Threshold = {thresholds[row]}")
+
+            ax[row].set_xlabel("Detection delay")
+            ax[row].set_ylabel("Normed num of delays")
+
+        plt.savefig(
+            Path("PySATL-CPD-Module\\CPDShell\\correct_delays_hists") / f"{name}.png")
+        plt.close(fig)
+
+        # ==================================================
+
+        fig, ax = plt.subplots(nrows=4, figsize=(20, 10))
+        thresholds = list(all_detected_cps.keys())
+
+        plt.suptitle(f"Correct change points: {name}", fontsize=18)
+        plt.tight_layout()
+
+        for row in range(4):
+            ax[row].set_xlim(0, 500)
+
+            after_actual_cp_mask = np.array(all_detection_times[thresholds[row]]) >= 250
+            correct_cps_mask = ((np.array(all_detected_cps[thresholds[row]]) > 225)
+                                & (np.array(all_detected_cps[thresholds[row]]) < 275))
+            mask = after_actual_cp_mask & correct_cps_mask
+
+            cps_after_actual = np.array(all_detected_cps[thresholds[row]])[mask]
+            detections_after_actual = np.array(all_detection_times[thresholds[row]])[mask]
+
+            ax[row].hist(cps_after_actual, 100, range=(0, 500), ec='red', fc='none', lw=1.5,
+                         histtype='step', label='change points', density=True)
+            ax[row].hist(detections_after_actual, 100, range=(0, 500), ec='green', fc='none', lw=1.5,
+                         histtype='step', label='detection times', density=True)
+            ax[row].legend(loc='upper left')
+
+            ax[row].text(450, 0.8 * ax[row].get_ylim()[1], f"Threshold = {thresholds[row]}")
+
+            ax[row].axvline(250, c="blue", ls="dotted", label='change point')
+
+            ax[row].set_xlabel("Time")
+            ax[row].set_ylabel("Normed num of points")
+
+        plt.savefig(
+            Path("PySATL-CPD-Module\\CPDShell\\correct_hists") / f"{name}.png")
+        plt.close(fig)
+
+
 if __name__ == "__main__":
     # generate_normal_data_for_validation()
     # process_normal_data()
@@ -394,9 +639,11 @@ if __name__ == "__main__":
     # thresholds_for_power = [0.27, 0.18, 0.07, 0.04]
     # calculate_powers(thresholds_for_power, 0, 1000)
 
+    plot_hists()
+
     # calculate_significance_levels()
 
-    build_bad_plots()
+    # build_bad_plots()
 
     """
     normal_data = np.load("normal_data_for_validation.npy")
