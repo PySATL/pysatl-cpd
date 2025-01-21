@@ -8,3 +8,7 @@ class BenchmarkingAlgorithm(ABC, Algorithm):
     @abstractmethod
     def get_benchmarking_info(self) -> AlgorithmBenchmarkingInfo:
         raise NotImplementedError
+    
+    @abstractmethod
+    def get_metaparameters(self) -> dict[str, str]:
+        raise NotImplementedError

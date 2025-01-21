@@ -1,31 +1,44 @@
 import os
+import yaml
 from pathlib import Path
+from shutil import copy
 
 from CPDShell.Core.algorithms.classification_algorithm import ClassificationAlgorithm
 from CPDShell.Core.algorithms.knn_algorithm import KNNAlgorithm
 from CPDShell.Core.scrubber.abstract_scrubber import Scrubber
 from CPDShell.labeled_data import LabeledCPData
-from CPDShell.shell import CPContainer, CPDShell
+from CPDShell.shell import CPContainer, CPDProblem
 from benchmarking.worker.common.utils import Utils
+from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
+from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo, ScrubberBenchmarkingInfo
+from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 
 
 class StatisticsCalculation:
     @staticmethod
     def calculate_statistics(
-        cpd_algorithm: ClassificationAlgorithm | KNNAlgorithm, scrubber: Scrubber, datasets_dir: Path, dest_dir: Path
+        cpd_algorithm: BenchmarkingKNNAlgorithm, scrubber: BenchmarkingLinearScrubber, datasets_dir: Path, dest_dir: Path
     ) -> list[CPContainer]:
         """
         :param datasets_dir: Path where datasets are stored.
         """
+        # Generate algorithm and scrubber config in the root dir.
+        alg_metaparams = cpd_algorithm.get_metaparameters()
+        scrubber_metaparams = scrubber.get_metaparameters()
+        config = {"algorithm": alg_metaparams, "scrubber": scrubber_metaparams}
+        os.makedirs(dest_dir)
+        with open(dest_dir / "config.yaml", "w") as outfile:
+            yaml.dump(config, outfile, default_flow_style=False, sort_keys=False, Dumper=VerboseSafeDumper)
+
         samples_dirs = Utils.get_all_sample_dirs(datasets_dir)
         results = []
 
         for sample_dir in samples_dirs:
             data = LabeledCPData.read_generated_datasets(sample_dir[0])[sample_dir[1]].raw_data
-            shell = CPDShell(data, cpd_algorithm=cpd_algorithm, scrubber=scrubber)
+            shell = CPDProblem(data, cpd_algorithm=cpd_algorithm, scrubber=scrubber)
             results.append(shell.run_cpd())
 
-            stats = cpd_algorithm.statistics_list
+            bench_info = cpd_algorithm.get_benchmarking_info()
             dest_path = (
                 dest_dir
                 / sample_dir[1]
@@ -33,11 +46,22 @@ class StatisticsCalculation:
             )
             os.makedirs(dest_path, exist_ok=True)
 
-            with open(dest_path / "stats", "w+") as outfile:
-                for stat in stats:
-                    outfile.write(str(stat) + "\n")
+            # Copy config of distribution one for all samples with the same distribution.
+            if len(os.listdir(dest_dir / sample_dir[1])) == 1:
+                copy(datasets_dir / sample_dir[1] / "config.yaml", dest_path / sample_dir[1])
 
-            cpd_algorithm.free_statistics_list()
+            with open(dest_path / "stats", "w") as outfile:
+                for window_info in bench_info:
+                    for stat in window_info:
+                        outfile.write(str(stat) + "\n")
+            
+            # Save time and memory.
+            # with open(dest_path / "benchmarking_info", "w") as outfile:
+            #     for window_info in bench_info:
+            #         for stat in window_info:
+            #             outfile.write(str(stat) + "\n")
+            
+
             print(sample_dir[0])
 
         return results

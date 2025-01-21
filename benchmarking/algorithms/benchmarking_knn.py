@@ -51,6 +51,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__change_points: list[int] = []
         self.__change_points_count = 0
 
+        self.__metaparameters_info = {"type": "knn", "k": f"{k}", "indent_coeff": f"{indent_coeff}"}
         self.__benchmarking_info: AlgorithmBenchmarkingInfo = []
 
     @property
@@ -65,6 +66,9 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         current_benchmarking_info = self.__benchmarking_info
         self.__benchmarking_info = []
         return current_benchmarking_info
+    
+    def get_metaparameters(self) -> dict[str, str]:
+        return self.__metaparameters_info
 
     def detect(self, window: Iterable[float | np.float64]) -> int:
         """Finds change points in window.
