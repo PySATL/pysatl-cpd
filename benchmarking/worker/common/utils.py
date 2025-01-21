@@ -31,7 +31,7 @@ class Utils:
 
     @staticmethod
     def print_all_change_points(statistics_dir: Path, test_statistic: TestStatistic, window_size: int) -> None:
-        stats_paths = Utils.get_all_stats_paths(statistics_dir)
+        stats_paths = Utils.get_all_stats_dirs(statistics_dir)
 
         for stats_path in stats_paths:
             stats = Utils.read_data(stats_path)
@@ -40,19 +40,18 @@ class Utils:
             print(change_points)
 
     @staticmethod
-    def get_all_stats_paths(statistics_dir: Path) -> list[Path]:
+    def get_all_stats_dirs(statistics_dir: Path) -> list[Path]:
         root_content = os.listdir(statistics_dir)
         sample_paths = []
+
+        if "stats" in root_content and not os.path.isdir(statistics_dir / "stats"):
+            return [statistics_dir]
 
         for name in root_content:
             cur_path = statistics_dir / name
 
-            if name == "stats":
-                sample_paths.append(cur_path)
-                continue
-
             if os.path.isdir(cur_path):
-                sample_paths.extend(Utils.get_all_stats_paths(cur_path))
+                sample_paths.extend(Utils.get_all_stats_dirs(cur_path))
 
         return sample_paths
 

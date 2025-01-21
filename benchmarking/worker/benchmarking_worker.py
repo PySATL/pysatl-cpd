@@ -133,9 +133,10 @@ class CPDBenchmarkWorker(Worker):
         # TODO: If dataset_path is not None ...
         assert dataset_path is not None, "Dataset path should not be None"
 
-        results: list[CPContainer] = StatisticsCalculation.calculate_statistics(cpd_algorithm, scrubber, dataset_path, results_path)
+        # TODO: Statistics calculation saves all metrics. Should it be the responsibility of worker?
+        StatisticsCalculation.calculate_statistics(cpd_algorithm, scrubber, dataset_path, results_path)
 
-        self.__average_time = sum(result.time_sec for result in results) / len(results)
-        self.__logger.info(f"Average time: {self.__average_time}")
+        # self.__average_time = sum(result.time_sec for result in results) / len(results)
+        # self.__logger.info(f"Average time: {self.__average_time}")
         # It should be calculated while report generating. Time, memory and statistics should be saved. Other metrics should be calculated later.
         # Utils.print_all_change_points(results_path, ThresholdOvercome(self.__threshold), self.__interval_length)
