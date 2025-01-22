@@ -107,21 +107,17 @@ from CPDShell.shell import CPContainer
 from benchmarking.worker.common.statistics_calculation import StatisticsCalculation
 from benchmarking.worker.common.utils import Utils
 from benchmarking.worker.worker import Worker
+from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
+from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 
 
-class CPDBenchmarkWorker(Worker):
-    def __init__(self, expected_change_points: list[int], interval_length: int, logger: logging.Logger) -> None:
-        self.__expected_change_points = expected_change_points
-        self.__interval_length = interval_length
-
-        self.__average_time: float = 0.0
-        self.__power: float = 0.0
-        self.__logger = logger
+class BenchmarkingKNNWorker(Worker):
+    def __init__(self, cpd_algorithm: BenchmarkingKNNAlgorithm, scrubber: BenchmarkingLinearScrubber, expected_change_points: list[int], interval_length: int, logger: logging.Logger) -> None:
+        self.__scrubber = scrubber
+        self.__cpd_algorithm = cpd_algorithm
 
     def run(
         self,
-        scrubber: LinearScrubber,
-        cpd_algorithm: ClassificationAlgorithm | KNNAlgorithm,
         dataset_path: Path | None,
         results_path: Path,
     ) -> None:
@@ -134,7 +130,7 @@ class CPDBenchmarkWorker(Worker):
         assert dataset_path is not None, "Dataset path should not be None"
 
         # TODO: Statistics calculation saves all metrics. Should it be the responsibility of worker?
-        StatisticsCalculation.calculate_statistics(cpd_algorithm, scrubber, dataset_path, results_path)
+        StatisticsCalculation.calculate_statistics(self.__cpd_algorithm, self.__scrubber, dataset_path, results_path)
 
         # self.__average_time = sum(result.time_sec for result in results) / len(results)
         # self.__logger.info(f"Average time: {self.__average_time}")
