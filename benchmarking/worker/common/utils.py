@@ -1,3 +1,11 @@
+"""
+Module for implementation of CPD algorithm based on knn classification.
+"""
+
+__author__ = "Artemii Patov"
+__copyright__ = "Copyright (c) 2025 Artemii Patov"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import os
 from collections.abc import MutableSequence
 from pathlib import Path
@@ -10,7 +18,7 @@ from CPDShell.labeled_data import LabeledCPData
 
 class Utils:
     @staticmethod
-    def read_data(data_path: Path) -> list[float]:
+    def read_float_data(data_path: Path) -> list[float]:
         with open(data_path) as infile:
             data = list(map(float, infile.readlines()))
 
@@ -34,7 +42,7 @@ class Utils:
         stats_paths = Utils.get_all_stats_dirs(statistics_dir)
 
         for stats_path in stats_paths:
-            stats = Utils.read_data(stats_path)
+            stats = Utils.read_float_data(stats_path)
             change_points = Utils.get_change_points(stats, test_statistic, window_size)
             print(stats_path)
             print(change_points)

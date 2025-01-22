@@ -1,9 +1,9 @@
 """
-Module for implementation of Linear Scrubber.
+Module for implementation of CPD algorithm based on knn classification.
 """
 
-__author__ = "Romanyuk Artem"
-__copyright__ = "Copyright (c) 2024 Romanyuk Artem"
+__author__ = "Artemii Patov"
+__copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from collections.abc import Iterable, Sequence

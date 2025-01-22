@@ -1,8 +1,17 @@
+"""
+Module for implementation of CPD algorithm based on knn classification.
+"""
+
+__author__ = "Artemii Patov"
+__copyright__ = "Copyright (c) 2025 Artemii Patov"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from pathlib import Path
 from dataclasses import dataclass
 import yaml
 import sys
 from benchmarking.worker.common.utils import Utils
+from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
 
 
 # User can filter out none values and use only some.
@@ -23,8 +32,12 @@ class Measures():
 
 
 class BenchmarkingReport():
-    def __init__(self, resultsDir: Path) -> None:
+    def __init__(self, resultsDir: Path, expected_cp: list[int], threshold: float, interval_length: int) -> None:
         self.__resultsDir = resultsDir
+        self.__expected_cp = expected_cp
+        self.__theshold = threshold
+        self.__interval_length = interval_length
+
         self.__result: Measures = Measures()
         self.__sample_dirs = Utils.get_all_stats_dirs(resultsDir)
 
@@ -56,7 +69,24 @@ class BenchmarkingReport():
         raise NotImplementedError
 
     def count_power(self) -> None:
-        raise NotImplementedError
+        power_sum = 0.0
+
+        for sample_dir in self.__sample_dirs:
+            stats = Utils.read_float_data(sample_dir / "stats")
+            actual_cp = Utils.get_change_points(stats, ThresholdOvercome(self.__theshold), len(stats))
+            
+            true_positives = 0
+
+            for exp_cp in self.__expected_cp:
+                true_positives_delta = list(filter(lambda act_cp: abs(act_cp - exp_cp) <= self.__interval_length, actual_cp))
+
+                if true_positives_delta:
+                    true_positives += 1
+
+            if true_positives > 0:
+                power_sum += true_positives / len(self.__expected_cp)
+
+        self.__result.power = power_sum / len(self.__sample_dirs)
 
     def count_F1(self) -> None:
         raise NotImplementedError

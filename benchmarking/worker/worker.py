@@ -1,3 +1,11 @@
+"""
+Module for implementation of CPD algorithm based on knn classification.
+"""
+
+__author__ = "Artemii Patov"
+__copyright__ = "Copyright (c) 2025 Artemii Patov"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 

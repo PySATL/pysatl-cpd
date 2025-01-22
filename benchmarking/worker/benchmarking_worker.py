@@ -1,3 +1,11 @@
+"""
+Module for implementation of CPD algorithm based on knn classification.
+"""
+
+__author__ = "Artemii Patov"
+__copyright__ = "Copyright (c) 2025 Artemii Patov"
+__license__ = "SPDX-License-Identifier: MIT"
+
 # from pathlib import Path
 # import logging
 
@@ -112,7 +120,8 @@ from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinea
 
 
 class BenchmarkingKNNWorker(Worker):
-    def __init__(self, cpd_algorithm: BenchmarkingKNNAlgorithm, scrubber: BenchmarkingLinearScrubber, expected_change_points: list[int], interval_length: int, logger: logging.Logger) -> None:
+    def __init__(self, cpd_algorithm: BenchmarkingKNNAlgorithm, scrubber: BenchmarkingLinearScrubber, expected_change_points: list[int]) -> None:
+        self.__expected_change_points = expected_change_points
         self.__scrubber = scrubber
         self.__cpd_algorithm = cpd_algorithm
 
@@ -131,8 +140,3 @@ class BenchmarkingKNNWorker(Worker):
 
         # TODO: Statistics calculation saves all metrics. Should it be the responsibility of worker?
         StatisticsCalculation.calculate_statistics(self.__cpd_algorithm, self.__scrubber, dataset_path, results_path)
-
-        # self.__average_time = sum(result.time_sec for result in results) / len(results)
-        # self.__logger.info(f"Average time: {self.__average_time}")
-        # It should be calculated while report generating. Time, memory and statistics should be saved. Other metrics should be calculated later.
-        # Utils.print_all_change_points(results_path, ThresholdOvercome(self.__threshold), self.__interval_length)

@@ -3,7 +3,7 @@ Module for implementation of CPD algorithm based on knn classification.
 """
 
 __author__ = "Artemii Patov"
-__copyright__ = "Copyright (c) 2024 Artemii Patov"
+__copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
