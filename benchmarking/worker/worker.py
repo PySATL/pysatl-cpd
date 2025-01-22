@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+
 class Worker(ABC):
     """Abstract class for worker"""
 

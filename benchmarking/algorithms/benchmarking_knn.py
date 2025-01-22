@@ -7,17 +7,16 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
-from time import perf_counter
 from collections.abc import Iterable
+from time import perf_counter
 
 import numpy as np
 
-from CPDShell.Core.algorithms.abstract_algorithm import Algorithm
+from benchmarking.algorithms.benchmarking_algorithm import BenchmarkingAlgorithm
+from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo
 from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
 from CPDShell.Core.algorithms.KNNCPD.knn_classifier import KNNClassifier
-from benchmarking.algorithms.benchmarking_algorithm import BenchmarkingAlgorithm
-from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo
-from benchmarking.benchmarking_info import AlgorithmWindowBenchmarkingInfo
+
 
 class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
     """
@@ -66,7 +65,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         current_benchmarking_info = self.__benchmarking_info
         self.__benchmarking_info = []
         return current_benchmarking_info
-    
+
     def get_metaparameters(self) -> dict[str, str]:
         return self.__metaparameters_info
 

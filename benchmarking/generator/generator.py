@@ -7,10 +7,10 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import csv
+import typing as tp
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-import typing as tp
 
 import yaml
 

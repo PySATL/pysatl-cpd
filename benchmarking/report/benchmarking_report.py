@@ -7,20 +7,20 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from pathlib import Path
-from dataclasses import dataclass
+
 import yaml
-import sys
+
 from benchmarking.worker.common.utils import Utils
 from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
 
 
 # User can filter out none values and use only some.
 # Actually, Measures can be class with method to incalsulate this work.
-class Measures():
+class Measures:
     def __init__(self) -> None:
         self.average_overall_time: float | None = None
         self.average_window_time: float | None = None
-        self.memory: float | None = None # TODO: There are different types of memory
+        self.memory: float | None = None  # TODO: There are different types of memory
         self.power: float | None = None
         self.f1: float | None = None
         self.sl: float | None = None
@@ -31,7 +31,7 @@ class Measures():
         return {k: v for k, v in vars(self).items() if v is not None}
 
 
-class BenchmarkingReport():
+class BenchmarkingReport:
     def __init__(self, resultsDir: Path, expected_cp: list[int], threshold: float, interval_length: int) -> None:
         self.__resultsDir = resultsDir
         self.__expected_cp = expected_cp
@@ -50,7 +50,7 @@ class BenchmarkingReport():
                 loaded_info: dict[str, float] = yaml.safe_load(infile)
 
             overall_time += loaded_info["overall_time"]
-        
+
         self.__result.average_overall_time = overall_time / len(self.__sample_dirs)
 
     def count_average_window_time(self) -> None:
@@ -62,7 +62,7 @@ class BenchmarkingReport():
                 loaded_info: dict[str, float] = yaml.safe_load(infile)
 
             overall_time += loaded_info["average_time"]
-        
+
         self.__result.average_window_time = overall_time / len(self.__sample_dirs)
 
     def count_memory(self) -> None:
@@ -74,11 +74,13 @@ class BenchmarkingReport():
         for sample_dir in self.__sample_dirs:
             stats = Utils.read_float_data(sample_dir / "stats")
             actual_cp = Utils.get_change_points(stats, ThresholdOvercome(self.__theshold), len(stats))
-            
+
             true_positives = 0
 
             for exp_cp in self.__expected_cp:
-                true_positives_delta = list(filter(lambda act_cp: abs(act_cp - exp_cp) <= self.__interval_length, actual_cp))
+                true_positives_delta = list(
+                    filter(lambda act_cp: abs(act_cp - exp_cp) <= self.__interval_length, actual_cp)
+                )
 
                 if true_positives_delta:
                     true_positives += 1
@@ -101,11 +103,8 @@ class BenchmarkingReport():
         with open(self.__resultsDir / "config.yaml") as infile:
             # TODO: Unsure about type.
             loaded_info: dict[str, dict[str, str]] = yaml.safe_load(infile)
-        
+
         self.__result.scrubbing_alg_info = loaded_info
 
-    # Either serialized format or just string. But probably we need to count some statistics over results, so it would be good to make it serialized to deserialized and get some metrics.
-    # We do not need to serialize it. We can just return some dataclass containig. Products do not need to have general interface. What if we do not need some metrics?
-    # Make fields optional? Yeah.
     def get_result(self) -> Measures:
         return self.__result

@@ -11,7 +11,6 @@ from collections.abc import Iterable, Sequence
 import numpy
 
 from benchmarking.scrubber.benchmarking_scrubber import BenchmarkingScrubber
-from benchmarking.benchmarking_info import ScrubberBenchmarkingInfo
 
 
 class BenchmarkingLinearScrubber(BenchmarkingScrubber):

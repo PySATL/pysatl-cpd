@@ -6,8 +6,8 @@ __author__ = "Artemii Patov"
 __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
 from benchmarking.worker.common.utils import Utils
+from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
 
 
 class Rates:

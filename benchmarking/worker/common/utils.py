@@ -10,8 +10,6 @@ import os
 from collections.abc import MutableSequence
 from pathlib import Path
 
-import numpy
-
 from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
 from CPDShell.labeled_data import LabeledCPData
 
@@ -25,9 +23,7 @@ class Utils:
         return data
 
     @staticmethod
-    def get_change_points(
-        data: list[float], test_statistic: TestStatistic, window_size: int
-    ) -> list[int]:
+    def get_change_points(data: list[float], test_statistic: TestStatistic, window_size: int) -> list[int]:
         change_points = []
 
         for start in range(0, len(data), window_size):

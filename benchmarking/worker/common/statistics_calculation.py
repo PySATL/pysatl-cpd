@@ -7,26 +7,26 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import os
-import yaml
 from pathlib import Path
 from shutil import copy
 
-from CPDShell.Core.algorithms.classification_algorithm import ClassificationAlgorithm
-from CPDShell.Core.algorithms.knn_algorithm import KNNAlgorithm
-from CPDShell.Core.scrubber.abstract_scrubber import Scrubber
+import yaml
+
+from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
+from benchmarking.generator.generator import VerboseSafeDumper
+from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
+from benchmarking.worker.common.utils import Utils
 from CPDShell.labeled_data import LabeledCPData
 from CPDShell.shell import CPContainer, CPDProblem
-from benchmarking.worker.common.utils import Utils
-from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
-from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo, ScrubberBenchmarkingInfo
-from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
-from benchmarking.generator.generator import VerboseSafeDumper
 
 
 class StatisticsCalculation:
     @staticmethod
     def calculate_statistics(
-        cpd_algorithm: BenchmarkingKNNAlgorithm, scrubber: BenchmarkingLinearScrubber, datasets_dir: Path, dest_dir: Path
+        cpd_algorithm: BenchmarkingKNNAlgorithm,
+        scrubber: BenchmarkingLinearScrubber,
+        datasets_dir: Path,
+        dest_dir: Path,
     ) -> list[CPContainer]:
         """
         :param datasets_dir: Path where datasets are stored.
@@ -49,11 +49,7 @@ class StatisticsCalculation:
 
             bench_info = cpd_algorithm.get_benchmarking_info()
 
-            dest_path = (
-                dest_dir
-                / sample_dir[1]
-                / sample_dir[0].name
-            )
+            dest_path = dest_dir / sample_dir[1] / sample_dir[0].name
             os.makedirs(dest_path, exist_ok=True)
 
             # Copy config of distribution one for all samples with the same distribution.
@@ -70,13 +66,14 @@ class StatisticsCalculation:
             avg_time = sum(map(lambda x: x.time), bench_info) / len(bench_info)
             bench_info_format = {"overall_time": overall_time, "avg_time": avg_time}
             with open(dest_dir / "benchmarking_info.yaml") as outfile:
-                yaml.dump(bench_info_format, outfile, default_flow_style=False, sort_keys=False, Dumper=VerboseSafeDumper)
+                yaml.dump(
+                    bench_info_format, outfile, default_flow_style=False, sort_keys=False, Dumper=VerboseSafeDumper
+                )
 
             # with open(dest_path / "benchmarking_info", "w") as outfile:
             #     for window_info in bench_info:
             #         for stat in window_info:
             #             outfile.write(str(stat) + "\n")
-            
 
             print(sample_dir[0])
 

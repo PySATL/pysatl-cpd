@@ -8,8 +8,8 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from pathlib import Path
 
-from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
 from benchmarking.worker.common.utils import Utils
+from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
 from Experiments.rates import Rates
 
 
@@ -66,7 +66,8 @@ class ThresholdCalculation:
     ) -> float:
         """
         :param sample_length: number of statistical values.
-        :param interval_length: The length of the intervals that are atomically examined for the presense of change point.
+        :param interval_length: The length of the intervals that are
+         atomically examined for the presense of change point.
         """
         fpr_sum = 0
         overall_count = len(dataset_path)
