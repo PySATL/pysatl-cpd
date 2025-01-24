@@ -19,7 +19,7 @@ from benchmarking.worker.common.threshold_calculation import ThresholdCalculatio
 from benchmarking.worker.worker import Worker
 
 
-class ThresholdCalculationWorker(Worker):
+class OptimalThresholdWorker(Worker):
     def __init__(
         self,
         cpd_algorithm: BenchmarkingKNNAlgorithm,
@@ -38,6 +38,12 @@ class ThresholdCalculationWorker(Worker):
         self.__sl_delta = sl_delta
         self.__sample_length = sample_length
         self.__interval_length = interval_length
+
+        self.__threshold: float | None = None
+
+    @property
+    def threshold(self) -> float | None:
+        return self.__threshold
 
     def run(
         self,
@@ -66,6 +72,8 @@ class ThresholdCalculationWorker(Worker):
             self.__interval_length,
             self.__sl_delta,
         )
+
+        self.__threshold = threshold
 
         result_info = [
             {

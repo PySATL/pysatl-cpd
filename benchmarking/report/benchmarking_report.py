@@ -41,7 +41,7 @@ class BenchmarkingReport:
         self.__result: Measures = Measures()
         self.__sample_dirs = Utils.get_all_stats_dirs(resultsDir)
 
-    def count_average_overall_time(self) -> None:
+    def add_average_overall_time(self) -> None:
         overall_time = 0
 
         for sample_dir in self.__sample_dirs:
@@ -53,7 +53,7 @@ class BenchmarkingReport:
 
         self.__result.average_overall_time = overall_time / len(self.__sample_dirs)
 
-    def count_average_window_time(self) -> None:
+    def add_average_window_time(self) -> None:
         overall_time = 0
 
         for sample_dir in self.__sample_dirs:
@@ -65,10 +65,10 @@ class BenchmarkingReport:
 
         self.__result.average_window_time = overall_time / len(self.__sample_dirs)
 
-    def count_memory(self) -> None:
+    def add_memory(self) -> None:
         raise NotImplementedError
 
-    def count_power(self) -> None:
+    def add_power(self) -> None:
         power_sum = 0.0
 
         for sample_dir in self.__sample_dirs:
@@ -90,13 +90,13 @@ class BenchmarkingReport:
 
         self.__result.power = power_sum / len(self.__sample_dirs)
 
-    def count_F1(self) -> None:
+    def add_F1(self) -> None:
         raise NotImplementedError
 
-    def count_SL(self) -> None:
+    def add_SL(self) -> None:
         raise NotImplementedError
 
-    def count_interval(self) -> None:
+    def add_interval(self) -> None:
         raise NotImplementedError
 
     def add_scrubbing_alg_info(self) -> None:
