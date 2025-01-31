@@ -35,7 +35,7 @@ class StatisticsCalculation:
         alg_metaparams = cpd_algorithm.get_metaparameters()
         scrubber_metaparams = scrubber.get_metaparameters()
         config = {"algorithm": alg_metaparams, "scrubber": scrubber_metaparams}
-        os.makedirs(dest_dir)
+        dest_dir.mkdir(parents=True, exist_ok=True)
         with open(dest_dir / "config.yaml", "w") as outfile:
             yaml.dump(config, outfile, default_flow_style=False, sort_keys=False, Dumper=VerboseSafeDumper)
 
@@ -50,22 +50,23 @@ class StatisticsCalculation:
             bench_info = cpd_algorithm.get_benchmarking_info()
 
             dest_path = dest_dir / sample_dir[1] / sample_dir[0].name
-            os.makedirs(dest_path, exist_ok=True)
+            dest_path.mkdir(parents=True, exist_ok=True)
 
             # Copy config of distribution one for all samples with the same distribution.
             if len(os.listdir(dest_dir / sample_dir[1])) == 1:
-                copy(datasets_dir / sample_dir[1] / "config.yaml", dest_path / sample_dir[1])
+                # copy(datasets_dir / sample_dir[1] / "config.yaml", dest_path / sample_dir[1])
+                copy(datasets_dir / "config.yaml", dest_path / sample_dir[1])
 
             with open(dest_path / "stats", "w") as outfile:
                 for window_info in bench_info:
-                    for stat in window_info:
+                    for stat in window_info.quality_statistics:
                         outfile.write(str(stat) + "\n")
 
             # Save time and memory. TODO: Save memory.
             overall_time = results[-1].time_sec
-            avg_time = sum(map(lambda x: x.time), bench_info) / len(bench_info)
+            avg_time = sum(map(lambda x: x.time, bench_info)) / len(bench_info)
             bench_info_format = {"overall_time": overall_time, "avg_time": avg_time}
-            with open(dest_dir / "benchmarking_info.yaml") as outfile:
+            with open(dest_path / "benchmarking_info.yaml", "w") as outfile:
                 yaml.dump(
                     bench_info_format, outfile, default_flow_style=False, sort_keys=False, Dumper=VerboseSafeDumper
                 )

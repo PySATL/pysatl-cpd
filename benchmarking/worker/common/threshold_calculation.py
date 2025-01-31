@@ -9,8 +9,8 @@ __license__ = "SPDX-License-Identifier: MIT"
 from pathlib import Path
 
 from benchmarking.worker.common.utils import Utils
+from benchmarking.worker.common.rates import Rates
 from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
-from Experiments.rates import Rates
 
 
 class ThresholdCalculation:
@@ -73,9 +73,11 @@ class ThresholdCalculation:
         overall_count = len(dataset_path)
         test_statistic = ThresholdOvercome(threshold)
 
+
         for data_path in dataset_path:
+            data = Utils.read_float_data(data_path[0] / data_path[1])
             fpr_sum += Rates.false_positive_rate(
-                -1, data_path[0], test_statistic, sample_length, window_length, interval_length
+                -1, data, test_statistic, window_length, interval_length
             )
 
         return fpr_sum / overall_count

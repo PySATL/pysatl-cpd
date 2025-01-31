@@ -50,7 +50,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__change_points: list[int] = []
         self.__change_points_count = 0
 
-        self.__metaparameters_info = {"type": "knn", "k": f"{k}", "indent_coeff": f"{indent_coeff}"}
+        self.__metaparameters_info = {"type": "knn", "k": k, "indent_coeff": indent_coeff}
         self.__benchmarking_info: AlgorithmBenchmarkingInfo = []
 
     @property
@@ -66,7 +66,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info = []
         return current_benchmarking_info
 
-    def get_metaparameters(self) -> dict[str, str]:
+    def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
     def detect(self, window: Iterable[float | np.float64]) -> int:

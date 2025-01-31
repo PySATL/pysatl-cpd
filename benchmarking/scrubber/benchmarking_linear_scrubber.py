@@ -64,5 +64,5 @@ class BenchmarkingLinearScrubber(BenchmarkingScrubber):
                 )
             )
 
-    def get_metaparameters(self) -> dict[str, str]:
-        return {"type": "linear", "window_length": str(self._window_length), "shift_factor": str(self._shift_factor)}
+    def get_metaparameters(self) -> dict:
+        return {"type": "linear", "window_length": self._window_length, "shift_factor": self._shift_factor}

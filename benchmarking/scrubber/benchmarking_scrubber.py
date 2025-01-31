@@ -13,5 +13,5 @@ from CPDShell.Core.scrubber.abstract_scrubber import Scrubber
 
 class BenchmarkingScrubber(Scrubber):
     @abstractmethod
-    def get_metaparameters(self) -> dict[str, str]:
+    def get_metaparameters(self) -> dict:
         raise NotImplementedError

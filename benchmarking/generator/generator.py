@@ -43,13 +43,6 @@ class VerboseSafeDumper(yaml.SafeDumper):
 
 class DistributionGenerator:
     @staticmethod
-    def generate(distributions: list[DistributionComposition], sample_count: int, dest_path: Path):
-        Path(dest_path).mkdir(parents=True, exist_ok=True)
-        distributions_info = DistributionGenerator.__generate_configs(distributions, sample_count, dest_path)
-        DistributionGenerator.__generate_experiment_description(distributions_info, dest_path)
-        DistributionGenerator.__generate_dataset(distributions_info, dest_path)
-
-    @staticmethod
     def generate_by_config(config_path: Path, dataset_path: Path, sample_count: int) -> list[DistributionComposition]:
         with open(config_path) as stream:
             loaded_config: list[dict[str, tp.Any]] = yaml.safe_load(stream)
@@ -66,6 +59,13 @@ class DistributionGenerator:
         DistributionGenerator.generate(distributions, sample_count, dataset_path)
 
         return distributions
+
+    @staticmethod
+    def generate(distributions: list[DistributionComposition], sample_count: int, dest_path: Path):
+        Path(dest_path).mkdir(parents=True, exist_ok=True)
+        distributions_info = DistributionGenerator.__generate_configs(distributions, sample_count, dest_path)
+        DistributionGenerator.__generate_experiment_description(distributions_info, dest_path)
+        DistributionGenerator.__generate_dataset(distributions_info, dest_path)
 
     @staticmethod
     def __generate_configs(

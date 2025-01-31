@@ -1,0 +1,20 @@
+- name: exponential-exponential
+  distributions:
+  - type: exponential
+    length: 100
+    parameters:
+      rate: 1.0
+  - type: exponential
+    length: 100
+    parameters:
+      rate: 4.0
+- name: exponential-exponential
+  distributions:
+  - type: exponential
+    length: 100
+    parameters:
+      rate: 1.0
+  - type: exponential
+    length: 100
+    parameters:
+      rate: 5.0

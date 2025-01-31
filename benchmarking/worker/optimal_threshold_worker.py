@@ -7,6 +7,7 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import logging
+import os
 from pathlib import Path
 
 import yaml
@@ -55,7 +56,7 @@ class OptimalThresholdWorker(Worker):
         :param window: part of global data for finding change points
         :return: the number of change points in the window
         """
-        if dataset_path is not None:
+        if not os.listdir(results_path):
             StatisticsCalculation.calculate_statistics(
                 self.__cpd_algorithm, self.__scrubber, dataset_path, results_path
             )
@@ -75,11 +76,16 @@ class OptimalThresholdWorker(Worker):
 
         self.__threshold = threshold
 
+        with open(dataset_path / "config.yaml") as stream:
+            loaded_config: list[dict] = yaml.safe_load(stream)
+
         result_info = [
             {
                 "config": {"algorithm": alg_metaparams, "scrubber": scrubber_metaparams},
-                "optimal_values": {"threshold": threshold},
+                "distr_config": loaded_config[0],
+                "optimal_values": {"threshold": threshold}
             }
         ]
+
         with open(self.__optimal_value_storage_path, "a") as outfile:
             yaml.dump(result_info, outfile, default_flow_style=False, sort_keys=False, Dumper=VerboseSafeDumper)

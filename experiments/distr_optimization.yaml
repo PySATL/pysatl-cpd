@@ -1,0 +1,20 @@
+- name: exponential
+  distributions:
+  - type: exponential
+    length: 200
+    parameters:
+      rate: 1.0
+- name: normal
+  distributions:
+  - type: normal
+    length: 200
+    parameters:
+      mean: 0.0
+      variance: 1.0
+- name: uniform
+  distributions:
+  - type: uniform
+    length: 200
+    parameters:
+      min: 0.0
+      max: 1.0
