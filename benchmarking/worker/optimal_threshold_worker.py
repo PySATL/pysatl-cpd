@@ -13,6 +13,7 @@ from pathlib import Path
 import yaml
 
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
+from benchmarking.algorithms.benchmarking_classification import BenchmarkingClassificationAlgorithm
 from benchmarking.generator.generator import VerboseSafeDumper
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.worker.common.statistics_calculation import StatisticsCalculation
@@ -23,7 +24,7 @@ from benchmarking.worker.worker import Worker
 class OptimalThresholdWorker(Worker):
     def __init__(
         self,
-        cpd_algorithm: BenchmarkingKNNAlgorithm,
+        cpd_algorithm: BenchmarkingKNNAlgorithm | BenchmarkingClassificationAlgorithm,
         scrubber: BenchmarkingLinearScrubber,
         optimal_values_storage_path: Path,
         significance_level: float,
@@ -56,6 +57,9 @@ class OptimalThresholdWorker(Worker):
         :param window: part of global data for finding change points
         :return: the number of change points in the window
         """
+        assert dataset_path is not None, "dataset_path should not be None"
+
+        results_path.mkdir(parents=True, exist_ok=True)
         if not os.listdir(results_path):
             StatisticsCalculation.calculate_statistics(
                 self.__cpd_algorithm, self.__scrubber, dataset_path, results_path
@@ -67,10 +71,7 @@ class OptimalThresholdWorker(Worker):
         threshold = ThresholdCalculation.calculate_threshold(
             self.__significance_level,
             1.0,
-            self.__sample_length,
-            int(scrubber_metaparams["window_length"]),
             results_path,
-            self.__interval_length,
             self.__sl_delta,
         )
 
@@ -83,7 +84,7 @@ class OptimalThresholdWorker(Worker):
             {
                 "config": {"algorithm": alg_metaparams, "scrubber": scrubber_metaparams},
                 "distr_config": loaded_config[0],
-                "optimal_values": {"threshold": threshold}
+                "optimal_values": {"threshold": threshold},
             }
         ]
 

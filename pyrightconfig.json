@@ -1,0 +1,12 @@
+{
+    "exclude": [
+      "experiments/experiment-dt-4",
+      "experiments/experiment-knn-1",
+      "experiments/experiment-knn-2",
+      "experiments/experiment-knn-3",
+      "experiments/experiment-rf-4",
+      "experiments/experiment-svm-4",
+      "experiments/old_experiments",
+      "experiments/experiment-*"
+    ]
+}  

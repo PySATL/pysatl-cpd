@@ -81,10 +81,9 @@ class Rates:
         change_point_i: int,
         statistics: list[float],
         test_statistic: TestStatistic,
-        dataset_size: int,
         window_size: int,
         interval_length: int,
     ):
         return 1 - Rates.false_positive_rate(
-            change_point_i, statistics, test_statistic, dataset_size, window_size, interval_length
+            change_point_i, statistics, test_statistic, window_size, interval_length
         )

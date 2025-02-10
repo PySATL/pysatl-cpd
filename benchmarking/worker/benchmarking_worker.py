@@ -9,15 +9,16 @@ __license__ = "SPDX-License-Identifier: MIT"
 from pathlib import Path
 
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
+from benchmarking.algorithms.benchmarking_classification import BenchmarkingClassificationAlgorithm
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.worker.common.statistics_calculation import StatisticsCalculation
 from benchmarking.worker.worker import Worker
 
 
-class BenchmarkingKNNWorker(Worker):
+class BenchmarkingWorker(Worker):
     def __init__(
         self,
-        cpd_algorithm: BenchmarkingKNNAlgorithm,
+        cpd_algorithm: BenchmarkingKNNAlgorithm | BenchmarkingClassificationAlgorithm,
         scrubber: BenchmarkingLinearScrubber,
         expected_change_points: list[int],
     ) -> None:

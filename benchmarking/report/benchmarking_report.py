@@ -42,7 +42,7 @@ class BenchmarkingReport:
         self.__sample_dirs = Utils.get_all_stats_dirs(resultsDir)
 
     def add_average_overall_time(self) -> None:
-        overall_time = 0
+        overall_time = 0.0
 
         for sample_dir in self.__sample_dirs:
             with open(sample_dir / "benchmarking_info.yaml") as infile:
@@ -54,7 +54,7 @@ class BenchmarkingReport:
         self.__result.average_overall_time = overall_time / len(self.__sample_dirs)
 
     def add_average_window_time(self) -> None:
-        overall_time = 0
+        overall_time = 0.0
 
         for sample_dir in self.__sample_dirs:
             with open(sample_dir / "benchmarking_info.yaml") as infile:

@@ -6,9 +6,10 @@ from shutil import rmtree
 
 from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
 from benchmarking.worker.optimal_threshold_worker import OptimalThresholdWorker
-from benchmarking.worker.benchmarking_worker import BenchmarkingKNNWorker
+from benchmarking.worker.benchmarking_worker import BenchmarkingWorker
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
+from benchmarking.algorithms.benchmarking_classification import BenchmarkingClassificationAlgorithm
 from benchmarking.report.benchmarking_report import BenchmarkingReport, Measures
 from benchmarking.generator.generator import DistributionGenerator, Distribution, DistributionType, DistributionComposition
 
@@ -20,7 +21,7 @@ WITHOUT_CP_SAMPLE_LENGTH = 200
 class Experiment():
     def __init__(
         self,
-        cpd_algorithm: BenchmarkingKNNAlgorithm,
+        cpd_algorithm: BenchmarkingKNNAlgorithm | BenchmarkingClassificationAlgorithm,
         scrubber: BenchmarkingLinearScrubber,
         logger: logging.Logger
     ) -> None:
@@ -76,7 +77,7 @@ class Experiment():
             # Run benchmark with calculated threshold.
             self.__cpd_algorithm.test_statistic = ThresholdOvercome(threshold)
             distr_path = dataset_path / Path(f"{i}-" + "-".join(map(lambda d: d.type.name, distr_comp)))
-            cpd = BenchmarkingKNNWorker(self.__cpd_algorithm, self.__scrubber, expected_change_points)
+            cpd = BenchmarkingWorker(self.__cpd_algorithm, self.__scrubber, expected_change_points)
             cpd.run(distr_path, results_path)
 
             report = BenchmarkingReport(results_path, expected_change_points, threshold, interval_length)
@@ -114,7 +115,7 @@ class Experiment():
         if threshold is not None:
             self.__cpd_algorithm.test_statistic = ThresholdOvercome(threshold)
 
-        cpd = BenchmarkingKNNWorker(self.__cpd_algorithm, self.__scrubber, expected_change_points)
+        cpd = BenchmarkingWorker(self.__cpd_algorithm, self.__scrubber, expected_change_points)
         cpd.run(dataset_path, storage_path)
 
     @staticmethod

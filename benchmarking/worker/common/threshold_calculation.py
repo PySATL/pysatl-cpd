@@ -18,10 +18,7 @@ class ThresholdCalculation:
     def calculate_threshold(
         significance_level: float,
         threshold: float,
-        sample_length: int,
-        window_length: int,
         dataset_path: Path,
-        interval_length: int,
         delta: float,
     ) -> float:
         """
@@ -30,26 +27,20 @@ class ThresholdCalculation:
         dataset = Utils.get_all_sample_dirs(dataset_path)
 
         cur_threshold = threshold
-        cur_sig_level = ThresholdCalculation.__calculate_significance_level(
-            dataset, cur_threshold, sample_length, window_length, interval_length
-        )
+        cur_sig_level = ThresholdCalculation.__calculate_significance_level(dataset, cur_threshold)
         cur_difference = 1.0
 
         while abs(cur_sig_level - significance_level) > delta:
             print(cur_threshold)
             if cur_sig_level > significance_level:
                 cur_threshold = cur_threshold + cur_difference
-                cur_sig_level = ThresholdCalculation.__calculate_significance_level(
-                    dataset, cur_threshold, sample_length, window_length, interval_length
-                )
+                cur_sig_level = ThresholdCalculation.__calculate_significance_level(dataset, cur_threshold)
 
                 if cur_sig_level < significance_level + delta:
                     cur_difference /= 2.0
             else:
                 cur_threshold = cur_threshold - cur_difference
-                cur_sig_level = ThresholdCalculation.__calculate_significance_level(
-                    dataset, cur_threshold, sample_length, window_length, interval_length
-                )
+                cur_sig_level = ThresholdCalculation.__calculate_significance_level(dataset, cur_threshold)
 
                 if cur_sig_level > significance_level - delta:
                     cur_difference /= 2.0
@@ -57,27 +48,19 @@ class ThresholdCalculation:
         return cur_threshold
 
     @staticmethod
-    def __calculate_significance_level(
-        dataset_path: list[tuple[Path, str]],
-        threshold: float,
-        sample_length: int,
-        window_length: int,
-        interval_length: int,
-    ) -> float:
+    def __calculate_significance_level(dataset_path: list[tuple[Path, str]], threshold: float) -> float:
         """
         :param sample_length: number of statistical values.
         :param interval_length: The length of the intervals that are
          atomically examined for the presense of change point.
         """
-        fpr_sum = 0
+        fp_count = 0
         overall_count = len(dataset_path)
         test_statistic = ThresholdOvercome(threshold)
 
-
         for data_path in dataset_path:
             data = Utils.read_float_data(data_path[0] / data_path[1])
-            fpr_sum += Rates.false_positive_rate(
-                -1, data, test_statistic, window_length, interval_length
-            )
+            if test_statistic.get_change_points(data):
+                fp_count += 1
 
-        return fpr_sum / overall_count
+        return fp_count / overall_count
