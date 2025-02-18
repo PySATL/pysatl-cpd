@@ -14,7 +14,7 @@ class LabeledCPData:
 
     def __init__(
         self,
-        raw_data: MutableSequence[float | numpy.float64 | list[numpy.float64]],
+        raw_data: MutableSequence[float | numpy.float64 | numpy.ndarray],
         change_points: MutableSequence[int],
     ) -> None:
         """LabeledCPData object constructor

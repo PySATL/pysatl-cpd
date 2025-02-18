@@ -47,7 +47,7 @@ class DatasetGenerator(Generic[DT], ABC):
 
     def generate_datasets(
         self, config_path: Path, saver: DatasetSaver | None = None
-    ) -> dict[str, tuple[list[float], list[int]]]:
+    ) -> dict[str, tuple[list[float | np.ndarray], list[int]]]:
         """Generate pairs of dataset and change points by config file
 
         :param config_path: path to config file
