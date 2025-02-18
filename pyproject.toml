@@ -16,7 +16,7 @@ readme = "README.md"
 repository = "https://github.com/PySATL/pysatl-cpd"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 numpy = "^2.0.0"
 scipy = "^1.14.0"
 matplotlib = "^3.9.1"
