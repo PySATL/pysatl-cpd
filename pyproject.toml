@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pysatl-cpd"
+name = "pysatl_cpd"
 version = "0.1.0"
 description = "Batch module for changepoint detection"
 authors = [
