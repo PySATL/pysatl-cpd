@@ -1,3 +1,4 @@
+import ast
 from enum import Enum
 from typing import Final, Protocol
 
@@ -14,6 +15,7 @@ class Distributions(Enum):
     GAMMA = "gamma"
     T = "t"
     LOGNORM = "lognorm"
+    MULTIVARIATIVE_NORMAL = "multivariate_normal"
 
     def __str__(self):
         return self.value
@@ -50,6 +52,7 @@ class Distribution(Protocol):
             Distributions.GAMMA.value: GammaDistribution,
             Distributions.T.value: TDistribution,
             Distributions.LOGNORM.value: LogNormDistribution,
+            Distributions.MULTIVARIATIVE_NORMAL.value: MultivariateNormalDistribution,
         }
         return distributions[name].from_params(params)
 
@@ -283,8 +286,8 @@ class BetaDistribution(ScipyDistribution):
     def scipy_sample(self, length: int) -> np.ndarray:
         return ss.beta(a=self.alpha, b=self.beta).rvs(size=length)
     
-    def scipy_sample_trunc(self, length: int, lb: float, ub: float) -> np.ndarray:
-        return ss.truncate(ss.beta(a=self.alpha, b=self.beta), lb=lb, ub=ub).rvs(size=length)
+    # def scipy_sample_trunc(self, length: int, lb: float, ub: float) -> np.ndarray:
+    #     return ss.truncate(ss.beta(a=self.alpha, b=self.beta), lb=lb, ub=ub).rvs(size=length)
 
     @staticmethod
     def from_params(params: dict[str, str]) -> "BetaDistribution":
@@ -417,3 +420,41 @@ class LogNormDistribution(ScipyDistribution):
             raise ValueError(f"Log normal distribution must have 1 parameter: {LogNormDistribution.S_KEY}")
         s = float(params[LogNormDistribution.S_KEY])
         return LogNormDistribution(s)
+
+
+class MultivariateNormalDistribution(ScipyDistribution):
+    """
+    Description of multivariate normal distribution with det(covarianse matrix) == 1
+    """
+
+    MEAN_KEY: Final[str] = "mean"
+
+    mean: list[float]
+    cov: np.ndarray
+
+    def __init__(self, mean_value: list[float]) -> None:
+        if len(mean_value) == 0:
+            raise ValueError("Mean cannot have dimention less than 1")
+        self.mean = mean_value
+        self.cov = np.diag(v=[1 for _ in range(len(mean_value))])
+
+    @property
+    def name(self) -> str:
+        return str(Distributions.MULTIVARIATIVE_NORMAL)
+
+    @property
+    def params(self) -> dict[str, str]:
+        return {MultivariateNormalDistribution.MEAN_KEY: str(self.mean)}
+
+    def scipy_sample(self, length: int) -> np.ndarray:
+        return ss.multivariate_normal(mean=self.mean, cov=self.cov).rvs(size=length)
+
+    @staticmethod
+    def from_params(params: dict[str, str]) -> "MultivariateNormalDistribution":
+        num_params = 1
+        if len(params) != num_params:
+            raise ValueError(
+                f"Multivariative normal distribution must have 1 parameter: {MultivariateNormalDistribution.MEAN_KEY}"
+            )
+        mean = list(map(float, ast.literal_eval(params[MultivariateNormalDistribution.MEAN_KEY])))
+        return MultivariateNormalDistribution(mean)

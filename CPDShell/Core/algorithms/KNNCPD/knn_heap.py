@@ -57,7 +57,7 @@ class NNHeap:
         """
 
         def predicate(x: Neighbour) -> bool:
-            return isclose(x.observation.value, observation.value, rel_tol=self.__delta) and (
+            return isclose(self.__metric(x.observation, observation), 0.0, rel_tol=self.__delta) and (
                 x.observation.time == observation.time
             )
 

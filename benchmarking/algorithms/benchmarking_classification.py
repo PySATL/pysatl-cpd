@@ -6,7 +6,7 @@ __author__ = "Artemii Patov"
 __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from collections.abc import Iterable
+from collections.abc import Iterable, MutableSequence
 from time import perf_counter
 
 import numpy as np
@@ -68,7 +68,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
     def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -77,7 +77,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -86,7 +86,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points.copy()
 
-    def __process_data(self, window: Iterable[float | np.float64]) -> AlgorithmWindowBenchmarkingInfo:
+    def __process_data(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> AlgorithmWindowBenchmarkingInfo:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 
@@ -94,10 +94,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         """
         time_start = perf_counter()
 
-        sample = list(window)
-        sample_size = len(sample)
-        if sample_size == 0:
-            return
+        sample_size = len(window)
 
         # Examining each point.
         # Boundaries are always change points.
@@ -106,7 +103,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         assessments = []
 
         for time in range(first_point, last_point):
-            train_sample, test_sample = BenchmarkingClassificationAlgorithm.__split_sample(sample)
+            train_sample, test_sample = BenchmarkingClassificationAlgorithm.__split_sample(window)
             self.__classifier.train(train_sample, int(time / 2))
             classes = self.__classifier.predict(test_sample)
 
@@ -127,9 +124,20 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
     # Soon classification algorithm will be more generalized: the split strategy will be one of the parameters.
     @staticmethod
     def __split_sample(
-        sample: Iterable[float | np.float64],
+        sample: MutableSequence[float | np.float64 | list[np.float64]],
     ) -> tuple[list[list[float | np.float64]], list[list[float | np.float64]]]:
-        train_sample = [[x] for i, x in enumerate(sample) if i % 2 == 0]
-        test_sample = [[x] for i, x in enumerate(sample) if i % 2 != 0]
+        train_sample = []
+        test_sample = []
+
+        for i, x in enumerate(sample):
+            if isinstance(x, list):
+                new_el = x
+            else:
+                new_el = [x]
+            
+            if i % 2 == 0:
+                train_sample.append(new_el)
+            else:
+                test_sample.append(new_el)
 
         return train_sample, test_sample

@@ -8,7 +8,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import MutableSequence
 
 import numpy as np
 
@@ -23,8 +23,8 @@ class KNNGraph:
 
     def __init__(
         self,
-        window: Iterable[float | np.float64],
-        metric: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float],
+        window: MutableSequence[float | np.float64 | list[np.float64]],
+        metric: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float] | tp.Callable[[list[np.float64], list[np.float64]], float],
         k=7,
         delta=1e-12,
     ) -> None:

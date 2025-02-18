@@ -18,7 +18,7 @@ class CPContainer:
 
     def __init__(
         self,
-        data: MutableSequence[float | numpy.float64],
+        data: MutableSequence[float | numpy.float64 | list[numpy.float64]],
         result: list[int],
         expected_result: list[int] | None,
         time_sec: float,

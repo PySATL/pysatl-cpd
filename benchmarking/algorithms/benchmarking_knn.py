@@ -7,7 +7,7 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
-from collections.abc import Iterable
+from collections.abc import MutableSequence
 from time import perf_counter
 
 import numpy as np
@@ -69,7 +69,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
     def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -78,7 +78,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -87,7 +87,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points.copy()
 
-    def __process_data(self, window: Iterable[float | np.float64]) -> AlgorithmWindowBenchmarkingInfo:
+    def __process_data(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> AlgorithmWindowBenchmarkingInfo:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 

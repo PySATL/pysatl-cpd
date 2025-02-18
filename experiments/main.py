@@ -31,16 +31,16 @@ SHIFT_FACTOR = 0.5
 # SIGNIFICANCE_LEVEL = 0.03
 DELTA = 0.005
 DATA_SIZE = 200
-SAMPLE_COUNT = 10000
-WITHOUT_CP_SAMPLE_COUNT = 10000
+SAMPLE_COUNT = 1000
+WITHOUT_CP_SAMPLE_COUNT = 1000
 INTERVAL_LENGTH = int(WINDOW_SIZE / 4)
 EXPECTED_CHANGE_POINTS = [100]
 ROOT_DIR = Path()
-DISTR_CONFIG_PATH = ROOT_DIR / "experiments/distr_config_2.yaml"
-DISTR_OPTIMIZATION_PATH = ROOT_DIR / "experiments/distr_optimization.yaml"
+DISTR_CONFIG_PATH = ROOT_DIR / "experiments/distr_config_3.yaml"
+DISTR_OPTIMIZATION_PATH = ROOT_DIR / "experiments/distr_optimization_1.yaml"
 OPTIMAL_VALUES_PATH = ROOT_DIR / "benchmarking/optimal_values.yaml"
 QUALITY_METRIC = MCC()
-EXP_N = 7
+EXP_N = 3
 
 logger = logging.getLogger("BenchmarkInfo")
 fileHandler = logging.FileHandler(f"{ROOT_DIR}/experiments/benchmark_info.log", mode="a", encoding="utf-8")
@@ -50,7 +50,7 @@ logger.info(datetime.datetime.now())
 
 statistic_test = ThresholdOvercome(THRESHOLD)
 
-for alg_name in ["rf"]:
+for alg_name in ["dt"]:
     # for k in [7]:
     significance_level = 0.05
     # if alg_name == "svm":
@@ -62,13 +62,14 @@ for alg_name in ["rf"]:
     # logger.info("KNN Algorithm")
     # logger.info(f"K: {K}")
     # if alg_name == "rf":
-    cpd_algorithm = BenchmarkingClassificationAlgorithm(RFClassifier(), QUALITY_METRIC, statistic_test, INDENT_FACTOR)
-    logger.info("RF Classifier")
-    logger.info(f"Metric: {type(QUALITY_METRIC).__name__}")
+    # cpd_algorithm = BenchmarkingClassificationAlgorithm(RFClassifier(), QUALITY_METRIC, statistic_test, INDENT_FACTOR)
+    # logger.info("RF Classifier")
+    # logger.info(f"Metric: {type(QUALITY_METRIC).__name__}")
     # if alg_name == "dt":
-    #     cpd_algorithm = BenchmarkingClassificationAlgorithm(DecisionTreeClassifier(), QUALITY_METRIC, statistic_test, INDENT_FACTOR)
-    #     logger.info("DT Classifier")
-    #     logger.info(f"Metric: {type(QUALITY_METRIC).__name__}")
+    cpd_algorithm = BenchmarkingClassificationAlgorithm(DecisionTreeClassifier(), QUALITY_METRIC, statistic_test, INDENT_FACTOR)
+    logger.info("DT Classifier")
+    logger.info(f"Metric: {type(QUALITY_METRIC).__name__}")
+    # distribution_names = ["0-multivariate_normal-multivariate_normal", "1-multivariate_normal-multivariate_normal", "2-multivariate_normal-multivariate_normal"]
     # distribution_names = ["0-exponential-exponential", "1-normal-normal"]
     # distribution_names = ["2-normal-normal", "3-normal-normal"]
     # distribution_names = ["4-normal-normal", "5-normal-normal"]
@@ -78,7 +79,7 @@ for alg_name in ["rf"]:
     # distribution_names = ["12-beta-beta", "13-weibull-weibull"]
     # distribution_names = ["14-weibull-weibull", "15-weibull-weibull"]
     # distribution_names = ["16-weibull-weibull", "17-weibull-weibull"]
-    distribution_names = ["18-weibull-weibull"]
+    # distribution_names = ["18-weibull-weibull"]
     # distribution_names = ["4-normal-normal", "5-normal-normal", "6-uniform-uniform", "7-uniform-uniform"]
     # distribution_names = ["8-uniform-uniform", "9-uniform-uniform", "10-uniform-uniform", "11-beta-beta"]
     # distribution_names = ["12-beta-beta", "13-weibull-weibull", "14-weibull-weibull", "15-weibull-weibull"]
@@ -90,7 +91,7 @@ for alg_name in ["rf"]:
     # distribution_names = "3-beta"
     # distribution_names = "4-weibull"
     # distribution_names = "5-weibull"
-    # distribution_names = "6-weibull"
+    distribution_names = "6-weibull"
     dataset_dir = ROOT_DIR / f"experiments/experiment-knn-3/dataset/"
     without_cp_dir = dataset_dir / "without_cp"
     results_dir = ROOT_DIR / f"experiments/experiment-{alg_name}-{EXP_N}/results/"
@@ -110,7 +111,10 @@ for alg_name in ["rf"]:
     #     if not os.path.isdir(without_cp_dir / without_cp_dataset):
     #         continue
 
-    # experiment.run_optimization(without_cp_dir / distribution_names, results_dir / distribution_names, OPTIMAL_VALUES_PATH, significance_level, DELTA, INTERVAL_LENGTH)
+    # for distr in distribution_names:
+    #     experiment.run_optimization(without_cp_dir / distr, results_dir / distr, OPTIMAL_VALUES_PATH, significance_level, DELTA, INTERVAL_LENGTH)
+
+    experiment.run_optimization(without_cp_dir / distribution_names, results_dir / distribution_names, OPTIMAL_VALUES_PATH, significance_level, DELTA, INTERVAL_LENGTH)
 
     # for distr in os.listdir(dataset_dir):
     #     if distr.count('-') != 2:
@@ -119,8 +123,8 @@ for alg_name in ["rf"]:
     #     experiment.run_benchmark(dataset_dir / distr, OPTIMAL_VALUES_PATH, results_dir / distr, EXPECTED_CHANGE_POINTS, INTERVAL_LENGTH)
 
         
-    for distr in distribution_names:
-        experiment.run_benchmark(dataset_dir / distr, OPTIMAL_VALUES_PATH, results_dir / distr, EXPECTED_CHANGE_POINTS, INTERVAL_LENGTH)
+    # for distr in distribution_names:
+    #     experiment.run_benchmark(dataset_dir / distr, OPTIMAL_VALUES_PATH, results_dir / distr, EXPECTED_CHANGE_POINTS, INTERVAL_LENGTH)
 
     # for distr in os.listdir(results_dir):
     #     if distr.count('-') != 2:

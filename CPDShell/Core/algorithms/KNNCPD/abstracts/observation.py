@@ -18,7 +18,7 @@ class Observation:
     """
 
     time: int
-    value: float | np.float64 = field(compare=False)
+    value: float | np.float64 | list[np.float64] = field(compare=False)
 
 
 @dataclass(order=True)

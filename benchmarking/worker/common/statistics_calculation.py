@@ -50,7 +50,7 @@ class StatisticsCalculation:
                 print("done")
                 continue
 
-            data = LabeledCPData.read_generated_datasets(sample_dir[0])[sample_dir[1]].raw_data
+            data = LabeledCPData.read_generated_datasets(sample_dir[0])[sample_dir[1]]
             shell = CPDProblem(data, cpd_algorithm=cpd_algorithm, scrubber=scrubber)
             results.append(shell.run_cpd())
 

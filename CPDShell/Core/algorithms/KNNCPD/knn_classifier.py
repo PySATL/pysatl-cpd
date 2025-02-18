@@ -7,7 +7,7 @@ __copyright__ = "Copyright (c) 2024 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
-from collections.abc import Iterable
+from collections.abc import MutableSequence
 from math import sqrt
 
 import numpy as np
@@ -38,10 +38,10 @@ class KNNClassifier:
         self.__metric = metric
         self.__delta = delta
 
-        self.__window: list[float | np.float64] | None = None
+        self.__window: list[float | np.float64 | list[np.float64]] | None = None
         self.__knn_graph: KNNGraph | None = None
 
-    def classify(self, window: Iterable[float | np.float64]) -> None:
+    def classify(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> None:
         """Applies classificator to the given sample.
 
         :param window: part of global data for finding change points.
@@ -56,6 +56,8 @@ class KNNClassifier:
 
         :param time: index of point in the given sample to calculate statistics relative to it.
         """
+        assert self.__window is not None, "Sample should not be None."
+
         window_size = len(self.__window)
 
         assert self.__knn_graph is not None, "Graph should not be None."
@@ -94,7 +96,7 @@ class KNNClassifier:
         variance = (expectation / k) * (h * (sum_1 + k - (2 * k**2 / (n - 1))) + (1 - h) * (sum_2 - k**2))
         deviation = sqrt(variance)
 
-        permutation: np.array = np.arange(window_size)
+        permutation: np.ndarray = np.arange(window_size)
         random_variable_value = self.__calculate_random_variable(permutation, time, window_size)
 
         if deviation == 0:
@@ -115,6 +117,8 @@ class KNNClassifier:
         :param t: fixed point that splits the permutation.
         :return: value of the random variable.
         """
+
+        assert self.__knn_graph is not None, "Graph should not be None."
 
         def b(i: int, j: int) -> bool:
             pi = permutation[i]

@@ -12,7 +12,11 @@ class LabeledCPData:
     """Class for generating and storing labeled data,
     needed in CPDShell"""
 
-    def __init__(self, raw_data: MutableSequence[float | numpy.float64], change_points: MutableSequence[int]) -> None:
+    def __init__(
+        self,
+        raw_data: MutableSequence[float | numpy.float64 | list[numpy.float64]],
+        change_points: MutableSequence[int],
+    ) -> None:
         """LabeledCPData object constructor
 
         :param: raw_data: data, that will be passed into CPD algo
@@ -78,7 +82,11 @@ class LabeledCPData:
             if "changepoints.csv" not in dataset_files or "sample.csv" not in dataset_files:
                 raise ValueError(f"{datasets_directory} is not datasets directory")
             with open(dataset_files["sample.csv"]) as sample:
-                data = list(map(numpy.float64, sample.readlines()))
+                raw_data = sample.readlines()
+                try:
+                    data = list(map(numpy.float64, raw_data))
+                except ValueError:
+                    data = [numpy.array(list(map(numpy.float64, vals.split(",")))) for vals in raw_data]
             with open(dataset_files["changepoints.csv"]) as changepoints:
                 change_points = list(map(int, changepoints.readlines()))
             datasets[dataset_directory.name] = LabeledCPData(data, change_points)

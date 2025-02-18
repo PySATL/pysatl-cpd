@@ -24,6 +24,7 @@ class DistributionType(Enum):
     uniform = 3
     weibull = 4
     beta = 5
+    multivariate_normal = 6
 
 
 @dataclass

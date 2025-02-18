@@ -2,6 +2,7 @@ import tempfile
 from os import walk
 from pathlib import Path
 
+import numpy
 import pytest
 
 from CPDShell.labeled_data import LabeledCPData
@@ -85,5 +86,10 @@ class TestLabeledCPData:
             )
             read = LabeledCPData.read_generated_datasets(Path(tempdir))
             for name in generated:
-                assert read[name].raw_data == generated[name].raw_data
+                assert len(read[name].raw_data) == len(generated[name].raw_data)
+                if not isinstance(read[name].raw_data[0], numpy.ndarray):
+                    assert read[name].raw_data == generated[name].raw_data
+                else:
+                    data = zip(read[name].raw_data, generated[name].raw_data)
+                    assert all(numpy.array_equal(r, g) for r, g in data)
                 assert read[name].change_points == generated[name].change_points
