@@ -107,9 +107,9 @@ def test_constant_hazard_for_constants(hazard_rate, max_run_length):
     constant_hazard = ConstantHazard(hazard_rate)
     run_lengths = np.arange(max_run_length)
     hazard_probs = constant_hazard.hazard(run_lengths)
-    assert (
-        hazard_probs.shape[0] == max_run_length
-    ), f"Expected {max_run_length} probabilities, got {hazard_probs.shape[0]}"
+    assert hazard_probs.shape[0] == max_run_length, (
+        f"Expected {max_run_length} probabilities, got {hazard_probs.shape[0]}"
+    )
     assert np.all(hazard_probs == 1 / hazard_rate), f"Hazard probabilities must be {1 / hazard_rate}"
 
 
@@ -140,22 +140,22 @@ def test_learning_and_update():
             pred_probs = np.array(likelihood.predict(observation))
 
             if time == time_after_learning:
-                assert (
-                    pred_probs[-1] > threshold_after_learning
-                ), f"Too small predictive probability after learning: {pred_probs[-1]}"
+                assert pred_probs[-1] > threshold_after_learning, (
+                    f"Too small predictive probability after learning: {pred_probs[-1]}"
+                )
             if time == time_before_change_point:
-                assert (
-                    pred_probs[-1] >= threshold_change_point
-                ), f"Too small predictive probability before change: {pred_probs[-1]}"
+                assert pred_probs[-1] >= threshold_change_point, (
+                    f"Too small predictive probability before change: {pred_probs[-1]}"
+                )
             if time == change_point:
-                assert (
-                    pred_probs[-1] < threshold_change_point
-                ), f"Too large predictive probability after change: {pred_probs[-1]}"
+                assert pred_probs[-1] < threshold_change_point, (
+                    f"Too large predictive probability after change: {pred_probs[-1]}"
+                )
 
             expected_size = time - learning_steps + 1
-            assert (
-                pred_probs.shape[0] == expected_size
-            ), f"Expected {expected_size} probabilities, got {pred_probs.shape[0]}"
+            assert pred_probs.shape[0] == expected_size, (
+                f"Expected {expected_size} probabilities, got {pred_probs.shape[0]}"
+            )
 
             likelihood.update(observation)
 

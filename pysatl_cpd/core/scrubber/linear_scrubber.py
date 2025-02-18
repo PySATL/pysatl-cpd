@@ -38,11 +38,8 @@ class LinearScrubber(Scrubber):
         self._window_start = 0
 
     def get_windows(self) -> Iterable[Sequence[float | numpy.float64]]:
-        while (
-            self._data
-            and self._window_start == 0
-            or self._window_start + self._window_length <= len(self._data)
-            and self.is_running
+        while (self._data and self._window_start == 0) or (
+            self._window_start + self._window_length <= len(self._data) and self.is_running
         ):
             window_end = self._window_start + self._window_length
             yield self._data[self._window_start : window_end]
