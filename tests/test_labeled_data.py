@@ -9,6 +9,7 @@ from pysatl_cpd.labeled_data import LabeledCPData
 
 
 class TestLabeledCPData:
+    config_path = "tests/test_configs/test_config_1.yml"
     data = LabeledCPData([1, 2, 3], [4, 5, 6])
 
     def test_init(self) -> None:
@@ -22,7 +23,7 @@ class TestLabeledCPData:
         "config_path_str,expected_change_points_list,expected_lengths",
         (
             (
-                "tests/test_pysatl_cpd/test_configs/test_config_1.yml",
+                config_path,
                 {
                     "20-normal-0-1-20-normal-10-1": [20],
                     "20-normal-0-1-no-change-point": [],
@@ -47,7 +48,7 @@ class TestLabeledCPData:
         "config_path_str,expected_change_points_list,expected_lengths",
         (
             (
-                "tests/test_pysatl_cpd/test_configs/test_config_1.yml",
+                config_path,
                 {
                     "20-normal-0-1-20-normal-10-1": [20],
                     "20-normal-0-1-no-change-point": [],
@@ -77,7 +78,7 @@ class TestLabeledCPData:
 
     @pytest.mark.parametrize(
         "config_path_str",
-        ("tests/test_pysatl_cpd/test_configs/test_config_1.yml",),
+        (config_path,),
     )
     def test_read_generated_datasets(self, config_path_str):
         with tempfile.TemporaryDirectory() as tempdir:

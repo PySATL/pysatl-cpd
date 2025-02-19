@@ -9,11 +9,13 @@ from pysatl_cpd.generator.saver import DatasetSaver
 
 
 class TestGenerator:
+    config_path = "tests/test_configs/test_config_1.yml"
+
     @pytest.mark.parametrize(
         "config_path_str,generator,configurations",
         (
             (
-                "tests/test_pysatl_cpd/test_configs/test_config_1.yml",
+                config_path,
                 ScipyDatasetGenerator(),
                 {
                     "20-normal-0-1-20-normal-10-1": [40, [20]],
@@ -43,7 +45,7 @@ class TestGenerator:
         "config_path_str,generator,configurations",
         (
             (
-                "tests/test_pysatl_cpd/test_configs/test_config_1.yml",
+                config_path,
                 ScipyDatasetGenerator(),
                 {
                     "20-normal-0-1-20-normal-10-1": [40, [20]],
