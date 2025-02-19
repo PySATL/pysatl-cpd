@@ -52,6 +52,11 @@ line-ending = "auto"
 select = ["A", "E", "F", "I", "PL", "RUF", "SIM", "UP", "W"]
 ignore = ["PLR0913"]
 
+[tool.mypy]
+files = "pysatl_cpd, tests"
+mypy_path = "pysatl_cpd"
+strict = true
+
 
 [build-system]
 requires = ["poetry-core"]
