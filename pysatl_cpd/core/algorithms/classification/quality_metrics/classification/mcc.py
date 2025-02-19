@@ -8,7 +8,8 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from math import sqrt
 
-from numpy import ndarray
+import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import QualityMetric
 
@@ -18,7 +19,7 @@ class MCC(QualityMetric):
     The class implementing quality metric based on Matthews correlation coefficient.
     """
 
-    def assess_barrier(self, classes: ndarray, time: int) -> float:
+    def assess_barrier(self, classes: npt.NDArray[np.intp], time: int) -> float:
         """Evaluates quality function based on classificator in the specified point.
 
         :param classes: Classes of observations, predicted by the classifier.

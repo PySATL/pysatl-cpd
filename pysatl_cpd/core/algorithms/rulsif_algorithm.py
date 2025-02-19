@@ -1,6 +1,7 @@
-from collections.abc import Iterable
+from typing import cast
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
 
@@ -26,7 +27,7 @@ class RulsifAlgorithm(DensityBasedAlgorithm):
         self.regularization_coef = regularization_coef
         self.threshold = threshold
 
-    def _loss_function(self, density_ratio: np.ndarray, alpha: np.ndarray) -> float:
+    def _loss_function(self, density_ratio: npt.NDArray[np.float64], alpha: npt.NDArray[np.float64]) -> float:
         """Loss function for RULSIF.
 
         Args:
@@ -38,7 +39,7 @@ class RulsifAlgorithm(DensityBasedAlgorithm):
         """
         return np.mean((density_ratio - 1) ** 2) + self.regularization_coef * np.sum(alpha**2)
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         """Detect the number of change points in the given data window
         using RULSIF.
 
@@ -58,7 +59,7 @@ class RulsifAlgorithm(DensityBasedAlgorithm):
 
         return np.count_nonzero(weights > self.threshold)
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """Localize the change points in the given data window using RULSIF.
 
         Args:
@@ -75,4 +76,4 @@ class RulsifAlgorithm(DensityBasedAlgorithm):
             objective_function=self._loss_function,
         )
 
-        return np.where(weights > self.threshold)[0].tolist()
+        return cast(list[int], np.where(weights > self.threshold)[0].tolist())

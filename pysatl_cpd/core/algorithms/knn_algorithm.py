@@ -7,9 +7,9 @@ __copyright__ = "Copyright (c) 2024 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
-from collections.abc import Iterable
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
@@ -23,10 +23,10 @@ class KNNAlgorithm(Algorithm):
 
     def __init__(
         self,
-        distance_func: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float],
+        distance_func: tp.Callable[[float, float], float],
         test_statistic: TestStatistic,
         indent_coeff: float,
-        k=7,
+        k: int = 7,
         delta: float = 1e-12,
     ) -> None:
         """
@@ -53,10 +53,10 @@ class KNNAlgorithm(Algorithm):
         return self.__test_statistic
 
     @test_statistic.setter
-    def test_statistic(self, test_statistic) -> None:
+    def test_statistic(self, test_statistic: TestStatistic) -> None:
         self.__test_statistic = test_statistic
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -65,7 +65,7 @@ class KNNAlgorithm(Algorithm):
         self.__process_data(window)
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -74,7 +74,7 @@ class KNNAlgorithm(Algorithm):
         self.__process_data(window)
         return self.__change_points.copy()
 
-    def __process_data(self, window: Iterable[float | np.float64]) -> None:
+    def __process_data(self, window: npt.NDArray[np.float64]) -> None:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 

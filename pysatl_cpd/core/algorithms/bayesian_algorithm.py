@@ -6,9 +6,9 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from collections.abc import Iterable
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
@@ -66,7 +66,7 @@ class BayesianAlgorithm(Algorithm):
         self.__change_points: list[int] = []
         self.__change_points_count = 0
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -75,7 +75,7 @@ class BayesianAlgorithm(Algorithm):
         self.__process_data(False, window)
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -84,28 +84,27 @@ class BayesianAlgorithm(Algorithm):
         self.__process_data(True, window)
         return self.__change_points.copy()
 
-    def __process_data(self, with_localization: bool, window: Iterable[float | np.float64]) -> None:
+    def __process_data(self, with_localization: bool, window: npt.NDArray[np.float64]) -> None:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
         :param with_localization: boolean flag representing whether function needs to localize a change point.
         :param window: part of global data for change points analysis.
         """
-        sample = list(window)
-        sample_size = len(sample)
+        sample_size = len(window)
         if sample_size == 0:
             return
 
         self.__prepare(sample_size)
 
         while self.__time + self._learning_steps < sample_size:
-            self.__learning_stage(sample)
+            self.__learning_stage(window)
 
-            self.__bayesian_stage(sample)
+            self.__bayesian_stage(window)
 
             if self.__time < sample_size - 1:
                 self.__process_change_point(sample_size, with_localization)
 
-    def __learning_stage(self, sample: list[float | np.float64]) -> None:
+    def __learning_stage(self, sample: npt.NDArray[np.float64]) -> None:
         """
         Performs a likelihood's parameter learning stage.
         :param sample: an overall sample the model working with.
@@ -113,7 +112,7 @@ class BayesianAlgorithm(Algorithm):
         self.__likelihood.learn(sample[self.__time : self.__time + self._learning_steps])
         self.__shift_time(self._learning_steps - 1)
 
-    def __bayesian_stage(self, sample: list[float | np.float64]) -> None:
+    def __bayesian_stage(self, sample: npt.NDArray[np.float64]) -> None:
         """
         Performs a Bayesian statistics (run lengths distribution) evaluating stage.
         :param sample: an overall sample the model working with.
@@ -164,7 +163,7 @@ class BayesianAlgorithm(Algorithm):
             and not self.__detector.detect(self.__growth_probs[: self.__gap_size + 1])
         )
 
-    def __bayesian_update(self, observation: float | np.float64) -> None:
+    def __bayesian_update(self, observation: np.float64) -> None:
         """
         Performs a Bayesian update of statistics (run lengths distribution).
         :param observation: an observation from a sample.

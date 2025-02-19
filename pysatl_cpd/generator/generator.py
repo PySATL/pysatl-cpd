@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
-from typing import Generic, TypeVar
 
 import numpy as np
+import numpy.typing as npt
 
 from .config_parser import ConfigParser
-from .distributions import Distribution, ScipyDistribution
+from .distributions import Distribution
 from .saver import DatasetSaver
 
 
@@ -17,17 +17,14 @@ class Generators(Enum):
         return self.value
 
 
-DT = TypeVar("DT", bound=Distribution)
-
-
-class DatasetGenerator(Generic[DT], ABC):
+class DatasetGenerator(ABC):
     """
     An interface for dataset generators using different backends (e.g. SciPy or Numpy)
     to create a sample with a given distributions and lengths.
     """
 
     @abstractmethod
-    def generate_sample(self, distributions: list[DT], lengths: list[int]) -> np.ndarray:
+    def generate_sample(self, distributions: list[Distribution], lengths: list[int]) -> npt.NDArray[np.float64]:
         """
         Creates a sample consists of subsamples with given `distributions` and `lengths`.
 
@@ -47,7 +44,7 @@ class DatasetGenerator(Generic[DT], ABC):
 
     def generate_datasets(
         self, config_path: Path, saver: DatasetSaver | None = None
-    ) -> dict[str, tuple[list[float | np.ndarray], list[int]]]:
+    ) -> dict[str, tuple[npt.NDArray[np.float64], list[int]]]:
         """Generate pairs of dataset and change points by config file
 
         :param config_path: path to config file
@@ -67,13 +64,10 @@ class DatasetGenerator(Generic[DT], ABC):
             for length in descr.length[:-1]:
                 current_point += length
                 change_points.append(current_point)
-            datasets[descr.name] = (list(sample), change_points)
+            datasets[descr.name] = (sample, change_points)
             if saver:
                 saver.save_sample(sample, descr)
         return datasets
-
-
-DST = TypeVar("DST", bound=ScipyDistribution)
 
 
 class ScipyDatasetGenerator(DatasetGenerator):
@@ -81,7 +75,7 @@ class ScipyDatasetGenerator(DatasetGenerator):
     Dataset generator using SciPy to create samples.
     """
 
-    def generate_sample(self, distributions: list[DST], lengths: list[int]) -> np.ndarray:
+    def generate_sample(self, distributions: list[Distribution], lengths: list[int]) -> npt.NDArray[np.float64]:
         return np.concatenate(
             [distribution.scipy_sample(length) for distribution, length in zip(distributions, lengths)]
         )

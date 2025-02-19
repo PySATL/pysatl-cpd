@@ -10,7 +10,7 @@ class AdjacencyListBuilder(IBuilder):
     def __init__(self, data: list[Any], comparing_function: Callable[[Any, Any], bool]):
         super().__init__(data, comparing_function)
 
-    def build(self) -> dict[int, list]:  # Adjacency List
+    def build(self) -> dict[int, list[Any]]:  # Adjacency List
         """
         Build the adjacency list from the provided data.
 
@@ -19,7 +19,7 @@ class AdjacencyListBuilder(IBuilder):
         """
         unique_edges = set()
         count_nodes = len(self.data)
-        adjacency_list: dict[int, list] = {index: [] for index in range(count_nodes)}
+        adjacency_list: dict[int, list[Any]] = {index: [] for index in range(count_nodes)}
         for i in range(count_nodes):
             for j in range(count_nodes):
                 if self.compare(self.data[i], self.data[j]) and (i != j):

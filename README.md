@@ -1,3 +1,5 @@
+from pysatl_cpd.core.scrubber.data_providers import ListUnivariateProviderfrom pysatl_cpd.core.scrubber.linear import LinearScrubber
+
 # PySATL-CPD-Module
 
 <a href="https://github.com/Lesh79/PySATL-CPD-Module/actions"><img alt="Test" src="https://github.com/Lesh79/PySATL-CPD-Module/actions/workflows/check.yaml/badge.svg"></a>
@@ -47,29 +49,32 @@ poetry install
 ```python
 # import needed CPD algorithm from pysatl_cpd.core
 from pysatl_cpd.core.algorithms.graph_algorithm import GraphAlgorithm
-from pysatl_cpd.labeled_data import LabeledCPData
-from pysatl_cpd.core.scrubber_scenario import ScrubberScenario
+from pysatl_cpd.core.problem import CpdProblem
+from pysatl_cpd.core.scrubber.linear import LinearScrubber
+from pysatl_cpd.core.scrubber.data_providers import ListUnivariateProvider
 
-# import shell
-from pysatl_cpd.shell import CPDProblem
+# import solver
+from pysatl_cpd.cpd_solver import CpdSolver
 
-# make a shell object
-shell = CPDProblem(ScrubberScenario(10, True), [1] * 100 + [50] * 100 + [100] * 100)
-
+# specify data scrubber
+scrubber = LinearScrubber(ListUnivariateProvider([1] * 100 + [50] * 100 + [100] * 100))
 # specify CPD algorithm with parametrs
-shell.cpd_algorithm = GraphAlgorithm(lambda a, b: abs(a - b) < 5, 3)
+algorithm = GraphAlgorithm(lambda a, b: abs(a - b) < 5, 3)
+# make a solver object
+solver = CpdSolver(CpdProblem(True), algorithm, scrubber)
+
 
 # then run algorithm
-change_points = shell.run_cpd()
+cpd_results = solver.run()
 
 # print the results
-print(change_points)
+print(cpd_results)
 # output:
 # Located change points: (100;200)
 # Computation time (ms): 0.03
 
 # visualize data with located changepoints
-change_points.visualize()
+cpd_results.visualize()
 ```
 ![example_of_output](assets/exam1.png)
 

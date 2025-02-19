@@ -3,6 +3,7 @@ from typing import Final
 
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.generator.dataset_description import SampleDescription
 
@@ -30,7 +31,7 @@ class DatasetSaver:
         self._replace = replace
         self._out_dir = out_dir
 
-    def save_sample(self, sample: np.ndarray, description: SampleDescription) -> bool:
+    def save_sample(self, sample: npt.NDArray[np.float64], description: SampleDescription) -> bool:
         """
         Save sample, list of changepoints, sample plot and AsciiDoc description.
 

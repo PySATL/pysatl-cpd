@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 
 import numpy as np
+import numpy.typing as npt
 from scipy.optimize import minimize
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
@@ -9,7 +10,7 @@ from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 
 class DensityBasedAlgorithm(Algorithm):
     @staticmethod
-    def _kernel_density_estimation(observation: np.ndarray, bandwidth: float) -> np.ndarray:
+    def _kernel_density_estimation(observation: npt.NDArray[np.float64], bandwidth: float) -> npt.NDArray[np.float64]:
         """Perform kernel density estimation on the given observations without fitting a model.
 
         Args:
@@ -30,11 +31,11 @@ class DensityBasedAlgorithm(Algorithm):
 
     def _calculate_weights(
         self,
-        test_value: np.ndarray,
-        reference_value: np.ndarray,
+        test_value: npt.NDArray[np.float64],
+        reference_value: npt.NDArray[np.float64],
         bandwidth: float,
-        objective_function: Callable[[np.ndarray, np.ndarray], float],
-    ) -> np.ndarray:
+        objective_function: Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], float],
+    ) -> npt.NDArray[np.float64]:
         """Calculate the weights based on the density ratio between test and reference values.
 
         Args:
@@ -49,7 +50,7 @@ class DensityBasedAlgorithm(Algorithm):
         test_density = self._kernel_density_estimation(test_value, bandwidth)
         reference_density = self._kernel_density_estimation(reference_value, bandwidth)
 
-        def objective_function_wrapper(alpha: np.ndarray) -> float:
+        def objective_function_wrapper(alpha: npt.NDArray[np.float64], /) -> float:
             """Wrapper for the objective function to calculate the density ratio.
 
             Args:
@@ -63,12 +64,12 @@ class DensityBasedAlgorithm(Algorithm):
             return objective_function(objective_density_ratio, alpha)
 
         res = minimize(objective_function_wrapper, np.zeros(len(test_value)), method="L-BFGS-B")
-        optimized_alpha = res.x
-        density_ratio = np.exp(test_density - reference_density - optimized_alpha)
+        optimized_alpha: npt.NDArray[np.float64] = res.x
+        density_ratio: npt.NDArray[np.float64] = np.exp(test_density - reference_density - optimized_alpha)
         return density_ratio / np.mean(density_ratio)
 
     @abstractmethod
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         # maybe rtype tuple[int]
         """Function for finding change points in window
 
@@ -78,7 +79,7 @@ class DensityBasedAlgorithm(Algorithm):
         raise NotImplementedError
 
     @abstractmethod
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """Function for finding coordinates of change points in window
 
         :param window: part of global data for finding change points
@@ -87,7 +88,9 @@ class DensityBasedAlgorithm(Algorithm):
         raise NotImplementedError
 
     @staticmethod
-    def evaluate_detection_accuracy(true_change_points: list[int], detected_change_points: list[int]) -> dict:
+    def evaluate_detection_accuracy(
+        true_change_points: list[int], detected_change_points: list[int]
+    ) -> dict[str, int | float]:
         """Evaluate the accuracy of change point detection.
 
         Args:

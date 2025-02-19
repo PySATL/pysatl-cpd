@@ -6,7 +6,8 @@ __author__ = "Artemii Patov"
 __copyright__ = "Copyright (c) 2024 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from numpy import ndarray
+import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import QualityMetric
 
@@ -16,7 +17,7 @@ class Accuracy(QualityMetric):
     The class implementing quality metric based on accuracy.
     """
 
-    def assess_barrier(self, classes: ndarray, time: int) -> float:
+    def assess_barrier(self, classes: npt.NDArray[np.intp], time: int) -> float:
         """Evaluates quality function based on classificator in the specified point.
 
         :param classes: Classes of observations, predicted by the classifier.
@@ -28,7 +29,7 @@ class Accuracy(QualityMetric):
         before_length = time
         sample_length = len(classes)
 
-        true_positive = after.sum()
-        true_negative = before_length - before.sum()
+        true_positive = float(after.sum())
+        true_negative = before_length - float(before.sum())
 
         return (true_positive + true_negative) / sample_length

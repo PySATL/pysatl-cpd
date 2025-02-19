@@ -10,6 +10,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from abc import ABC, abstractmethod
 
 import numpy as np
+import numpy.typing as npt
 
 
 class IHazard(ABC):
@@ -18,7 +19,7 @@ class IHazard(ABC):
     """
 
     @abstractmethod
-    def hazard(self, run_lengths: np.ndarray) -> np.ndarray:
+    def hazard(self, run_lengths: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """
         Calculates the hazard function for given run lengths.
         :param run_lengths: run lengths at the time.

@@ -1,8 +1,8 @@
 from collections.abc import Callable, Iterable
 from typing import Any
 
-import numpy
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.graph.abstracts.ibuilder import IBuilder
 from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
@@ -10,10 +10,14 @@ from pysatl_cpd.core.algorithms.graph.graph_matrix import GraphMatrix
 
 
 class AdjacencyMatrixBuilder(IBuilder):
-    def __init__(self, data: Iterable[float | numpy.float64], comparing_function: Callable[[Any, Any], bool]):
+    def __init__(
+        self,
+        data: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]],
+        comparing_function: Callable[[Any, Any], bool],
+    ):
         super().__init__(data, comparing_function)
 
-    def build_matrix(self) -> np.ndarray:  # Adjacency Matrix
+    def build_matrix(self) -> npt.NDArray[np.int8]:  # Adjacency Matrix
         """
         Build the adjacency matrix from the provided data.
 
@@ -22,7 +26,7 @@ class AdjacencyMatrixBuilder(IBuilder):
         """
         count_edges = 0
         count_nodes = len(self.data)
-        adjacency_matrix = np.zeros((count_nodes, count_nodes), dtype=int)
+        adjacency_matrix = np.zeros((count_nodes, count_nodes), dtype=np.int8)
 
         for i in range(count_nodes):
             for j in range(count_nodes):

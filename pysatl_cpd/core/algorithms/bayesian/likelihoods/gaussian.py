@@ -20,7 +20,7 @@ class GaussianLikelihood(ILikelihood):
     Likelihood for Gaussian (a.k.a. normal) distribution, parametrized by mean and standard deviation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the GaussianLikelihood, parametrized by mean and standard deviation (without any concrete values).
         """
@@ -46,7 +46,7 @@ class GaussianLikelihood(ILikelihood):
         self.__means = np.append(self.__means, new_mean)
         self.__standard_deviations = np.append(self.__standard_deviations, new_standard_deviation)
 
-    def learn(self, learning_sample: list[float | np.float64]) -> None:
+    def learn(self, learning_sample: npt.NDArray[np.float64]) -> None:
         """
         Learns first mean and stander deviations from a given sample.
         :param learning_sample: a sample for parameter learning.
@@ -64,7 +64,7 @@ class GaussianLikelihood(ILikelihood):
 
         self.__update_parameters_lists()
 
-    def update(self, observation: float | np.float64) -> None:
+    def update(self, observation: np.float64) -> None:
         """
         Updates the means and standard deviations lists according to the given observation.
         :param observation: an observation from a sample.
@@ -76,7 +76,7 @@ class GaussianLikelihood(ILikelihood):
 
         self.__update_parameters_lists()
 
-    def predict(self, observation: float | np.float64) -> npt.ArrayLike:
+    def predict(self, observation: np.float64) -> npt.ArrayLike:
         """
         Returns predictive probabilities for a given observation based on stored means and standard deviations.
         :param observation: an observation from a sample.
@@ -84,13 +84,13 @@ class GaussianLikelihood(ILikelihood):
         """
         return stats.norm(self.__means, self.__standard_deviations).pdf(observation)
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Clears parameters of gaussian likelihood.
         :return:
         """
-        self.__means = []
-        self.__standard_deviations = []
+        self.__means = np.array([])
+        self.__standard_deviations = np.array([])
 
         self.__sample_sum = 0.0
         self.__squared_sample_sum = 0.0

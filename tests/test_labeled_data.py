@@ -2,15 +2,15 @@ import tempfile
 from os import walk
 from pathlib import Path
 
-import numpy
+import numpy as np
 import pytest
 
-from pysatl_cpd.labeled_data import LabeledCPData
+from pysatl_cpd.labeled_data import LabeledCpdData
 
 
 class TestLabeledCPData:
     config_path = "tests/test_configs/test_config_1.yml"
-    data = LabeledCPData([1, 2, 3], [4, 5, 6])
+    data = LabeledCpdData([1, 2, 3], [4, 5, 6])
 
     def test_init(self) -> None:
         assert self.data.raw_data == [1, 2, 3]
@@ -38,7 +38,7 @@ class TestLabeledCPData:
         ),
     )
     def test_generate_datasets(self, config_path_str, expected_change_points_list, expected_lengths) -> None:
-        generated = LabeledCPData.generate_cp_datasets(Path(config_path_str))
+        generated = LabeledCpdData.generate_cp_datasets(Path(config_path_str))
         for name in expected_lengths:
             data_length = len(generated[name].raw_data)
             assert data_length == expected_lengths[name]
@@ -64,7 +64,7 @@ class TestLabeledCPData:
     )
     def test_generate_datasets_save(self, config_path_str, expected_change_points_list, expected_lengths) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
-            generated = LabeledCPData.generate_cp_datasets(
+            generated = LabeledCpdData.generate_cp_datasets(
                 Path(config_path_str), to_save=True, output_directory=Path(tempdir)
             )
             for name in expected_lengths:
@@ -82,15 +82,11 @@ class TestLabeledCPData:
     )
     def test_read_generated_datasets(self, config_path_str):
         with tempfile.TemporaryDirectory() as tempdir:
-            generated = LabeledCPData.generate_cp_datasets(
+            generated = LabeledCpdData.generate_cp_datasets(
                 Path(config_path_str), to_save=True, output_directory=Path(tempdir)
             )
-            read = LabeledCPData.read_generated_datasets(Path(tempdir))
+            read = LabeledCpdData.read_generated_datasets(Path(tempdir))
             for name in generated:
-                assert len(read[name].raw_data) == len(generated[name].raw_data)
-                if not isinstance(read[name].raw_data[0], numpy.ndarray):
-                    assert read[name].raw_data == generated[name].raw_data
-                else:
-                    data = zip(read[name].raw_data, generated[name].raw_data)
-                    assert all(numpy.array_equal(r, g) for r, g in data)
+                assert read[name].raw_data.shape == generated[name].raw_data.shape
+                assert np.array_equal(read[name].raw_data, generated[name].raw_data)
                 assert read[name].change_points == generated[name].change_points

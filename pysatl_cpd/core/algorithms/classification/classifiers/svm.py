@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 import typing as tp
 
 import numpy as np
+import numpy.typing as npt
 from sklearn.svm import SVC
 
 from pysatl_cpd.core.algorithms.classification.abstracts.iclassifier import Classifier
@@ -27,7 +28,7 @@ class SVMClassifier(Classifier):
         self.__kernel: tp.Literal["linear", "poly", "rbf", "sigmoid", "precomputed"] = kernel
         self.__model: SVC | None = None
 
-    def train(self, sample: list[list[float | np.float64]], barrier: int) -> None:
+    def train(self, sample: npt.NDArray[np.float64], barrier: int) -> None:
         """Trains classifier on the given sample.
 
         :param sample: sample for training classifier.
@@ -37,9 +38,10 @@ class SVMClassifier(Classifier):
         self.__model = SVC(kernel=self.__kernel)
         self.__model.fit(sample, classes)
 
-    def predict(self, sample: list[list[float | np.float64]]) -> np.ndarray:
+    def predict(self, sample: npt.NDArray[np.float64]) -> npt.NDArray[np.intp]:
         """Classifies observations in the given sample based on training with barrier.
 
         :param sample: sample to classify.
         """
-        return self.__model.predict(sample)
+        assert self.__model is not None
+        return tp.cast(npt.NDArray[np.intp], self.__model.predict(sample))

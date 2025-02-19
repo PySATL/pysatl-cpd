@@ -19,7 +19,7 @@ class ILikelihood(ABC):
     """
 
     @abstractmethod
-    def learn(self, learning_sample: list[float | np.float64]) -> None:
+    def learn(self, learning_sample: npt.NDArray[np.float64]) -> None:
         """
         Learns first parameters of a likelihood function on a given sample.
         :param learning_sample: a sample for parameter learning.
@@ -27,7 +27,7 @@ class ILikelihood(ABC):
         ...
 
     @abstractmethod
-    def predict(self, observation: float | np.float64) -> npt.ArrayLike:
+    def predict(self, observation: np.float64) -> npt.ArrayLike:
         """
         Returns predictive probabilities for a given observation based on stored parameters.
         :param observation: an observation from a sample.
@@ -36,7 +36,7 @@ class ILikelihood(ABC):
         ...
 
     @abstractmethod
-    def update(self, observation: float | np.float64) -> None:
+    def update(self, observation: np.float64) -> None:
         """
         Updates parameters of a likelihood function according to the given observation.
         :param observation: an observation from a sample.

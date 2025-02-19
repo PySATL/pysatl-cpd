@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ihazard import IHazard
 
@@ -23,10 +24,10 @@ class ConstantHazard(IHazard):
         Initializes the constant hazard function with a given rate of an underlying exponential distribution.
         :param rate: rate of an underlying exponential distribution.
         """
-        self._rate = rate
+        self._rate = np.float64(rate)
         assert self._rate >= 1.0, "Hazard rate cannot be less than 1.0"
 
-    def hazard(self, run_lengths: np.ndarray) -> np.ndarray:
+    def hazard(self, run_lengths: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """
         Calculates the constant hazard function.
         :param run_lengths: run lengths at the time.

@@ -8,9 +8,9 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
 from collections import deque
-from collections.abc import Iterable
 
 import numpy as np
+import numpy.typing as npt
 
 from .abstracts.observation import Observation
 from .heap import NNHeap
@@ -23,10 +23,10 @@ class KNNGraph:
 
     def __init__(
         self,
-        window: Iterable[float | np.float64],
-        metric: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float],
-        k=7,
-        delta=1e-12,
+        window: npt.NDArray[np.float64],
+        metric: tp.Callable[[float, float], float],
+        k: int = 7,
+        delta: float = 1e-12,
     ) -> None:
         """
         Initializes a new instance of KNN graph.
@@ -37,7 +37,7 @@ class KNNGraph:
         Default is 7, which is generally the most optimal value (based on the experiments results).
         :param delta: delta for comparing float values of the given observations.
         """
-        self.__window: list[Observation] = [Observation(t, v) for t, v in enumerate(window)]
+        self.__window: list[Observation] = [Observation(t, float(v)) for t, v in enumerate(window)]
         self.__metric: tp.Callable[[Observation, Observation], float] = lambda obs1, obs2: metric(
             obs1.value, obs2.value
         )

@@ -1,7 +1,8 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import Any
 
-import numpy
+import numpy as np
+import numpy.typing as npt
 
 from .abstract_algorithm import Algorithm
 from .graph.builders.matrix import AdjacencyMatrixBuilder
@@ -13,14 +14,14 @@ class GraphAlgorithm(Algorithm):
         self.compare = compare_func
         self.threshold = threshold
 
-    def localize(self, window: Iterable[float | numpy.float64]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         builder = AdjacencyMatrixBuilder(window, self.compare)
         graph = builder.build_graph()
         cpd = GraphCPD(graph)
         num_cpd: list[int] = cpd.find_changepoint(self.threshold)
         return num_cpd
 
-    def detect(self, window: Iterable[float | numpy.float64]) -> int:
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         builder = AdjacencyMatrixBuilder(window, self.compare)
         graph = builder.build_graph()
         cpd = GraphCPD(graph)

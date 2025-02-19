@@ -2,13 +2,16 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
 from typing import Any
 
-import numpy
+import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
 
 
 class IBuilder(ABC):
-    def __init__(self, data: Iterable[float | numpy.float64], compare: Callable[[Any, Any], bool]):
+    def __init__(
+        self, data: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]], compare: Callable[[Any, Any], bool]
+    ):
         """
         Initialize the builder with data and a comparison function.
 

@@ -33,6 +33,9 @@ pyyaml = "^6.0.1"
 matplotlib = "^3.9.1"
 ipykernel = "^6.29.5"
 hypothesis = "^6.122.1"
+scipy-stubs = "^1.15.2"
+types-pyyaml = "^6.0.12"
+microsoft-python-type-stubs = {git = "https://github.com/microsoft/python-type-stubs.git"}
 
 
 [tool.ruff]
@@ -51,6 +54,11 @@ line-ending = "auto"
 [tool.ruff.lint]
 select = ["A", "E", "F", "I", "PL", "RUF", "SIM", "UP", "W"]
 ignore = ["PLR0913"]
+
+[tool.mypy]
+files = "pysatl_cpd"
+mypy_path = "pysatl_cpd"
+strict = true
 
 
 [build-system]

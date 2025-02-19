@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 import typing as tp
 
 import numpy as np
+import numpy.typing as npt
 from sklearn.neighbors import KNeighborsClassifier
 
 from pysatl_cpd.core.algorithms.classification.abstracts.iclassifier import Classifier
@@ -32,7 +33,7 @@ class KNNClassifier(Classifier):
         self.__distance: tp.Literal["manhattan", "euclidean", "minkowski", "hamming"] = distance
         self.__model: KNeighborsClassifier | None = None
 
-    def train(self, sample: list[list[float | np.float64]], barrier: int) -> None:
+    def train(self, sample: npt.NDArray[np.float64], barrier: int) -> None:
         """Trains classifier on the given sample.
 
         :param sample: sample for training classifier.
@@ -42,9 +43,10 @@ class KNNClassifier(Classifier):
         self.__model = KNeighborsClassifier(n_neighbors=self.__k, metric=self.__distance)
         self.__model.fit(sample, classes)
 
-    def predict(self, sample: list[list[float | np.float64]]) -> np.ndarray:
+    def predict(self, sample: npt.NDArray[np.float64]) -> npt.NDArray[np.intp]:
         """Classifies observations in the given sample based on training with barrier.
 
         :param sample: sample to classify.
         """
+        assert self.__model is not None
         return self.__model.predict(sample)

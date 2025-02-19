@@ -23,21 +23,21 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
     parameters.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes model. There are no known parameters at this moment.
         """
-        self.__mu_0 = None
-        self.__k_0 = None
-        self.__alpha_0 = None
-        self.__beta_0 = None
+        self.__mu_0: np.float64 | None = None
+        self.__k_0: int | None = None
+        self.__alpha_0: float | None = None
+        self.__beta_0: np.float64 | None = None
 
         self.__mu_params = np.array([])
         self.__k_params = np.array([])
         self.__alpha_params = np.array([])
         self.__beta_params = np.array([])
 
-    def learn(self, learning_sample: list[float | np.float64]) -> None:
+    def learn(self, learning_sample: npt.NDArray[np.float64]) -> None:
         """
         Learns first prior parameters. Can be interpreted as mean was estimated from k_0 observations with sample mean
         mu_0, and precision was estimated from 2 * alpha observations with sample mean mu_0 and sum of squared
@@ -47,20 +47,29 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
         data = np.array(learning_sample)
         sample_size = data.shape[0]
         self.__mu_0 = data.mean()
+        assert self.__mu_0 is not None
         self.__beta_0 = ((data - self.__mu_0) ** 2).sum() / 2.0
         self.__k_0 = sample_size
         self.__alpha_0 = sample_size / 2.0
 
+        assert self.__k_0 is not None
+        assert self.__alpha_0 is not None
+        assert self.__beta_0 is not None
         self.__mu_params = np.array([self.__mu_0])
         self.__k_params = np.array([self.__k_0])
         self.__alpha_params = np.array([self.__alpha_0])
         self.__beta_params = np.array([self.__beta_0])
 
-    def update(self, observation: float | np.float64) -> None:
+    def update(self, observation: np.float64) -> None:
         """
         Updates 4 parameters arrays of normal-inverse gamma conjugate prior, calculating posterior parameters.
         :param observation: an observation from a sample.
         """
+        assert self.__mu_0 is not None
+        assert self.__k_0 is not None
+        assert self.__alpha_0 is not None
+        assert self.__beta_0 is not None
+
         mu_divider = self.__k_params + 1.0
         assert np.count_nonzero(mu_divider) == mu_divider.shape[0], "Mu dividers cannot be 0.0"
 
@@ -80,7 +89,7 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
         self.__alpha_params = new_alpha_params
         self.__beta_params = new_beta_params
 
-    def predict(self, observation: float | np.float64) -> npt.ArrayLike:
+    def predict(self, observation: np.float64) -> npt.ArrayLike:
         """
         Returns predictive probabilities for a given observation based on posterior parameters. Predictive distribution
         is Student's t-distribution with 2 * alpha degrees of freedom.
