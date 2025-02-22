@@ -68,7 +68,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
     def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -77,7 +77,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -86,7 +86,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points.copy()
 
-    def __process_data(self, window: Iterable[float | np.float64]) -> AlgorithmWindowBenchmarkingInfo:
+    def __process_data(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> AlgorithmWindowBenchmarkingInfo:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 
@@ -127,9 +127,20 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
     # Soon classification algorithm will be more generalized: the split strategy will be one of the parameters.
     @staticmethod
     def __split_sample(
-        sample: Iterable[float | np.float64],
-    ) -> tuple[list[list[float | np.float64]], list[list[float | np.float64]]]:
-        train_sample = [[x] for i, x in enumerate(sample) if i % 2 == 0]
-        test_sample = [[x] for i, x in enumerate(sample) if i % 2 != 0]
+        sample: MutableSequence[float | np.float64 | np.ndarray],
+    ) -> tuple[np.ndarray, np.ndarray]:
+        train_sample = []
+        test_sample = []
 
-        return train_sample, test_sample
+        for i, x in enumerate(sample):
+            if isinstance(x, np.ndarray):
+                new_el = x
+            else:
+                new_el = [x]
+            
+            if i % 2 == 0:
+                train_sample.append(new_el)
+            else:
+                test_sample.append(new_el)
+
+        return np.array(train_sample), np.array(test_sample)

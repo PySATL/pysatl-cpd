@@ -25,7 +25,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
 
     def __init__(
         self,
-        distance_func: tp.Callable[[float, float], float],
+        distance_func: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
         test_statistic: TestStatistic,
         indent_coeff: float,
         k=7,
@@ -69,7 +69,11 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
     def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
+<<<<<<< HEAD
     def detect(self, window: Iterable[float | np.float64]) -> int:
+=======
+    def detect(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> int:
+>>>>>>> bb8d211 (fix: typing; wip: performance benchmarking)
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -78,7 +82,11 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points_count
 
+<<<<<<< HEAD
     def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+=======
+    def localize(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> list[int]:
+>>>>>>> bb8d211 (fix: typing; wip: performance benchmarking)
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -87,7 +95,11 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points.copy()
 
+<<<<<<< HEAD
     def __process_data(self, window: Iterable[float | np.float64]) -> AlgorithmWindowBenchmarkingInfo:
+=======
+    def __process_data(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> AlgorithmWindowBenchmarkingInfo:
+>>>>>>> bb8d211 (fix: typing; wip: performance benchmarking)
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 

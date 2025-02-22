@@ -23,10 +23,17 @@ class KNNGraph:
 
     def __init__(
         self,
+<<<<<<< HEAD:pysatl_cpd/core/algorithms/knn/graph.py
         window: npt.NDArray[np.float64],
         metric: tp.Callable[[np.float64 | npt.NDArray[np.float64], np.float64 | npt.NDArray[np.float64]], float],
         k: int = 7,
         delta: float = 1e-12,
+=======
+        window: MutableSequence[float | np.float64 | np.ndarray],
+        metric: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
+        k=7,
+        delta=1e-12,
+>>>>>>> bb8d211 (fix: typing; wip: performance benchmarking):CPDShell/Core/algorithms/KNNCPD/knn_graph.py
     ) -> None:
         """
         Initializes a new instance of KNN graph.

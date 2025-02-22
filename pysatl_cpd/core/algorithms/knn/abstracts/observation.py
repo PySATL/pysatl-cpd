@@ -19,7 +19,11 @@ class Observation:
     """
 
     time: int
+<<<<<<< HEAD:pysatl_cpd/core/algorithms/knn/abstracts/observation.py
     value: np.float64 | npt.NDArray[np.float64] = field(compare=False)
+=======
+    value: float | np.float64 | np.ndarray = field(compare=False)
+>>>>>>> bb8d211 (fix: typing; wip: performance benchmarking):CPDShell/Core/algorithms/KNNCPD/abstracts/observation.py
 
 
 @dataclass(order=True)

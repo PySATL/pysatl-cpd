@@ -11,6 +11,7 @@ import typing as tp
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from random import randint
 
 import yaml
 
@@ -61,6 +62,27 @@ class DistributionGenerator:
         return distributions
 
     @staticmethod
+    def generate_by_frequency_rnd(distr_length: int, overall_length: int, dest_path: Path):
+        default_distrs = [Distribution(DistributionType.beta, {"alpha": 1.0, "beta": 1.0}, distr_length),
+                           Distribution(DistributionType.exponential, {"rate": 1.0}, distr_length),
+                           Distribution(DistributionType.uniform, {"min": 0.0, "max": 1.0}, distr_length),
+                           Distribution(DistributionType.weibull, {"shape": 0.5, "scale": 1.0}, distr_length),
+                           Distribution(DistributionType.normal, {"mean": 0.0, "variance": 1.0}, distr_length)]
+
+        sample_distr = []
+
+        prev = -1
+        for _ in range(0, overall_length, distr_length):
+            distr_n = randint(0, 4)
+            while distr_n == prev:
+                distr_n = randint(0, 4)
+            prev = distr_n
+
+            sample_distr.append(default_distrs[distr_n])
+
+        DistributionGenerator.generate([sample_distr], 1, dest_path)
+
+    @staticmethod
     def generate(distributions: list[DistributionComposition], sample_count: int, dest_path: Path):
         Path(dest_path).mkdir(parents=True, exist_ok=True)
         distributions_info = DistributionGenerator.__generate_configs(distributions, sample_count, dest_path)
@@ -76,7 +98,11 @@ class DistributionGenerator:
         for i in range(len(distributions)):
             distribution_comp = distributions[i]
 
-            name = f"{i}-" + "-".join(map(lambda d: d.type.name, distribution_comp))
+            if len(distribution_comp) > 4:
+                name = f"{i}-{len(distribution_comp)}-{sum(map(lambda x: x.length, distribution_comp))}"
+            else:
+                name = f"{i}-" + "-".join(map(lambda d: d.type.name, distribution_comp))
+
             generated_distributions_info.append((name, sample_count))
 
             config = [

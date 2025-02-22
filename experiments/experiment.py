@@ -5,8 +5,8 @@ import yaml
 from shutil import rmtree
 
 from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
-from benchmarking.worker.optimal_threshold_worker import OptimalThresholdWorker
-from benchmarking.worker.benchmarking_worker import BenchmarkingWorker
+from benchmarking.worker.optimal_threshold import OptimalThresholdWorker
+from benchmarking.worker.benchmarking import BenchmarkingWorker
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
 from benchmarking.algorithms.benchmarking_classification import BenchmarkingClassificationAlgorithm
@@ -85,7 +85,7 @@ class Experiment():
             report.add_average_overall_time()
             report.add_average_window_time()
             report.add_power()
-            evaluatedMetrics = report.get_result().filter_out_none()
+            evaluatedMetrics = report.get_result().filter_none()
             print(evaluatedMetrics)
 
     def run_optimization(self, dataset_path: Path | None, storage_path: Path, optimal_values_storage_path: Path, significance_level: float, delta: float, interval_length: int) -> None:
