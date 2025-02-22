@@ -24,14 +24,20 @@ class ThresholdCalculation:
         """
         :param sample_length: number of statistical values.
         """
+        print(dataset_path)
         dataset = Utils.get_all_sample_dirs(dataset_path)
 
         cur_threshold = threshold
         cur_sig_level = ThresholdCalculation.__calculate_significance_level(dataset, cur_threshold)
         cur_difference = 1.0
 
-        while abs(cur_sig_level - significance_level) > delta:
+        counter = 0
+        while abs(significance_level - cur_sig_level) > delta:
             print(cur_threshold)
+            if counter == 20:
+                break
+            counter += 1
+
             if cur_sig_level > significance_level:
                 cur_threshold = cur_threshold + cur_difference
                 cur_sig_level = ThresholdCalculation.__calculate_significance_level(dataset, cur_threshold)

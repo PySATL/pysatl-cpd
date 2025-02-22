@@ -27,7 +27,7 @@ class SVMClassifier(Classifier):
         self.__kernel: tp.Literal["linear", "poly", "rbf", "sigmoid", "precomputed"] = kernel
         self.__model: SVC | None = None
 
-    def train(self, sample: list[list[float | np.float64]], barrier: int) -> None:
+    def train(self, sample: np.ndarray, barrier: int) -> None:
         """Trains classifier on the given sample.
 
         :param sample: sample for training classifier.
@@ -37,7 +37,7 @@ class SVMClassifier(Classifier):
         self.__model = SVC(kernel=self.__kernel)
         self.__model.fit(sample, classes)
 
-    def predict(self, sample: list[list[float | np.float64]]) -> np.ndarray:
+    def predict(self, sample: np.ndarray) -> np.ndarray:
         """Classifies observations in the given sample based on training with barrier.
 
         :param sample: sample to classify.

@@ -37,7 +37,7 @@ class BenchmarkingLinearScrubber(BenchmarkingScrubber):
         self.is_running = True
         self._window_start = 0
 
-    def get_windows(self) -> Iterable[Sequence[float | numpy.float64]]:
+    def get_windows(self) -> Iterable[Sequence[float | numpy.float64 | numpy.ndarray]]:
         while (
             self._data
             and self._window_start == 0

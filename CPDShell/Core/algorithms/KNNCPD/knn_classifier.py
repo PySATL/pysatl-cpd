@@ -22,7 +22,7 @@ class KNNClassifier:
 
     def __init__(
         self,
-        metric: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float],
+        metric: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
         k=7,
         delta: float = 1e-12,
     ) -> None:
@@ -38,10 +38,10 @@ class KNNClassifier:
         self.__metric = metric
         self.__delta = delta
 
-        self.__window: list[float | np.float64 | list[np.float64]] | None = None
+        self.__window: list[float | np.float64 | np.ndarray] | None = None
         self.__knn_graph: KNNGraph | None = None
 
-    def classify(self, window: MutableSequence[float | np.float64 | list[np.float64]]) -> None:
+    def classify(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> None:
         """Applies classificator to the given sample.
 
         :param window: part of global data for finding change points.

@@ -23,8 +23,8 @@ class KNNGraph:
 
     def __init__(
         self,
-        window: MutableSequence[float | np.float64 | list[np.float64]],
-        metric: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float] | tp.Callable[[list[np.float64], list[np.float64]], float],
+        window: MutableSequence[float | np.float64 | np.ndarray],
+        metric: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
         k=7,
         delta=1e-12,
     ) -> None:

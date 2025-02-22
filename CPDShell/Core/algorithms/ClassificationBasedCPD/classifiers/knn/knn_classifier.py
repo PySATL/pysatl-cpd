@@ -32,19 +32,21 @@ class KNNClassifier(Classifier):
         self.__distance: tp.Literal["manhattan", "euclidean", "minkowski", "hamming"] = distance
         self.__model: KNeighborsClassifier | None = None
 
-    def train(self, sample: list[list[float | np.float64]], barrier: int) -> None:
+    def train(self, sample: np.ndarray, barrier: int) -> None:
         """Trains classifier on the given sample.
 
         :param sample: sample for training classifier.
         :param barrier: index of observation that splits the given sample.
         """
-        classes = [0 if i <= barrier else 1 for i in range(len(sample))]
+        classes = np.array([0 if i <= barrier else 1 for i in range(len(sample))])
         self.__model = KNeighborsClassifier(n_neighbors=self.__k, metric=self.__distance)
         self.__model.fit(sample, classes)
 
-    def predict(self, sample: list[list[float | np.float64]]) -> np.ndarray:
+    def predict(self, sample: np.ndarray) -> np.ndarray:
         """Classifies observations in the given sample based on training with barrier.
 
         :param sample: sample to classify.
         """
+        assert self.__model is not None, "classifier is None"
+
         return self.__model.predict(sample)

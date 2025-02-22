@@ -37,7 +37,7 @@ class Scrubber(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_windows(self) -> Iterable[Sequence[float | numpy.float64]]:
+    def get_windows(self) -> Iterable[Sequence[float | numpy.float64 | numpy.ndarray]]:
         """Function for dividing data into parts to feed into the change point detection algorithm
 
         :return: Iterator of data windows for change point detection algorithm

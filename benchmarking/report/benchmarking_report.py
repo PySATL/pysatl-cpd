@@ -27,7 +27,7 @@ class Measures:
         self.interval: int | None = None
         self.scrubbing_alg_info: dict[str, dict[str, str]] | None = None
 
-    def filter_out_none(self) -> dict[str, float]:
+    def filter_none(self) -> dict[str, float]:
         return {k: v for k, v in vars(self).items() if v is not None}
 
 

@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from collections.abc import MutableSequence
 
-import numpy
+import numpy as np
 
 
 class Algorithm(ABC):
     """Abstract class for change point detection algorithms"""
 
     @abstractmethod
-    def detect(self, window: MutableSequence[float | numpy.float64 | list[numpy.float64]]) -> int:
+    def detect(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> int:
         """Function for finding change points in window
 
         :param window: part of global data for finding change points
@@ -17,7 +17,7 @@ class Algorithm(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def localize(self, window: MutableSequence[float | numpy.float64 | list[numpy.float64]]) -> list[int]:
+    def localize(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> list[int]:
         """Function for finding coordinates of change points in window
 
         :param window: part of global data for finding change points
