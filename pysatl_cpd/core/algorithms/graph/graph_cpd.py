@@ -1,7 +1,7 @@
 import math
 
-from pysatl_cpd.core.algorithms.gpraph.abstracts.igraph import IGraph
-from pysatl_cpd.core.algorithms.gpraph.abstracts.igraph_cpd import IGraphCPD
+from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
+from pysatl_cpd.core.algorithms.graph.abstracts.igraph_cpd import IGraphCPD
 
 
 class GraphCPD(IGraphCPD):

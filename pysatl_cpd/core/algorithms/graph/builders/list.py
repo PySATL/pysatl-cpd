@@ -1,9 +1,9 @@
 from collections.abc import Callable
 from typing import Any
 
-from pysatl_cpd.core.algorithms.gpraph.abstracts.ibuilder import IBuilder
-from pysatl_cpd.core.algorithms.gpraph.abstracts.igraph import IGraph
-from pysatl_cpd.core.algorithms.gpraph.graph_list import GraphList
+from pysatl_cpd.core.algorithms.graph.abstracts.ibuilder import IBuilder
+from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
+from pysatl_cpd.core.algorithms.graph.graph_list import GraphList
 
 
 class AdjacencyListBuilder(IBuilder):

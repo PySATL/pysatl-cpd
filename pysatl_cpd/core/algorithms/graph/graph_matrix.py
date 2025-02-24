@@ -2,7 +2,7 @@ from typing import Any
 
 from numpy import dtype, ndarray
 
-from pysatl_cpd.core.algorithms.gpraph.abstracts.igraph import IGraph
+from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
 
 
 class GraphMatrix(IGraph):

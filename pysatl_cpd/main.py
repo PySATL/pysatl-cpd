@@ -15,7 +15,7 @@ from pysatl_cpd.generator.generator import ScipyDatasetGenerator
 from pysatl_cpd.generator.saver import DatasetSaver
 from pysatl_cpd.shell import CPDProblem
 
-path_string = "tests/test_pysatl_cpd/test_configs/test_config_exp.yml"
+path_string = "tests/test_configs/test_config_exp.yml"
 distributions_name = "exp"
 
 saver = DatasetSaver(Path(), True)

@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy
 
-from pysatl_cpd.core.algorithms.gpraph.abstracts.igraph import IGraph
+from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
 
 
 class IBuilder(ABC):

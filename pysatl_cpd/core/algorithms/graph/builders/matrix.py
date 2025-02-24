@@ -4,9 +4,9 @@ from typing import Any
 import numpy
 import numpy as np
 
-from pysatl_cpd.core.algorithms.gpraph.abstracts.ibuilder import IBuilder
-from pysatl_cpd.core.algorithms.gpraph.abstracts.igraph import IGraph
-from pysatl_cpd.core.algorithms.gpraph.graph_matrix import GraphMatrix
+from pysatl_cpd.core.algorithms.graph.abstracts.ibuilder import IBuilder
+from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
+from pysatl_cpd.core.algorithms.graph.graph_matrix import GraphMatrix
 
 
 class AdjacencyMatrixBuilder(IBuilder):

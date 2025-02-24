@@ -4,8 +4,8 @@ from typing import Any
 import numpy
 
 from .abstract_algorithm import Algorithm
-from .gpraph.builders.matrix import AdjacencyMatrixBuilder
-from .gpraph.graph_cpd import GraphCPD
+from .graph.builders.matrix import AdjacencyMatrixBuilder
+from .graph.graph_cpd import GraphCPD
 
 
 class GraphAlgorithm(Algorithm):
