@@ -7,6 +7,7 @@ __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
 
@@ -27,7 +28,7 @@ class DropDetector(IDetector):
         self._threshold = threshold
         assert 0.0 <= self._threshold <= 1.0, "Drop threshold must be in [0.0, 1.0]"
 
-    def detect(self, growth_probs: np.ndarray) -> bool:
+    def detect(self, growth_probs: npt.NDArray[np.float64]) -> bool:
         """
         Checks whether a changepoint occurred with given growth probabilities at the time.
         :param growth_probs: growth probabilities for run lengths at the time.

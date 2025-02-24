@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from collections.abc import Iterable
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.classification.abstracts.iclassifier import Classifier
@@ -48,10 +49,10 @@ class ClassificationAlgorithm(Algorithm):
         return self.__test_statistic
 
     @test_statistic.setter
-    def test_statistic(self, test_statistic) -> None:
+    def test_statistic(self, test_statistic: TestStatistic) -> None:
         self.__test_statistic = test_statistic
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -60,7 +61,7 @@ class ClassificationAlgorithm(Algorithm):
         self.__process_data(window)
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -69,7 +70,7 @@ class ClassificationAlgorithm(Algorithm):
         self.__process_data(window)
         return self.__change_points.copy()
 
-    def __process_data(self, window: Iterable[float | np.float64]) -> None:
+    def __process_data(self, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]) -> None:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 
@@ -105,7 +106,7 @@ class ClassificationAlgorithm(Algorithm):
     # Soon classification algorithm will be more generalized: the split strategy will be one of the parameters.
     @staticmethod
     def __split_sample(
-        sample: Iterable[float | np.float64],
+        sample: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]],
     ) -> tuple[list[list[float | np.float64]], list[list[float | np.float64]]]:
         train_sample = [[x] for i, x in enumerate(sample) if i % 2 == 0]
         test_sample = [[x] for i, x in enumerate(sample) if i % 2 != 0]

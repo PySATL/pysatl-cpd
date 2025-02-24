@@ -1,17 +1,21 @@
 import os.path
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Final, Generic, TypeVar
+from typing import Any, Final, TypeAlias
 
 import yaml
 
 from .dataset_description import DatasetDescriptionBuilder, SampleDescription
 from .distributions import Distribution
 
-D = TypeVar("D", bound=Distribution)
+ConfDistrParams: TypeAlias = dict[str, str]
+ConfDistr: TypeAlias = dict[str, str | int | ConfDistrParams]
+ConfDistrs: TypeAlias = list[ConfDistr]
+ConfDataset: TypeAlias = dict[str, str | ConfDistrs]
+ParsedConfig: TypeAlias = list[ConfDataset]
 
 
-class ConfigParser(Generic[D]):
+class ConfigParser:
     """
     Parse YAML generation config and provides an iterator over DatasetDescriptions.
     """
@@ -22,32 +26,43 @@ class ConfigParser(Generic[D]):
     LENGTH_FIELD: Final[str] = "length"
     PARAMETERS_FIELD: Final[str] = "parameters"
 
-    _descriptions: list[SampleDescription[D]]
+    _descriptions: list[SampleDescription]
 
     def __init__(self, config_path: Path):
         self.validate_config(config_path)
         with open(config_path) as cf:
-            config: list[dict] = yaml.safe_load(cf)
+            config: ParsedConfig = yaml.safe_load(cf)
             self._descriptions = self._parse_config(config)
 
-    def __iter__(self) -> Iterator[SampleDescription[D]]:
+    def __iter__(self) -> Iterator[SampleDescription]:
         return self._descriptions.__iter__()
 
     @staticmethod
-    def _parse_config(config: list[dict]) -> list[SampleDescription[D]]:
+    def _parse_config(config: ParsedConfig) -> list[SampleDescription]:
         """Parse config to list of descriptions
 
         :param config: config with sample description
         :return: list of descriptions"""
-        descriptions: list[SampleDescription[D]] = []
+        descriptions: list[SampleDescription] = []
         for descr in config:
             db = DatasetDescriptionBuilder()
-            db.set_name(descr[ConfigParser.NAME_FIELD])
-            for distribution in descr[ConfigParser.DISTRIBUTION_FIELD]:
-                distribution_name = distribution[ConfigParser.DISTRIBUTION_TYPE]
-                distribution_length = distribution[ConfigParser.LENGTH_FIELD]
-                distribution_params = distribution[ConfigParser.PARAMETERS_FIELD]
-                db.add_distribution(distribution_name, distribution_length, distribution_params)
+            match (descr[ConfigParser.NAME_FIELD], descr[ConfigParser.DISTRIBUTION_FIELD]):
+                case (str(name), list(distributions)):
+                    pass
+                case _:
+                    raise ValueError("Invalid config")
+            db.set_name(name)
+            for distr in distributions:
+                match (
+                    distr[ConfigParser.DISTRIBUTION_TYPE],
+                    distr[ConfigParser.LENGTH_FIELD],
+                    distr[ConfigParser.PARAMETERS_FIELD],
+                ):
+                    case (str(name), int(length), dict(params)):
+                        pass
+                    case _:
+                        raise ValueError("Invalid config")
+                db.add_distribution(name, length, params)
             descriptions.append(db.build())
         return descriptions
 
@@ -70,7 +85,7 @@ class ConfigParser(Generic[D]):
                 raise TypeError(f"Description #{i} is not a dictionary")
             name = descr.get(ConfigParser.NAME_FIELD, None)
             ConfigParser._validate_description_name(i, name)
-            distributions: list[dict] | None = descr.get(ConfigParser.DISTRIBUTION_FIELD, None)
+            distributions: ConfDistrs | None = descr.get(ConfigParser.DISTRIBUTION_FIELD, None)
             if distributions is None:
                 raise TypeError(f"No distribution in Description #{i}")
             ConfigParser._validate_description_list_field(i, distributions, "distributions", dict)
@@ -92,7 +107,7 @@ class ConfigParser(Generic[D]):
                     raise ValueError("distributions and params can not be None")
 
     @staticmethod
-    def _validate_description_name(index: int, name) -> None:
+    def _validate_description_name(index: int, name: str | None) -> None:
         """Validate dataset name
 
         :param index: dataset index in config
@@ -103,7 +118,7 @@ class ConfigParser(Generic[D]):
             raise TypeError(f"Description #{index} name is not string")
 
     @staticmethod
-    def _validate_description_field_type(index: int, field, field_name: str, field_type: type) -> None:
+    def _validate_description_field_type(index: int, field: Any, field_name: str, field_type: type) -> None:
         """Validate field type
 
         :param index: dataset index in config
@@ -117,7 +132,7 @@ class ConfigParser(Generic[D]):
 
     @staticmethod
     def _validate_description_list_field(
-        index: int, list_field: list, list_field_name: str, elements_type: type
+        index: int, list_field: ConfDistrs, list_field_name: str, elements_type: type
     ) -> None:
         """Validate list from config
 

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class IGraph(ABC):
-    def __init__(self, num_of_edges, len_data):
+    def __init__(self, num_of_edges: int, len_data: int) -> None:
         """
         Initialize the IGraph with the number of edges and the length of data.
 

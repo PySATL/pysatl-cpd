@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from collections.abc import Iterable
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
@@ -66,7 +67,7 @@ class BayesianAlgorithm(Algorithm):
         self.__change_points: list[int] = []
         self.__change_points_count = 0
 
-    def detect(self, window: Iterable[float | np.float64]) -> int:
+    def detect(self, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -75,7 +76,7 @@ class BayesianAlgorithm(Algorithm):
         self.__process_data(False, window)
         return self.__change_points_count
 
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
+    def localize(self, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -84,7 +85,9 @@ class BayesianAlgorithm(Algorithm):
         self.__process_data(True, window)
         return self.__change_points.copy()
 
-    def __process_data(self, with_localization: bool, window: Iterable[float | np.float64]) -> None:
+    def __process_data(
+        self, with_localization: bool, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]
+    ) -> None:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
         :param with_localization: boolean flag representing whether function needs to localize a change point.

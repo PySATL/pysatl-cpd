@@ -4,6 +4,7 @@ from typing import Final, Protocol
 
 import numpy as np
 import scipy.stats as ss
+from numpy import typing as npt
 
 
 class Distributions(Enum):
@@ -17,7 +18,7 @@ class Distributions(Enum):
     LOGNORM = "lognorm"
     MULTIVARIATIVE_NORMAL = "multivariate_normal"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -32,18 +33,29 @@ class Distribution(Protocol):
         """
         :return: Name of the distribution.
         """
-        return ""
+        ...
 
     @property
     def params(self) -> dict[str, str]:
         """
         :return: Parameters of the distribution.
         """
-        return {}
+        ...
+
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
+        """
+        Generate sample using SciPy.
+
+        :return: Generated sample.
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "Distribution": ...
 
     @staticmethod
     def from_str(name: str, params: dict[str, str]) -> "Distribution":
-        distributions = {
+        distributions: dict[str, type[Distribution]] = {
             Distributions.NORMAL.value: NormalDistribution,
             Distributions.EXPONENTIAL.value: ExponentialDistribution,
             Distributions.WEIBULL.value: WeibullDistribution,
@@ -57,21 +69,7 @@ class Distribution(Protocol):
         return distributions[name].from_params(params)
 
 
-class ScipyDistribution(Distribution):
-    """
-    Distribution supporting sample generation with SciPy methods.
-    """
-
-    def scipy_sample(self, length: int) -> np.ndarray:
-        """
-        Generate sample using SciPy.
-
-        :return: Generated sample.
-        """
-        raise NotImplementedError()
-
-
-class NormalDistribution(ScipyDistribution):
+class NormalDistribution(Distribution):
     """
     Description for the normal distribution with mean and variance parameters.
     """
@@ -82,7 +80,7 @@ class NormalDistribution(ScipyDistribution):
     mean: float
     variance: float
 
-    def __init__(self, mean=0.0, var=1.0):
+    def __init__(self, mean: float = 0.0, var: float = 1.0) -> None:
         self.mean = mean
         self.variance = var
 
@@ -97,11 +95,11 @@ class NormalDistribution(ScipyDistribution):
             NormalDistribution.VAR_KEY: str(self.variance),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.norm(loc=self.mean, scale=self.variance).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "NormalDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "NormalDistribution":
         parameter_number = 2
         if len(params) != parameter_number:
             raise ValueError(
@@ -112,10 +110,10 @@ class NormalDistribution(ScipyDistribution):
         var: float = float(params[NormalDistribution.VAR_KEY])
         if var < 0:
             raise ValueError("Variance cannot be less than 0")
-        return NormalDistribution(mean, var)
+        return cls(mean, var)
 
 
-class ExponentialDistribution(ScipyDistribution):
+class ExponentialDistribution(Distribution):
     """
     Description of exponential distribution with intensity parameter.
     """
@@ -139,20 +137,20 @@ class ExponentialDistribution(ScipyDistribution):
             ExponentialDistribution.RATE_KEY: str(self.rate),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.expon(scale=1 / self.rate).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "ExponentialDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "ExponentialDistribution":
         if len(params) != 1:
             raise ValueError("Exponential distribution must have 1 parameter: " + f"{ExponentialDistribution.RATE_KEY}")
         rate: float = float(params[ExponentialDistribution.RATE_KEY])
         if rate <= 0:
             raise ValueError("Rate must be greater than 0")
-        return ExponentialDistribution(rate)
+        return cls(rate)
 
 
-class WeibullDistribution(ScipyDistribution):
+class WeibullDistribution(Distribution):
     """
     Description of weibull distribution with intensity parameter.
     """
@@ -180,11 +178,11 @@ class WeibullDistribution(ScipyDistribution):
             WeibullDistribution.SCALE_KEY: str(self.scale),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.weibull_min(c=self.shape, scale=1 / self.scale).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "WeibullDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "WeibullDistribution":
         num_params = 2
         if len(params) != num_params:
             raise ValueError(
@@ -196,10 +194,10 @@ class WeibullDistribution(ScipyDistribution):
         scale: float = float(params[WeibullDistribution.SCALE_KEY])
         if shape <= 0 or scale <= 0:
             raise ValueError("Parameters must be greater than 0")
-        return WeibullDistribution(shape, scale)
+        return cls(shape, scale)
 
 
-class UniformDistribution(ScipyDistribution):
+class UniformDistribution(Distribution):
     """
     Description of uniform distribution with intensity parameter.
     """
@@ -227,11 +225,11 @@ class UniformDistribution(ScipyDistribution):
             UniformDistribution.MAX_KEY: str(self.max),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.uniform(loc=self.min, scale=self.max - self.min).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "UniformDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "UniformDistribution":
         num_params = 2
         if len(params) != num_params:
             raise ValueError(
@@ -243,10 +241,10 @@ class UniformDistribution(ScipyDistribution):
         max_value: float = float(params[UniformDistribution.MAX_KEY])
         if min_value >= max_value:
             raise ValueError("Max must be greater than min value")
-        return UniformDistribution(min_value, max_value)
+        return cls(min_value, max_value)
 
 
-class BetaDistribution(ScipyDistribution):
+class BetaDistribution(Distribution):
     """
     Description of beta distribution with intensity parameter.
     """
@@ -274,11 +272,11 @@ class BetaDistribution(ScipyDistribution):
             BetaDistribution.BETA_KEY: str(self.beta),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.beta(a=self.alpha, b=self.beta).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "BetaDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "BetaDistribution":
         num_params = 2
         if len(params) != num_params:
             raise ValueError(
@@ -288,10 +286,10 @@ class BetaDistribution(ScipyDistribution):
         beta: float = float(params[BetaDistribution.BETA_KEY])
         if alpha <= 0 or beta <= 0:
             raise ValueError("Alpha and beta must be greater than zero")
-        return BetaDistribution(alpha, beta)
+        return cls(alpha, beta)
 
 
-class GammaDistribution(ScipyDistribution):
+class GammaDistribution(Distribution):
     """
     Description of gamma distribution with shape and scale parameters.
     """
@@ -319,11 +317,11 @@ class GammaDistribution(ScipyDistribution):
             GammaDistribution.BETA_KEY: str(self.beta),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.gamma(a=self.alpha, scale=1 / self.beta).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "GammaDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "GammaDistribution":
         num_params = 2
         if len(params) != num_params:
             raise ValueError(
@@ -333,10 +331,10 @@ class GammaDistribution(ScipyDistribution):
         beta = float(params[GammaDistribution.BETA_KEY])
         if alpha <= 0 or beta <= 0:
             raise ValueError("Alpha and beta for gamma distributions must be greater than zero")
-        return GammaDistribution(alpha, beta)
+        return cls(alpha, beta)
 
 
-class TDistribution(ScipyDistribution):
+class TDistribution(Distribution):
     """
     Description of Student's t-distribution with the degrees of freedom parameter.
     """
@@ -360,21 +358,21 @@ class TDistribution(ScipyDistribution):
             TDistribution.N_KEY: str(self.n),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.t(df=self.n).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "TDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "TDistribution":
         num_params = 1
         if len(params) != num_params:
             raise ValueError(f"Student's distribution must have 1 parameter: {TDistribution.N_KEY}")
         n = int(params[TDistribution.N_KEY])
         if n <= 0:
             raise ValueError("n (degrees of freedom) must be positive integer")
-        return TDistribution(n)
+        return cls(n)
 
 
-class LogNormDistribution(ScipyDistribution):
+class LogNormDistribution(Distribution):
     """
     Description of log normal distributionn with one parameter
     """
@@ -398,19 +396,19 @@ class LogNormDistribution(ScipyDistribution):
             LogNormDistribution.S_KEY: str(self.s),
         }
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.lognorm(s=self.s).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "LogNormDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "LogNormDistribution":
         num_params = 1
         if len(params) != num_params:
             raise ValueError(f"Log normal distribution must have 1 parameter: {LogNormDistribution.S_KEY}")
         s = float(params[LogNormDistribution.S_KEY])
-        return LogNormDistribution(s)
+        return cls(s)
 
 
-class MultivariateNormalDistribution(ScipyDistribution):
+class MultivariateNormalDistribution(Distribution):
     """
     Description of multivariate normal distribution with det(covarianse matrix) == 1
     """
@@ -418,7 +416,7 @@ class MultivariateNormalDistribution(ScipyDistribution):
     MEAN_KEY: Final[str] = "mean"
 
     mean: list[float]
-    cov: np.ndarray
+    cov: npt.NDArray[np.float64]
 
     def __init__(self, mean_value: list[float]) -> None:
         if len(mean_value) == 0:
@@ -434,15 +432,15 @@ class MultivariateNormalDistribution(ScipyDistribution):
     def params(self) -> dict[str, str]:
         return {MultivariateNormalDistribution.MEAN_KEY: str(self.mean)}
 
-    def scipy_sample(self, length: int) -> np.ndarray:
+    def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
         return ss.multivariate_normal(mean=self.mean, cov=self.cov).rvs(size=length)
 
-    @staticmethod
-    def from_params(params: dict[str, str]) -> "MultivariateNormalDistribution":
+    @classmethod
+    def from_params(cls, params: dict[str, str]) -> "MultivariateNormalDistribution":
         num_params = 1
         if len(params) != num_params:
             raise ValueError(
                 f"Multivariative normal distribution must have 1 parameter: {MultivariateNormalDistribution.MEAN_KEY}"
             )
         mean = list(map(float, ast.literal_eval(params[MultivariateNormalDistribution.MEAN_KEY])))
-        return MultivariateNormalDistribution(mean)
+        return cls(mean)

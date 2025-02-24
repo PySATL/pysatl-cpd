@@ -1,13 +1,10 @@
 from io import StringIO
 from itertools import accumulate
-from typing import Generic, TypeVar
 
 from .distributions import Distribution
 
-D = TypeVar("D", bound=Distribution)
 
-
-class SampleDescription(Generic[D]):
+class SampleDescription:
     """Contains dataset description:
 
     * sub-samples lengths;
@@ -18,13 +15,13 @@ class SampleDescription(Generic[D]):
 
     _name: str
     _samples_length: list[int]
-    _samples_distributions: list[D]
+    _samples_distributions: list[Distribution]
 
     def __init__(
         self,
         name: str,
         samples_length: list[int],
-        samples_distributions: list[D],
+        samples_distributions: list[Distribution],
     ) -> None:
         """
         Creates new DatasetDescription instance.
@@ -51,7 +48,7 @@ class SampleDescription(Generic[D]):
         return self._samples_length
 
     @property
-    def distributions(self) -> list[D]:
+    def distributions(self) -> list[Distribution]:
         return self._samples_distributions
 
     def to_asciidoc(self, image_path: str | None = None) -> str:

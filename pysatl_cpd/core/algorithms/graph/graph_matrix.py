@@ -1,12 +1,12 @@
 from typing import Any
 
-from numpy import dtype, ndarray
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
 
 
 class GraphMatrix(IGraph):
-    def __init__(self, graph: ndarray[Any, dtype], num_of_edges: int):
+    def __init__(self, graph: npt.NDArray[Any], num_of_edges: int):
         """
         Initialize the GraphMatrix with the adjacency matrix and number of edges.
 
@@ -16,7 +16,7 @@ class GraphMatrix(IGraph):
         super().__init__(num_of_edges, len(graph))
         self.mtx = graph
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> Any:
         """
         Get the row of the adjacency matrix for a given node.
 

@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from math import sqrt
 
 import numpy as np
+import numpy.typing as npt
 
 from .graph import KNNGraph
 
@@ -22,8 +23,8 @@ class KNNClassifier:
 
     def __init__(
         self,
-        metric: tp.Callable[[float, float], float] | tp.Callable[[np.float64, np.float64], float],
-        k=7,
+        metric: tp.Callable[[float, float], float],
+        k: int = 7,
         delta: float = 1e-12,
     ) -> None:
         """
@@ -38,10 +39,10 @@ class KNNClassifier:
         self.__metric = metric
         self.__delta = delta
 
-        self.__window: list[float | np.float64] | None = None
+        self.__window: list[np.float64] | list[npt.NDArray[np.float64]] | None = None
         self.__knn_graph: KNNGraph | None = None
 
-    def classify(self, window: Iterable[float | np.float64]) -> None:
+    def classify(self, window: Iterable[np.float64] | Iterable[npt.NDArray[np.float64]]) -> None:
         """Applies classificator to the given sample.
 
         :param window: part of global data for finding change points.
@@ -56,6 +57,7 @@ class KNNClassifier:
 
         :param time: index of point in the given sample to calculate statistics relative to it.
         """
+        assert self.__window is not None
         window_size = len(self.__window)
 
         assert self.__knn_graph is not None, "Graph should not be None."
@@ -94,7 +96,7 @@ class KNNClassifier:
         variance = (expectation / k) * (h * (sum_1 + k - (2 * k**2 / (n - 1))) + (1 - h) * (sum_2 - k**2))
         deviation = sqrt(variance)
 
-        permutation: np.array = np.arange(window_size)
+        permutation = np.arange(window_size)
         random_variable_value = self.__calculate_random_variable(permutation, time, window_size)
 
         if deviation == 0:
@@ -107,7 +109,7 @@ class KNNClassifier:
 
         return statistics
 
-    def __calculate_random_variable(self, permutation: np.array, t: int, window_size: int) -> int:
+    def __calculate_random_variable(self, permutation: npt.NDArray[np.intp], t: int, window_size: int) -> int:
         """
         Calculates a random variable from a permutation and a fixed point.
 
@@ -117,10 +119,11 @@ class KNNClassifier:
         """
 
         def b(i: int, j: int) -> bool:
-            pi = permutation[i]
-            pj = permutation[j]
+            pi = int(permutation[i])
+            pj = int(permutation[j])
             return (pi <= t < pj) or (pj <= t < pi)
 
+        assert self.__knn_graph is not None
         s = sum(
             (self.__knn_graph.check_for_neighbourhood(i, j) + self.__knn_graph.check_for_neighbourhood(j, i)) * b(i, j)
             for i in range(window_size)

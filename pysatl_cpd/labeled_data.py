@@ -1,21 +1,22 @@
 import os
-from collections.abc import Iterator, MutableSequence
+from collections.abc import Iterator
 from pathlib import Path
 
-import numpy
+import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.generator.generator import DatasetGenerator, ScipyDatasetGenerator
 from pysatl_cpd.generator.saver import DatasetSaver
 
 
-class LabeledCPData:
+class LabeledCpdData:
     """Class for generating and storing labeled data,
     needed in pysatl_cpd"""
 
     def __init__(
         self,
-        raw_data: MutableSequence[float | numpy.float64 | numpy.ndarray],
-        change_points: MutableSequence[int],
+        raw_data: npt.NDArray[np.float64],
+        change_points: list[int],
     ) -> None:
         """LabeledCPData object constructor
 
@@ -25,7 +26,7 @@ class LabeledCPData:
         self.raw_data = raw_data
         self.change_points = change_points
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator[npt.NDArray[np.float64]]:
         """labeledCPData iterator"""
         return self.raw_data.__iter__()
 
@@ -33,7 +34,7 @@ class LabeledCPData:
         """Shows main info about LabeledCPData object"""
         return f"data={self.raw_data}, change_points={self.change_points}"
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.raw_data)
 
     @staticmethod
@@ -43,7 +44,7 @@ class LabeledCPData:
         to_save: bool = False,
         output_directory: Path = Path(),
         to_replace: bool = True,
-    ) -> dict[str, "LabeledCPData"]:
+    ) -> dict[str, "LabeledCpdData"]:
         """Method for generating labeled data, that contains CP with specific
         distribution
 
@@ -64,11 +65,11 @@ class LabeledCPData:
         labeled_data_dict = dict()
         for name in datasets:
             data, change_points = datasets[name]
-            labeled_data_dict[name] = LabeledCPData(data, change_points)
+            labeled_data_dict[name] = LabeledCpdData(data, change_points)
         return labeled_data_dict
 
     @staticmethod
-    def read_generated_datasets(datasets_directory: Path) -> dict[str, "LabeledCPData"]:
+    def read_generated_datasets(datasets_directory: Path) -> dict[str, "LabeledCpdData"]:
         """Read already generated datasets from directory
 
         :param datasets_directory: directory with datasets
@@ -83,11 +84,12 @@ class LabeledCPData:
                 raise ValueError(f"{datasets_directory} is not datasets directory")
             with open(dataset_files["sample.csv"]) as sample:
                 raw_data = sample.readlines()
+                data: list[npt.NDArray[np.float64]] | npt.NDArray[np.float64]
                 try:
-                    data = list(map(numpy.float64, raw_data))
+                    data = np.array(list(map(np.float64, raw_data)))
                 except ValueError:
-                    data = [numpy.array(list(map(numpy.float64, vals.split(",")))) for vals in raw_data]
+                    data = np.array([list(map(np.float64, vals.split(","))) for vals in raw_data])
             with open(dataset_files["changepoints.csv"]) as changepoints:
                 change_points = list(map(int, changepoints.readlines()))
-            datasets[dataset_directory.name] = LabeledCPData(data, change_points)
+            datasets[dataset_directory.name] = LabeledCpdData(data, change_points)
         return datasets

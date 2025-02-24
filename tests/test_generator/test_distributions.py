@@ -52,7 +52,6 @@ class TestDistributions:
         sample_len = 100
         with pytest.raises(error):
             d = dstr.Distribution.from_str(str(distribution), params)
-            assert isinstance(d, dstr.ScipyDistribution)
             assert len(d.scipy_sample(sample_len)) == sample_len
 
     @pytest.mark.parametrize(
@@ -72,5 +71,4 @@ class TestDistributions:
     def test_distribution_generate(self, distribution, params):
         sample_len = 100
         d = dstr.Distribution.from_str(str(distribution), params)
-        assert isinstance(d, dstr.ScipyDistribution)
         assert len(d.scipy_sample(sample_len)) == sample_len

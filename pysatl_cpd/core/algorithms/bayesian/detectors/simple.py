@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
 
@@ -26,7 +27,7 @@ class SimpleDetector(IDetector):
         self._threshold = threshold
         assert 0.0 <= self._threshold <= 1.0, "Threshold must be in [0.0, 1.0]"
 
-    def detect(self, growth_probs: np.ndarray) -> bool:
+    def detect(self, growth_probs: npt.NDArray[np.float64]) -> bool:
         """
         Detects a change point if the probability of the maximum run length drops below the threshold.
         :param growth_probs: growth probabilities for run lengths at the time.

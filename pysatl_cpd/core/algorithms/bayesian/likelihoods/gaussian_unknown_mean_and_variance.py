@@ -23,14 +23,14 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
     parameters.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes model. There are no known parameters at this moment.
         """
-        self.__mu_0 = None
-        self.__k_0 = None
-        self.__alpha_0 = None
-        self.__beta_0 = None
+        self.__mu_0: np.float64 | None = None
+        self.__k_0: int | None = None
+        self.__alpha_0: float | None = None
+        self.__beta_0: np.float64 | None = None
 
         self.__mu_params = np.array([])
         self.__k_params = np.array([])
@@ -51,6 +51,10 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
         self.__k_0 = sample_size
         self.__alpha_0 = sample_size / 2.0
 
+        assert self.__mu_0 is not None
+        assert self.__k_0 is not None
+        assert self.__alpha_0 is not None
+        assert self.__beta_0 is not None
         self.__mu_params = np.array([self.__mu_0])
         self.__k_params = np.array([self.__k_0])
         self.__alpha_params = np.array([self.__alpha_0])
@@ -61,6 +65,11 @@ class GaussianUnknownMeanAndVariance(ILikelihood):
         Updates 4 parameters arrays of normal-inverse gamma conjugate prior, calculating posterior parameters.
         :param observation: an observation from a sample.
         """
+        assert self.__mu_0 is not None
+        assert self.__k_0 is not None
+        assert self.__alpha_0 is not None
+        assert self.__beta_0 is not None
+
         mu_divider = self.__k_params + 1.0
         assert np.count_nonzero(mu_divider) == mu_divider.shape[0], "Mu dividers cannot be 0.0"
 

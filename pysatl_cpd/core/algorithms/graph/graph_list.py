@@ -1,10 +1,10 @@
-import numpy
+from typing import Any
 
 from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
 
 
 class GraphList(IGraph):
-    def __init__(self, graph, data: list[float | numpy.float64], num_of_edges: int):
+    def __init__(self, graph: dict[int, list[Any]], data: list[Any], num_of_edges: int) -> None:
         """
         Initialize the GraphList with the adjacency list, data, and number of edges.
 
@@ -16,7 +16,7 @@ class GraphList(IGraph):
         self.graph = graph
         self.data = data
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> Any:
         """
         Get the list of adjacent nodes for a given node.
 

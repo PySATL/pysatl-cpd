@@ -20,7 +20,7 @@ class GaussianLikelihood(ILikelihood):
     Likelihood for Gaussian (a.k.a. normal) distribution, parametrized by mean and standard deviation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the GaussianLikelihood, parametrized by mean and standard deviation (without any concrete values).
         """
@@ -84,13 +84,13 @@ class GaussianLikelihood(ILikelihood):
         """
         return stats.norm(self.__means, self.__standard_deviations).pdf(observation)
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Clears parameters of gaussian likelihood.
         :return:
         """
-        self.__means = []
-        self.__standard_deviations = []
+        self.__means = np.array([])
+        self.__standard_deviations = np.array([])
 
         self.__sample_sum = 0.0
         self.__squared_sample_sum = 0.0

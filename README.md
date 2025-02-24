@@ -47,20 +47,20 @@ poetry install
 ```python
 # import needed CPD algorithm from pysatl_cpd.core
 from pysatl_cpd.core.algorithms.graph_algorithm import GraphAlgorithm
-from pysatl_cpd.labeled_data import LabeledCPData
-from pysatl_cpd.core.scrubber_scenario import ScrubberScenario
+from pysatl_cpd.labeled_data import LabeledCpdData
+from pysatl_cpd.core.problem import CpdProblem
 
 # import shell
-from pysatl_cpd.shell import CPDProblem
+from pysatl_cpd.cpd_solver import CpdSolver
 
 # make a shell object
-shell = CPDProblem(ScrubberScenario(10, True), [1] * 100 + [50] * 100 + [100] * 100)
+shell = CpdSolver(CpdProblem(10, True), [1] * 100 + [50] * 100 + [100] * 100)
 
 # specify CPD algorithm with parametrs
 shell.cpd_algorithm = GraphAlgorithm(lambda a, b: abs(a - b) < 5, 3)
 
 # then run algorithm
-change_points = shell.run_cpd()
+change_points = shell.run()
 
 # print the results
 print(change_points)

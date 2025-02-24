@@ -9,6 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from abc import ABC, abstractmethod
 
 import numpy as np
+import numpy.typing as npt
 
 
 class Classifier(ABC):
@@ -25,7 +26,7 @@ class Classifier(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def predict(self, sample: list[list[float | np.float64]]) -> np.ndarray:
+    def predict(self, sample: list[list[float | np.float64]]) -> npt.NDArray[np.intp]:
         """Classifies the elements of a sample into one of two classes, based on training with the barrier.
 
         :param sample: sample to classify.

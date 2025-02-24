@@ -8,8 +8,6 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from dataclasses import dataclass, field
 
-import numpy as np
-
 
 @dataclass(order=True)
 class Observation:
@@ -18,7 +16,7 @@ class Observation:
     """
 
     time: int
-    value: float | np.float64 = field(compare=False)
+    value: float = field(compare=False)
 
 
 @dataclass(order=True)

@@ -44,7 +44,7 @@ class IGraphCPD(ABC):
         pass
 
     @abstractmethod
-    def find_changepoint(self, border: float) -> list:
+    def find_changepoint(self, border: float) -> list[int]:
         """
         Find change points in the data based on the Z statistic.
 
