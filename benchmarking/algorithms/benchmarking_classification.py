@@ -13,9 +13,9 @@ import numpy as np
 
 from benchmarking.algorithms.benchmarking_algorithm import BenchmarkingAlgorithm
 from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.iclassifier import Classifier
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.iquality_metric import QualityMetric
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.classification.abstracts.iclassifier import Classifier
+from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import QualityMetric
 
 
 class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):

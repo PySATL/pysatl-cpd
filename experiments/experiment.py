@@ -4,13 +4,13 @@ import datetime
 import yaml
 from shutil import rmtree
 
-from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
+from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import ThresholdOvercome
 from benchmarking.worker.optimal_threshold import OptimalThresholdWorker
 from benchmarking.worker.benchmarking import BenchmarkingWorker
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
 from benchmarking.algorithms.benchmarking_classification import BenchmarkingClassificationAlgorithm
-from benchmarking.report.benchmarking_report import BenchmarkingReport, Measures
+from benchmarking.report.benchmarking_report import BenchmarkingReport
 from benchmarking.generator.generator import DistributionGenerator, Distribution, DistributionType, DistributionComposition
 
 

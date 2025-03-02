@@ -17,8 +17,8 @@ from benchmarking.algorithms.benchmarking_classification import BenchmarkingClas
 from benchmarking.generator.generator import VerboseSafeDumper
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.worker.common.utils import Utils
-from CPDShell.labeled_data import LabeledCPData
-from CPDShell.shell import CPContainer, CPDProblem
+from pysatl_cpd.labeled_data import LabeledCPData
+from pysatl_cpd.shell import CPContainer, CPDProblem
 
 
 class StatisticsCalculation:

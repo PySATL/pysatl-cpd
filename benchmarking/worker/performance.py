@@ -13,8 +13,8 @@ from benchmarking.algorithms.benchmarking_classification import BenchmarkingClas
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.worker.common.statistics_calculation import StatisticsCalculation
 from benchmarking.worker.worker import Worker
-from CPDShell.labeled_data import LabeledCPData
-from CPDShell.shell import CPContainer, CPDProblem
+from pysatl_cpd.labeled_data import LabeledCPData
+from pysatl_cpd.shell import CPContainer, CPDProblem
 
 
 class PerformanceWorker(Worker):

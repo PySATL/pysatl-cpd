@@ -10,8 +10,8 @@ import os
 from collections.abc import MutableSequence
 from pathlib import Path
 
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
-from CPDShell.labeled_data import LabeledCPData
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.labeled_data import LabeledCPData
 
 
 class Utils:

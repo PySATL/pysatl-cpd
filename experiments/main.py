@@ -7,20 +7,10 @@ import yaml
 
 import numpy as np
 
-from CPDShell.Core.algorithms.classification_algorithm import ClassificationAlgorithm
-from CPDShell.Core.algorithms.ClassificationBasedCPD.classifiers.svm.svm_classifier import SVMClassifier
-from CPDShell.Core.algorithms.ClassificationBasedCPD.classifiers.rf.rf_classifier import RFClassifier
-from CPDShell.Core.algorithms.ClassificationBasedCPD.classifiers.decision_tree.decision_tree_classifier import DecisionTreeClassifier
-from CPDShell.Core.algorithms.ClassificationBasedCPD.classifiers.knn.knn_classifier import KNNClassifier
-from CPDShell.Core.algorithms.ClassificationBasedCPD.quality_metrics.classification.mcc import MCC
-from CPDShell.Core.algorithms.ClassificationBasedCPD.quality_metrics.classification.f1 import F1
-from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
-from benchmarking.algorithms.benchmarking_classification import BenchmarkingClassificationAlgorithm
+from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import ThresholdOvercome
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.report.benchmarking_report import BenchmarkingReport
-from benchmarking.report.benchmarking_report import Measures
-from benchmarking.generator.generator import DistributionGenerator
 from experiments.experiment import Experiment
 
 

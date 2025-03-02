@@ -15,8 +15,8 @@ from random import randint
 
 import yaml
 
-from CPDShell.generator.generator import ScipyDatasetGenerator
-from CPDShell.generator.saver import DatasetSaver
+from pysatl_cpd.generator.generator import ScipyDatasetGenerator
+from pysatl_cpd.generator.saver import DatasetSaver
 
 
 class DistributionType(Enum):

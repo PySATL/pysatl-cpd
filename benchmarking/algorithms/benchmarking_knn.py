@@ -14,8 +14,8 @@ import numpy as np
 
 from benchmarking.algorithms.benchmarking_algorithm import BenchmarkingAlgorithm
 from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
-from CPDShell.Core.algorithms.KNNCPD.knn_classifier import KNNClassifier
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.knn.classifier import KNNClassifier
 
 
 class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
