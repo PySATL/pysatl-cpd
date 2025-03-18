@@ -33,7 +33,7 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__hazard = hazard
         self.__likelihood = likelihood
         self.__localizer = localizer
-        self.__window_size = learning_sample_size
+        self.__learning_sample_size = learning_sample_size
 
         self.__training_data: list[np.float64] = []
         self.__data_history: list[np.float64] = []
@@ -60,9 +60,14 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__was_change_point = False
         self.__change_point = None
 
-    def __train(self, value: np.float64) -> None:
+    def __learn(self, value: np.float64) -> None:
+        """
+        Performs a learning step for a prediction model until the given learning sample size is achieved.
+        :param value: new value of a time series.
+        :return:
+        """
         self.__training_data.append(value)
-        if len(self.__training_data) == self.__window_size:
+        if len(self.__training_data) == self.__learning_sample_size:
             self.__likelihood.clear()
             self.__detector.clear()
 
@@ -70,7 +75,12 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
             self.__is_training = False
             self.__run_length_probs = np.array([1.0])
 
-    def __bayesian_update(self, value: np.float64):
+    def __bayesian_update(self, value: np.float64) -> None:
+        """
+        Performs a bayesian update of the algorithm's state.
+        :param value: new value of a time series.
+        :return:
+        """
         predictive_prob = self.__likelihood.predict(value)
         current_run_lengths = np.arange(len(self.__run_length_probs))
         hazards = self.__hazard.hazard(current_run_lengths)
@@ -82,6 +92,11 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__likelihood.update(value)
 
     def __handle_localization(self) -> None:
+        """
+        Handles localization of the change point. It includes acquiring location, updating stored data and state of the
+        algorithm, training it if possible and building corresponding run length distribution.
+        :return:
+        """
         run_length = self.__localizer.localize(self.__run_length_probs)
         change_point_location = self.__current_time - run_length
         self.__training_data = self.__data_history[-run_length:]
@@ -92,21 +107,25 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__detector.clear()
         self.__is_training = True
 
-        if len(self.__training_data) >= self.__window_size:
-            self.__training_data = self.__training_data[: self.__window_size]
-            self.__likelihood.learn(self.__training_data)
-            self.__is_training = False
-            self.__run_length_probs = np.array([1.0])
+        if len(self.__training_data) >= self.__learning_sample_size:
+            self.__training_data = self.__training_data[: self.__learning_sample_size]
+            for value in self.__training_data:
+                self.__learn(value)
 
-            for value in self.__data_history[self.__window_size + 1 :]:
+            for value in self.__data_history[self.__learning_sample_size :]:
                 self.__bayesian_update(value)
 
     def __handle_detection(self) -> None:
+        """
+        Handles detection of the change point. It includes updating stored data and state of the algorithm.
+        :return:
+        """
         self.__data_history = self.__data_history[-1:]
         self.__training_data = self.__data_history[:]
         self.__likelihood.clear()
         self.__detector.clear()
         self.__is_training = True
+        self.__learn(self.__training_data[-1])
 
     def __process_point(self, value: np.float64, with_localization: bool) -> None:
         """
@@ -119,7 +138,7 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__current_time += 1
 
         if self.__is_training:
-            self.__train(value)
+            self.__learn(value)
         else:
             self.__bayesian_update(value)
             detected = self.__detector.detect(self.__run_length_probs)
