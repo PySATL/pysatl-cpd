@@ -6,8 +6,6 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2025 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from typing import List
-
 import numpy as np
 import numpy.typing as npt
 
@@ -24,12 +22,12 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
     """
 
     def __init__(
-            self,
-            hazard: IHazard,
-            likelihood: ILikelihood,
-            learning_sample_size: int,
-            detector: IDetector,
-            localizer: ILocalizer,
+        self,
+        hazard: IHazard,
+        likelihood: ILikelihood,
+        learning_sample_size: int,
+        detector: IDetector,
+        localizer: ILocalizer,
     ) -> None:
         self.detector = detector
         self.hazard = hazard
@@ -37,8 +35,8 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.localizer = localizer
         self.window_size = learning_sample_size
 
-        self.training_data: List[np.float64] = []
-        self.data_history: List[np.float64] = []
+        self.training_data: list[np.float64] = []
+        self.data_history: list[np.float64] = []
         self.current_time = 0
 
         self.is_training: bool = True
@@ -95,12 +93,12 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.is_training = True
 
         if len(self.training_data) >= self.window_size:
-            self.training_data = self.training_data[:self.window_size]
+            self.training_data = self.training_data[: self.window_size]
             self.likelihood.learn(self.training_data)
             self.is_training = False
             self.run_length_probs = np.array([1.0])
 
-            for value in self.data_history[self.window_size + 1:]:
+            for value in self.data_history[self.window_size + 1 :]:
                 self.__bayesian_update(value)
 
     def __handle_detection(self) -> None:

@@ -16,6 +16,7 @@ class OnlineCpdAlgorithm(Protocol):
     """
     Class for online change point detection algorithm's interface.
     """
+
     def detect(self, value: np.float64 | npt.NDArray[np.float64]) -> bool:
         """
         Method for detection of a change point.

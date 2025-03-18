@@ -74,7 +74,7 @@ def test_consecutive_detection(outer_bayesian_algorithm, generate_data, data_par
 
 
 def test_correctness_of_consecutive_detection(
-        outer_bayesian_algorithm, inner_algorithm_factory, generate_data, data_params
+    outer_bayesian_algorithm, inner_algorithm_factory, generate_data, data_params
 ):
     for _ in range(data_params["num_of_tests"]):
         data = generate_data()
@@ -103,9 +103,9 @@ def test_consecutive_localization(outer_bayesian_algorithm, generate_data, data_
             was_change_point = True
 
             assert (
-                    data_params["change_point"] - data_params["tolerable_deviation"]
-                    <= result
-                    <= data_params["change_point"] + data_params["tolerable_deviation"]
+                data_params["change_point"] - data_params["tolerable_deviation"]
+                <= result
+                <= data_params["change_point"] + data_params["tolerable_deviation"]
             ), "Incorrect change point localization"
 
         outer_bayesian_algorithm.clear()
@@ -113,7 +113,7 @@ def test_consecutive_localization(outer_bayesian_algorithm, generate_data, data_
 
 
 def test_correctness_of_consecutive_localization(
-        outer_bayesian_algorithm, inner_algorithm_factory, generate_data, data_params
+    outer_bayesian_algorithm, inner_algorithm_factory, generate_data, data_params
 ):
     for _ in range(data_params["num_of_tests"]):
         data = generate_data()
@@ -126,9 +126,8 @@ def test_correctness_of_consecutive_localization(
 
         outer_bayesian_algorithm.clear()
 
-def test_online_detection_correctness(
-        inner_algorithm_factory, generate_data, data_params
-):
+
+def test_online_detection_correctness(inner_algorithm_factory, generate_data, data_params):
     for _ in range(data_params["num_of_tests"]):
         algorithm = inner_algorithm_factory()
         data = generate_data()
@@ -137,9 +136,8 @@ def test_online_detection_correctness(
             if result:
                 assert data_params["change_point"] <= time[0], "Change point cannot be detected beforehand"
 
-def test_online_localization_correctness(
-        inner_algorithm_factory, generate_data, data_params
-):
+
+def test_online_localization_correctness(inner_algorithm_factory, generate_data, data_params):
     for _ in range(data_params["num_of_tests"]):
         algorithm = inner_algorithm_factory()
         data = generate_data()
