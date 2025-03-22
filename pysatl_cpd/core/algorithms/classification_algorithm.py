@@ -100,13 +100,23 @@ class ClassificationAlgorithm(Algorithm):
         self.__change_points_count = len(change_points)
 
     # Splits the given sample into train and test samples.
-    # Strategy: even elements goes to the train sample; odd --- to the test sample
+    # Strategy: even elements goes to the train sample; odd goes to the test sample
     # Soon classification algorithm will be more generalized: the split strategy will be one of the parameters.
     @staticmethod
     def __split_sample(
         sample: npt.NDArray[np.float64],
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        train_sample = sample[::2]
-        test_sample = sample[1::2]
+        train_sample = []
+        test_sample = []
 
-        return train_sample, test_sample
+        # Univariate distribution case. We need to make 2-dimensional array manually.
+        if np.ndim(sample) == 1:
+            sample = map(lambda x: [x], sample)
+
+        for i, x in enumerate(sample):
+            if i % 2 == 0:
+                train_sample.append(x)
+            else:
+                test_sample.append(x)
+
+        return np.array(train_sample), np.array(test_sample)

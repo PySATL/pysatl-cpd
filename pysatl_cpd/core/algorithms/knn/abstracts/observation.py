@@ -7,6 +7,8 @@ __copyright__ = "Copyright (c) 2024 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from dataclasses import dataclass, field
+import numpy.typing as npt
+import numpy as np
 
 
 @dataclass(order=True)
@@ -16,7 +18,7 @@ class Observation:
     """
 
     time: int
-    value: float = field(compare=False)
+    value: np.float64 | npt.NDArray[np.float64] = field(compare=False)
 
 
 @dataclass(order=True)

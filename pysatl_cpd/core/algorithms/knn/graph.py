@@ -24,7 +24,7 @@ class KNNGraph:
     def __init__(
         self,
         window: npt.NDArray[np.float64],
-        metric: tp.Callable[[float, float], float],
+        metric: tp.Callable[[np.float64 | npt.NDArray[np.float64], np.float64 | npt.NDArray[np.float64]], float],
         k: int = 7,
         delta: float = 1e-12,
     ) -> None:
@@ -37,7 +37,7 @@ class KNNGraph:
         Default is 7, which is generally the most optimal value (based on the experiments results).
         :param delta: delta for comparing float values of the given observations.
         """
-        self.__window: list[Observation] = [Observation(t, float(v)) for t, v in enumerate(window)]
+        self.__window: list[Observation] = [Observation(t, v) for t, v in enumerate(window)]
         self.__metric: tp.Callable[[Observation, Observation], float] = lambda obs1, obs2: metric(
             obs1.value, obs2.value
         )

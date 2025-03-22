@@ -43,7 +43,9 @@ class LinearScrubber(Scrubber):
         next_slice = np.array(list(islice(provided_data_it, self._window_length)))
         window_data: npt.NDArray[np.float64] = np.array([])
         while next_slice.size > 0:
-            window_data = np.concat((np.delete(window_data, np.s_[:shift], 0), next_slice), axis=0)
+            # print(np.delete(window_data, np.s_[:shift], 0))
+            # print(next_slice)
+            window_data = np.concat((np.delete(window_data, np.s_[:shift], 0), next_slice), axis=0) if len(window_data) > 0 else next_slice
             window_end = window_start + min(self._window_length, len(window_data))
             yield ScrubberWindow(window_data, list(range(window_start, window_end)))
             window_start += shift

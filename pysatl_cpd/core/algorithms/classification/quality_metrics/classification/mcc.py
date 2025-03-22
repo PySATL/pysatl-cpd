@@ -40,6 +40,9 @@ class MCC(QualityMetric):
         pp = true_positive + false_positive
         pn = false_negative + true_negative
 
+        if pp == 0 or pn == 0:
+            return -1.0
+
         tpr = true_positive / positive
         tnr = true_negative / negative
         ppv = true_positive / pp
