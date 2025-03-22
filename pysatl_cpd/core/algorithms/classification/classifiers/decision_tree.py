@@ -32,7 +32,7 @@ class DecisionTreeClassifier(Classifier):
         :param sample: sample for training classifier.
         :param barrier: index of observation that splits the given sample.
         """
-        classes = [0 if i <= barrier else 1 for i in range(len(sample))]
+        classes = np.array([0 if i <= barrier else 1 for i in range(len(sample))])
         self.__model = sk.DecisionTreeClassifier()
         self.__model.fit(sample, classes)
 

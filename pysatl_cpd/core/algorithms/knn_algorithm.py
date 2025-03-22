@@ -23,7 +23,7 @@ class KNNAlgorithm(Algorithm):
 
     def __init__(
         self,
-        distance_func: tp.Callable[[float, float], float],
+        distance_func: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
         test_statistic: TestStatistic,
         indent_coeff: float,
         k: int = 7,
@@ -80,8 +80,7 @@ class KNNAlgorithm(Algorithm):
 
         :param window: part of global data for change points analysis.
         """
-        sample = list(window)
-        sample_size = len(sample)
+        sample_size = len(window)
         if sample_size == 0:
             return
 
