@@ -7,8 +7,9 @@ __copyright__ = "Copyright (c) 2024 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from dataclasses import dataclass, field
-import numpy.typing as npt
+
 import numpy as np
+import numpy.typing as npt
 
 
 @dataclass(order=True)
