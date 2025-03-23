@@ -111,7 +111,7 @@ class ClassificationAlgorithm(Algorithm):
 
         # Univariate distribution case. We need to make 2-dimensional array manually.
         if np.ndim(sample) == 1:
-            sample = map(lambda x: [x], sample)
+            sample = np.reshape(sample, (-1, 1))
 
         for i, x in enumerate(sample):
             if i % 2 == 0:
