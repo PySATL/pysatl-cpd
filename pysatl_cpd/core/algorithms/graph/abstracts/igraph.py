@@ -31,3 +31,12 @@ class IGraph(ABC):
         :return: Sum of the squares of the degrees of the nodes.
         """
         pass
+
+    def sum_triangle(self):
+        pass
+
+    def node_triangle_frequencies(self):
+        pass
+
+    def most_and_least_frequent_nodes(self):
+        pass
