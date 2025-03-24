@@ -86,3 +86,28 @@
       length: 20
       parameters:
         mean: '["10", "10"]'
+
+- name: 30-normal-0-1-normal-5-5
+  distributions:
+    - type: normal
+      length: 30
+      parameters:
+        mean: 0
+        variance: 1
+    - type: normal
+      length: 30
+      parameters:
+        mean: 5
+        variance: 5
+- name: 30-normal-5-5-beta-1-1
+  distributions:
+    - type: normal
+      length: 30
+      parameters:
+        mean: 5
+        variance: 5
+    - type: beta
+      length: 20
+      parameters:
+        alpha: 1
+        beta: 1
