@@ -49,7 +49,7 @@ class DensityBasedAlgorithm(Algorithm):
         test_density = self._kernel_density_estimation(test_value, bandwidth)
         reference_density = self._kernel_density_estimation(reference_value, bandwidth)
 
-        def objective_function_wrapper(alpha: npt.NDArray[np.float64]) -> float:
+        def objective_function_wrapper(alpha: npt.NDArray[np.float64], /) -> float:
             """Wrapper for the objective function to calculate the density ratio.
 
             :param alpha: relative parameter that controls the weighting between the numerator distribution
