@@ -58,7 +58,7 @@ from pysatl_cpd.cpd_solver import CpdSolver
 
 # specify data scrubber
 scrubber = LinearScrubber(ListUnivariateProvider([1] * 100 + [50] * 100 + [100] * 100))
-# specify CPD algorithm with parametrs
+# specify CPD algorithm with parameters
 algorithm = GraphAlgorithm(lambda a, b: abs(a - b) < 5, 3)
 # make a solver object
 solver = CpdSolver(CpdProblem(True), algorithm, scrubber)

@@ -105,11 +105,11 @@ class TestCpdLocalizationResults:
         assert self.cont_default1.result_diff == [1, 4]
         assert self.cont_default2.result_diff == [1, 4, 8]
 
-    def test_result_diff_exeception_case(self) -> None:
+    def test_result_diff_exception_case(self) -> None:
         with pytest.raises(ValueError):
             print(self.cont_no_expected.result_diff)
 
-    def test_str_cpcontainer(self) -> None:
+    def test_str_cp_container(self) -> None:
         assert (
             str(self.cont_default1)
             == """Located change points: (1;2;3)
@@ -145,6 +145,6 @@ Computation time (sec): 5"""
             data.visualize(False, Path(tempdir), name)
             assert [f"{name}.png"] in [file_names for (_, _, file_names) in walk(tempdir)]
 
-    def test_mertic_exception_case(self):
+    def test_metric_exception_case(self):
         with pytest.raises(ValueError):
             self.cont_no_expected.count_confusion_matrix()
