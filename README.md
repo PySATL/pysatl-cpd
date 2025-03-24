@@ -1,4 +1,4 @@
-# PySATL-CPD-Module
+# PySATL-CPD
 
 [status-shield]: https://img.shields.io/github/actions/workflow/status/PySATL/pysatl-cpd/.github/workflows/check.yaml?branch=main&event=push&style=for-the-badge
 [status-url]: https://github.com/PySATL/pysatl-cpd/blob/main/.github/workflows/check.yaml
@@ -8,7 +8,7 @@
 [![Checks][status-shield]][status-url]
 [![MIT License][license-shield]][license-url]
 
-**Change point detection module** (*abbreviated CPD module*) is a module, designed for detecting anomalies in time series data, which refer to significant deviations from expected patterns or trends. Anomalies can indicate unusual events or changes in a system, making them crucial for monitoring and analysis in various fields such as finance, healthcare, and network security.
+**Change point detection** module (*abbreviated CPD module*) is a module, designed for detecting anomalies in time series data, which refer to significant deviations from expected patterns or trends. Anomalies can indicate unusual events or changes in a system, making them crucial for monitoring and analysis in various fields such as finance, healthcare, and network security.
 
 At the moment, the module implements the following CPD algorithms:
 * Bayesian algorithm
@@ -28,9 +28,7 @@ At the moment, the module implements the following CPD algorithms:
 ## Requirements
 
 - Python 3.10+
-- numpy 2.0.0+
-- scipy 1.14.0+
-- matplotlib 3.9.1+
+- Poetry 1.8.0+
 
 ## Installation
 
