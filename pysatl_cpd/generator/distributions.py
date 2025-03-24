@@ -1,3 +1,11 @@
+"""
+Module contains classes for generation samples with fixed distribution.
+"""
+
+__author__ = "Artem Romanyuk, Temerlan Akhmetov, Vladimir Kutuev"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import ast
 from enum import Enum
 from typing import Final, Protocol
@@ -48,7 +56,7 @@ class Distribution(Protocol):
 
         :return: Generated sample.
         """
-        raise NotImplementedError()
+        ...
 
     @classmethod
     def from_params(cls, params: dict[str, str]) -> "Distribution": ...

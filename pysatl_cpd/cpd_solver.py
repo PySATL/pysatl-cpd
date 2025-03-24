@@ -1,3 +1,11 @@
+"""
+Module contains classes for solving change point detection problem and representation its results.
+"""
+
+__author__ = "Aleksei Ivanov, Artem Romanyuk, Vladimir Kutuev"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import time
 from collections.abc import Iterator
 from pathlib import Path
@@ -109,12 +117,12 @@ class CpdLocalizationResults:
             raise ValueError("this object is not provided with expected result, recall cannot be calculated")
         return CpdResultsAnalyzer.count_recall(self.result, self.expected_result, window)
 
-    def visualize(self, to_show: bool = True, output_directory: Path | None = None, name: str = "Graph") -> None:
+    def visualize(self, to_show: bool = True, output_directory: Path | None = None, name: str = "plot") -> None:
         """method for building and analyzing graph
 
         :param to_show: is it necessary to show a graph
         :param output_directory: If necessary, the path to the directory to save the graph
-        :param name: If necessary, graph name for saving
+        :param name: A name for the output image with plot
         """
 
         data: npt.NDArray[np.float64] = np.array(list(self.data))

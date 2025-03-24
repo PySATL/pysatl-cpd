@@ -1,3 +1,11 @@
+"""
+Module contains wrapper for generated or labeled dataset.
+"""
+
+__author__ = "Artem Romanyuk, Vladimir Kutuev"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import os
 from collections.abc import Iterator
 from pathlib import Path

@@ -21,7 +21,7 @@ class IGraph(ABC):
         :param thao: Index dividing the nodes into two sets.
         :return: Number of edges existing between the two sets of nodes.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def sum_of_squares_of_degrees_of_nodes(self) -> int:
@@ -30,4 +30,4 @@ class IGraph(ABC):
 
         :return: Sum of the squares of the degrees of the nodes.
         """
-        pass
+        raise NotImplementedError

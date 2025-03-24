@@ -21,7 +21,7 @@ class IGraphCPD(ABC):
         :param thao: Index dividing the nodes into two sets.
         :return: Calculated expectation value.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def calculation_var(self, thao: int) -> float:
@@ -31,7 +31,7 @@ class IGraphCPD(ABC):
         :param thao: Index dividing the nodes into two sets.
         :return: Calculated variance value.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def calculation_z(self, thao: int) -> float:
@@ -41,7 +41,7 @@ class IGraphCPD(ABC):
         :param thao: Index dividing the nodes into two sets.
         :return: Calculated Z statistic.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def find_changepoint(self, border: float) -> list[int]:
@@ -51,4 +51,4 @@ class IGraphCPD(ABC):
         :param border: Threshold value for detecting change points.
         :return: List of detected change points.
         """
-        pass
+        raise NotImplementedError

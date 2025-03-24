@@ -30,4 +30,4 @@ class IBuilder(ABC):
 
         :return: An instance of IGraph representing the built graph.
         """
-        pass
+        raise NotImplementedError

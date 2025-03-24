@@ -1,4 +1,4 @@
-__author__ = "Romanyuk Artem, Vladimir Kutuev"
+__author__ = "Artem Romanyuk, Vladimir Kutuev"
 __copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
