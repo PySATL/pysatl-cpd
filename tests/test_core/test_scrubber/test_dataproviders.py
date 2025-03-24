@@ -14,10 +14,3 @@ class TestDataProviders:
         provided_data = list(provider.__iter__())
         assert len(data) == len(provided_data)
         assert all(map(lambda t: t[0] == t[1], zip(data, provided_data)))
-
-    # @given(strategies.lists(strategies.lists(strategies.floats(allow_nan=False)), min_size=0, max_size=100))
-    # def test_list_multivariate(self, data: list[list[float]]):
-    #     provider = ListMultivariateProvider(data)
-    #     provided_data = list(provider.get_data_iterator())
-    #     assert len(data) == len(provided_data)
-    #     assert all(map(lambda t: np.array_equal(t[0], t[1]), zip(data, provided_data)))
