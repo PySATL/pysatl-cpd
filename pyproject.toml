@@ -36,6 +36,7 @@ hypothesis = "^6.122.1"
 scipy-stubs = "^1.15.2"
 types-pyyaml = "^6.0.12"
 microsoft-python-type-stubs = {git = "https://github.com/microsoft/python-type-stubs.git"}
+pytest-cov = "^6.0.0"
 
 
 [tool.ruff]
