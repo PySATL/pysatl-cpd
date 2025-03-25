@@ -144,7 +144,7 @@ class TestKnnCpd:
     @pytest.fixture(scope="function")
     def knn_cpd_multivariate(self):
         def metric(obs1: npt.NDArray[np.float64], obs2: npt.NDArray[np.float64]) -> float:
-            return np.linalg.norm(obs1 - obs2)
+            return float(np.linalg.norm(obs1 - obs2))
 
         return KNNAlgorithm(distance_func=metric,
                         test_statistic=ThresholdOvercome(CM_THRESHOLD),
