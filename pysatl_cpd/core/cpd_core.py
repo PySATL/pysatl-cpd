@@ -22,7 +22,6 @@ class CpdCore:
         :param algorithm: change point detection algorithm
         :return: list of found change points
         """
-        # self.data_controller = DataController(data, scrubber_data_size)
         self.scrubber = scrubber
         self.algorithm = algorithm
 

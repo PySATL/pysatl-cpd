@@ -1,10 +1,12 @@
-from typing import Any
+from typing import Any, TypeAlias
 
 from pysatl_cpd.core.algorithms.graph.abstracts.igraph import IGraph
 
+_TAdjList: TypeAlias = dict[int, list[Any]]
+
 
 class GraphList(IGraph):
-    def __init__(self, graph: dict[int, list[Any]], data: list[Any], num_of_edges: int) -> None:
+    def __init__(self, graph: _TAdjList, data: list[Any], num_of_edges: int) -> None:
         """
         Initialize the GraphList with the adjacency list, data, and number of edges.
 

@@ -9,6 +9,7 @@ from scipy.optimize import minimize
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 
 _TObjFunc: TypeAlias = Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], float]
+_TMetrics: TypeAlias = dict[str, int | float]
 
 
 class DensityBasedAlgorithm(Algorithm):
@@ -85,9 +86,7 @@ class DensityBasedAlgorithm(Algorithm):
         raise NotImplementedError
 
     @staticmethod
-    def evaluate_detection_accuracy(
-        true_change_points: list[int], detected_change_points: list[int]
-    ) -> dict[str, int | float]:
+    def evaluate_detection_accuracy(true_change_points: list[int], detected_change_points: list[int]) -> _TMetrics:
         """Evaluate the accuracy of change point detection.
 
         :param true_change_points: list of true change point indices.
