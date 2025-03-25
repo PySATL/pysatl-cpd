@@ -1,6 +1,6 @@
 # PySATL-CPD
 
-[status-shield]: https://img.shields.io/github/actions/workflow/status/PySATL/pysatl-cpd/.github/workflows/check.yaml?branch=main&event=push&style=for-the-badge
+[status-shield]: https://img.shields.io/github/actions/workflow/status/PySATL/pysatl-cpd/.github/workflows/check.yaml?branch=main&event=push&style=for-the-badge&label=Checks
 [status-url]: https://github.com/PySATL/pysatl-cpd/blob/main/.github/workflows/check.yaml
 [license-shield]: https://img.shields.io/github/license/PySATL/pysatl-cpd.svg?style=for-the-badge&color=blue
 [license-url]: LICENSE
