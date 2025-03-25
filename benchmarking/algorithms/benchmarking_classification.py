@@ -48,7 +48,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__metaparameters_info = {
             "type": classifier.__class__.__name__,
             "quality_metric": quality_metric.__class__.__name__,
-            "indent_coeff": indent_coeff,
+            "indent_coeff": str(indent_coeff),
         }
         self.__benchmarking_info: AlgorithmBenchmarkingInfo = []
 
@@ -57,7 +57,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         return self.__test_statistic
 
     @test_statistic.setter
-    def test_statistic(self, test_statistic) -> None:
+    def test_statistic(self, test_statistic: TestStatistic) -> None:
         self.__test_statistic = test_statistic
 
     def get_benchmarking_info(self) -> AlgorithmBenchmarkingInfo:
@@ -65,7 +65,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info = []
         return current_benchmarking_info
 
-    def get_metaparameters(self) -> dict:
+    def get_metaparameters(self) -> dict[str, str]:
         return self.__metaparameters_info
 
     def detect(self, window: npt.NDArray[np.float64]) -> int:

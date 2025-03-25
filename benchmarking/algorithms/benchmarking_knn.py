@@ -25,10 +25,10 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
 
     def __init__(
         self,
-        distance_func: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
+        distance_func: tp.Callable[[np.float64 | npt.NDArray[np.float64], np.float64 | npt.NDArray[np.float64]], float],
         test_statistic: TestStatistic,
         indent_coeff: float,
-        k=7,
+        k: int = 7,
         delta: float = 1e-12,
     ) -> None:
         """
@@ -50,7 +50,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__change_points: list[int] = []
         self.__change_points_count = 0
 
-        self.__metaparameters_info = {"type": "knn", "k": k, "indent_coeff": indent_coeff}
+        self.__metaparameters_info = {"type": "knn", "k": str(k), "indent_coeff": str(indent_coeff)}
         self.__benchmarking_info: AlgorithmBenchmarkingInfo = []
 
     @property
@@ -58,7 +58,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         return self.__test_statistic
 
     @test_statistic.setter
-    def test_statistic(self, test_statistic) -> None:
+    def test_statistic(self, test_statistic: TestStatistic) -> None:
         self.__test_statistic = test_statistic
 
     def get_benchmarking_info(self) -> AlgorithmBenchmarkingInfo:
@@ -66,7 +66,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info = []
         return current_benchmarking_info
 
-    def get_metaparameters(self) -> dict:
+    def get_metaparameters(self) -> dict[str, str]:
         return self.__metaparameters_info
 
     def detect(self, window: npt.NDArray[np.float64]) -> int:

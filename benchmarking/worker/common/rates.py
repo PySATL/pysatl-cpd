@@ -7,7 +7,7 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from benchmarking.worker.common.utils import Utils
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
 
 
 class Rates:
@@ -18,7 +18,7 @@ class Rates:
         test_statistic: TestStatistic,
         window_size: int,
         interval_length: int,
-    ):
+    ) -> float:
         if change_point_i < 0:
             return 0
 
@@ -38,7 +38,7 @@ class Rates:
         test_statistic: TestStatistic,
         window_size: int,
         interval_length: int,
-    ):
+    ) -> float:
         return 1 - Rates.false_negative_rate(change_point_i, statistics, test_statistic, window_size, interval_length)
 
     @staticmethod
@@ -48,7 +48,7 @@ class Rates:
         test_statistic: TestStatistic,
         window_size: int,
         interval_length: int,
-    ):
+    ) -> float:
         data_length = len(statistics)
         change_points = Utils.get_change_points(statistics, test_statistic, window_size)
         overall_count = data_length // (2 * interval_length)
@@ -83,7 +83,7 @@ class Rates:
         test_statistic: TestStatistic,
         window_size: int,
         interval_length: int,
-    ):
+    ) -> float:
         return 1 - Rates.false_positive_rate(
             change_point_i, statistics, test_statistic, window_size, interval_length
         )

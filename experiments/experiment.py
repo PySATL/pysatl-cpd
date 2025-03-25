@@ -22,7 +22,8 @@ class Experiment():
     def __init__(
         self,
         cpd_algorithm: BenchmarkingKNNAlgorithm | BenchmarkingClassificationAlgorithm,
-        scrubber: BenchmarkingLinearScrubber,
+        window_length: int,
+        shift_factor: float,
         logger: logging.Logger
     ) -> None:
         """
@@ -31,7 +32,8 @@ class Experiment():
         :param dataset_path: path to directory where statistics should be saved.
         """
         self.__cpd_algorithm = cpd_algorithm
-        self.__scrubber = scrubber
+        self.__window_length = window_length
+        self.__shift_factor = shift_factor
         self.__logger = logger
 
     def run_pipeline(self,
@@ -65,7 +67,14 @@ class Experiment():
 
             # Calculate threshold on the dataset without change points and according to the given significance level.
             # sample_length = sum(distr.length for distr in distr_comp)
-            threshold_calculation = OptimalThresholdWorker(self.__cpd_algorithm, self.__scrubber, optimal_values_storage_path, significance_level, delta, WITHOUT_CP_SAMPLE_LENGTH, interval_length, self.__logger)
+            threshold_calculation = OptimalThresholdWorker(
+                self.__cpd_algorithm,
+                optimal_values_storage_path,
+                self.__window_length,
+                self.__shift_factor,
+                significance_level,
+                delta
+            )
             threshold_calculation.run(without_cp_path, results_path)
             threshold = threshold_calculation.threshold
 
@@ -77,7 +86,7 @@ class Experiment():
             # Run benchmark with calculated threshold.
             self.__cpd_algorithm.test_statistic = ThresholdOvercome(threshold)
             distr_path = dataset_path / Path(f"{i}-" + "-".join(map(lambda d: d.type.name, distr_comp)))
-            cpd = BenchmarkingWorker(self.__cpd_algorithm, self.__scrubber, expected_change_points)
+            cpd = BenchmarkingWorker(self.__cpd_algorithm, self.__window_length, self.__shift_factor, expected_change_points)
             cpd.run(distr_path, results_path)
 
             report = BenchmarkingReport(results_path, expected_change_points, threshold, interval_length)
@@ -89,20 +98,29 @@ class Experiment():
             print(evaluatedMetrics)
 
     def run_optimization(self, dataset_path: Path | None, storage_path: Path, optimal_values_storage_path: Path, significance_level: float, delta: float, interval_length: int) -> None:
-        threshold_calculation = OptimalThresholdWorker(self.__cpd_algorithm, self.__scrubber, optimal_values_storage_path, significance_level, delta, WITHOUT_CP_SAMPLE_LENGTH, interval_length, self.__logger)
+        threshold_calculation = OptimalThresholdWorker(
+            self.__cpd_algorithm,
+            optimal_values_storage_path,
+            self.__window_length,
+            self.__shift_factor,
+            significance_level,
+            delta
+        )
         threshold_calculation.run(dataset_path, storage_path) 
 
     def run_benchmark(self, dataset_path: Path, optimal_values_storage_path: Path, storage_path: Path, expected_change_points: list[int], interval_length: int) -> None:
         # dataset_path: .../n-distr-distr/
         alg_metaparams = self.__cpd_algorithm.get_metaparameters()
-        scrubber_metaparams = self.__scrubber.get_metaparameters()
+        scrubber_metaparams = {"type": "linear",
+                               "window_length": str(self.__window_length),
+                               "shift_factor": str(self.__shift_factor)}
 
         with open(dataset_path / "config.yaml") as stream:
             # Gets distribution.
             distr_config = yaml.safe_load(stream)[0]["distributions"][0]
 
         with open(optimal_values_storage_path) as stream:
-            optimal_values: list = yaml.safe_load(stream)
+            optimal_values = yaml.safe_load(stream)
 
         threshold: float | None = None
         for v_conf in optimal_values:
@@ -115,7 +133,7 @@ class Experiment():
         if threshold is not None:
             self.__cpd_algorithm.test_statistic = ThresholdOvercome(threshold)
 
-        cpd = BenchmarkingWorker(self.__cpd_algorithm, self.__scrubber, expected_change_points)
+        cpd = BenchmarkingWorker(self.__cpd_algorithm, self.__window_length, self.__shift_factor, expected_change_points)
         cpd.run(dataset_path, storage_path)
 
     @staticmethod
@@ -128,7 +146,7 @@ class Experiment():
         Path(storage_path).mkdir(parents=True, exist_ok=True)
 
         with open(config_path) as stream:
-            loaded_config: list[dict] = yaml.safe_load(stream)
+            loaded_config = yaml.safe_load(stream)
 
         for distr_comp_config in loaded_config:
             distr_comp: DistributionComposition = [

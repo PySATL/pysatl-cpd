@@ -9,8 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from pathlib import Path
 
 from benchmarking.worker.common.utils import Utils
-from benchmarking.worker.common.rates import Rates
-from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
+from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import ThresholdOvercome
 
 
 class ThresholdCalculation:

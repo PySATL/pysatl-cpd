@@ -7,11 +7,13 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import os
-from collections.abc import MutableSequence
 from pathlib import Path
 
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
-from CPDShell.labeled_data import LabeledCPData
+import numpy as np
+import numpy.typing as npt
+
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.labeled_data import LabeledCpdData
 
 
 class Utils:
@@ -60,9 +62,9 @@ class Utils:
         return sample_paths
 
     @staticmethod
-    def read_all_data_from_dir(dataset_dir: Path) -> list[MutableSequence[float]]:
+    def read_all_data_from_dir(dataset_dir: Path) -> list[npt.NDArray[np.float64]]:
         samples = Utils.get_all_sample_dirs(dataset_dir)
-        dataset = [LabeledCPData.read_generated_datasets(p[0])[p[1]].raw_data for p in samples]
+        dataset = [LabeledCpdData.read_generated_datasets(p[0])[p[1]].raw_data for p in samples]
 
         return dataset
 

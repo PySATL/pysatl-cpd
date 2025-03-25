@@ -19,11 +19,13 @@ class BenchmarkingWorker(Worker):
     def __init__(
         self,
         cpd_algorithm: BenchmarkingKNNAlgorithm | BenchmarkingClassificationAlgorithm,
-        scrubber: BenchmarkingLinearScrubber,
+        window_length: int,
+        shift_factor: float,
         expected_change_points: list[int],
     ) -> None:
         self.__expected_change_points = expected_change_points
-        self.__scrubber = scrubber
+        self.__window_length = window_length
+        self.__shift_factor = shift_factor
         self.__cpd_algorithm = cpd_algorithm
 
     def run(
@@ -40,4 +42,6 @@ class BenchmarkingWorker(Worker):
         assert dataset_path is not None, "Dataset path should not be None"
 
         # TODO: Statistics calculation saves all metrics. Should it be the responsibility of worker?
-        StatisticsCalculation.calculate_statistics(self.__cpd_algorithm, self.__scrubber, dataset_path, results_path)
+        StatisticsCalculation.calculate_statistics(
+            self.__cpd_algorithm, self.__window_length, self.__shift_factor, dataset_path, results_path
+        )

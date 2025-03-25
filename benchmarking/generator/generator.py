@@ -39,7 +39,7 @@ DistributionComposition = list[Distribution]
 
 
 class VerboseSafeDumper(yaml.SafeDumper):
-    def ignore_aliases(self, data):
+    def ignore_aliases(self, data: tp.Any) -> bool:
         return True
 
 
@@ -63,7 +63,7 @@ class DistributionGenerator:
         return distributions
 
     @staticmethod
-    def generate_by_frequency_rnd(distr_length: int, overall_length: int, dest_path: Path):
+    def generate_by_frequency_rnd(distr_length: int, overall_length: int, dest_path: Path) -> None:
         default_distrs = [Distribution(DistributionType.beta, {"alpha": 1.0, "beta": 1.0}, distr_length),
                            Distribution(DistributionType.exponential, {"rate": 1.0}, distr_length),
                            Distribution(DistributionType.uniform, {"min": 0.0, "max": 1.0}, distr_length),
@@ -84,7 +84,7 @@ class DistributionGenerator:
         DistributionGenerator.generate([sample_distr], 1, dest_path)
 
     @staticmethod
-    def generate(distributions: list[DistributionComposition], sample_count: int, dest_path: Path):
+    def generate(distributions: list[DistributionComposition], sample_count: int, dest_path: Path) -> None:
         Path(dest_path).mkdir(parents=True, exist_ok=True)
         distributions_info = DistributionGenerator.__generate_configs(distributions, sample_count, dest_path)
         DistributionGenerator.__generate_experiment_description(distributions_info, dest_path)

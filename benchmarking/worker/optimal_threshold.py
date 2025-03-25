@@ -25,21 +25,18 @@ class OptimalThresholdWorker(Worker):
     def __init__(
         self,
         cpd_algorithm: BenchmarkingKNNAlgorithm | BenchmarkingClassificationAlgorithm,
-        scrubber: BenchmarkingLinearScrubber,
         optimal_values_storage_path: Path,
+        window_length: int,
+        shift_factor: float,
         significance_level: float,
         sl_delta: float,
-        sample_length: int,
-        interval_length: int,
-        logger: logging.Logger,
     ) -> None:
         self.__cpd_algorithm = cpd_algorithm
-        self.__scrubber = scrubber
         self.__optimal_value_storage_path = optimal_values_storage_path
+        self.__window_length = window_length
+        self.__shift_factor = shift_factor
         self.__significance_level = significance_level
         self.__sl_delta = sl_delta
-        self.__sample_length = sample_length
-        self.__interval_length = interval_length
 
         self.__threshold: float | None = None
 
@@ -62,10 +59,12 @@ class OptimalThresholdWorker(Worker):
         results_path.mkdir(parents=True, exist_ok=True)
         if not os.listdir(results_path):
             StatisticsCalculation.calculate_statistics(
-                self.__cpd_algorithm, self.__scrubber, dataset_path, results_path
+                self.__cpd_algorithm, self.__window_length, self.__shift_factor, dataset_path, results_path
             )
 
-        scrubber_metaparams = self.__scrubber.get_metaparameters()
+        scrubber_metaparams = {"type": "linear",
+                               "window_length": str(self.__window_length),
+                               "shift_factor": str(self.__shift_factor)}
         alg_metaparams = self.__cpd_algorithm.get_metaparameters()
 
         threshold = ThresholdCalculation.calculate_threshold(
@@ -78,7 +77,7 @@ class OptimalThresholdWorker(Worker):
         self.__threshold = threshold
 
         with open(dataset_path / "config.yaml") as stream:
-            loaded_config: list[dict] = yaml.safe_load(stream)
+            loaded_config = yaml.safe_load(stream)
 
         result_info = [
             {

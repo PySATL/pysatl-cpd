@@ -1,4 +1,4 @@
-"""
+`"""
 Module for implementation of CPD algorithm based on classification.
 """
 

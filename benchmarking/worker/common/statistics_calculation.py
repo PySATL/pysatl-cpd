@@ -18,7 +18,8 @@ from benchmarking.generator.generator import VerboseSafeDumper
 from benchmarking.scrubber.benchmarking_linear_scrubber import BenchmarkingLinearScrubber
 from benchmarking.worker.common.utils import Utils
 from pysatl_cpd.labeled_data import LabeledCpdData
-from pysatl_cpd.cpd_solver import CpdProblem, CpdSolver, CpdLocalizationResults
+from pysatl_cpd.cpd_solver import CpdSolver, CpdLocalizationResults
+from pysatl_cpd.core.problem import CpdProblem
 from pysatl_cpd.core.scrubber.data_providers import LabeledDataProvider
 
 
@@ -36,7 +37,9 @@ class StatisticsCalculation:
         """
         # Generate algorithm and scrubber config in the root dir.
         alg_metaparams = cpd_algorithm.get_metaparameters()
-        scrubber_metaparams = {"type": "linear", "window_length": str(window_length), "shift_factor": str(shift_factor)}
+        scrubber_metaparams = {"type": "linear",
+                               "window_length": str(window_length),
+                               "shift_factor": str(shift_factor)}
         config = {"algorithm": alg_metaparams, "scrubber": scrubber_metaparams}
 
         dest_dir.mkdir(parents=True, exist_ok=True)

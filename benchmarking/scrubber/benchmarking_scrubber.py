@@ -13,5 +13,5 @@ from pysatl_cpd.core.scrubber.abstract import Scrubber
 
 class BenchmarkingScrubber(Scrubber):
     @abstractmethod
-    def get_metaparameters(self) -> dict:
+    def get_metaparameters(self) -> dict[str, str]:
         raise NotImplementedError

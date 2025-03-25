@@ -2,10 +2,10 @@ import os
 import typing as tp
 from pathlib import Path
 import logging
-import datetime
 import yaml
 
 import numpy as np
+import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import ThresholdOvercome
 from benchmarking.algorithms.benchmarking_knn import BenchmarkingKNNAlgorithm
@@ -14,7 +14,7 @@ from benchmarking.report.benchmarking_report import BenchmarkingReport
 from experiments.experiment import Experiment
 
 
-def metric(obs1: np.ndarray | float, obs2: np.ndarray | float) -> float:
+def metric(obs1: npt.NDArray[np.float64] | float, obs2: npt.NDArray[np.float64] | float) -> float:
     return float(np.linalg.norm(obs1 - obs2))
 
 
@@ -41,7 +41,6 @@ logger = logging.getLogger("BenchmarkInfo")
 statistic_test = ThresholdOvercome(THRESHOLD)
 
 cpd_algorithm = BenchmarkingKNNAlgorithm(metric, statistic_test, INDENT_FACTOR, K)
-scrubber = BenchmarkingLinearScrubber(WINDOW_SIZE, SHIFT_FACTOR)
 
 distribution_names_opt = ["0-exponential", "1-normal", "2-uniform", "3-beta", "4-weibull", "5-weibull", "6-weibull", "0-multivariate_normal", "1-multivariate_normal", "2-multivariate_normal"]
 distribution_names = ["0-exponential-exponential", "1-normal-normal", "2-normal-normal", "3-normal-normal", "4-normal-normal", "5-normal-normal"]
@@ -56,7 +55,7 @@ results_dir.mkdir(parents=True, exist_ok=True)
 
 Experiment.run_generator(DISTR_OPTIMIZATION_PATH, without_cp_dir, WITHOUT_CP_SAMPLE_COUNT)
 Experiment.run_generator(DISTR_CONFIG_PATH, dataset_dir, SAMPLE_COUNT)
-experiment = Experiment(cpd_algorithm, scrubber, logger)
+experiment = Experiment(cpd_algorithm, WINDOW_SIZE, SHIFT_FACTOR, logger)
 
 for distr in distribution_names_opt:
     experiment.run_optimization(without_cp_dir / distr, results_dir / distr, OPTIMAL_VALUES_PATH, SIGNIFICANCE_LEVEL, DELTA, INTERVAL_LENGTH)
@@ -65,7 +64,9 @@ for distr in distribution_names:
     experiment.run_benchmark(dataset_dir / distr, OPTIMAL_VALUES_PATH, results_dir / distr, EXPECTED_CHANGE_POINTS, INTERVAL_LENGTH)
 
 alg_metaparams = cpd_algorithm.get_metaparameters()
-scrubber_metaparams = scrubber.get_metaparameters()
+scrubber_metaparams = {"type": "linear",
+                        "window_length": str(WINDOW_SIZE),
+                        "shift_factor": str(SHIFT_FACTOR)}
 print(f"{alg_metaparams}")
 print(f"{scrubber_metaparams}")
 
@@ -80,7 +81,7 @@ for distr in os.listdir(results_dir):
         distr_config = yaml.safe_load(stream)[0]["distributions"][0]
 
     with open(OPTIMAL_VALUES_PATH) as stream:
-        optimal_values: list = yaml.safe_load(stream)
+        optimal_values = yaml.safe_load(stream)
 
     threshold: float | None = None
 
