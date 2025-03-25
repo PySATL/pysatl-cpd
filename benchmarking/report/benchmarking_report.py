@@ -11,7 +11,7 @@ from pathlib import Path
 import yaml
 
 from benchmarking.worker.common.utils import Utils
-from CPDShell.Core.algorithms.ClassificationBasedCPD.test_statistics.threshold_overcome import ThresholdOvercome
+from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import ThresholdOvercome
 
 
 # User can filter out none values and use only some.

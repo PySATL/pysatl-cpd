@@ -7,15 +7,15 @@ __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import typing as tp
-from collections.abc import Iterable
 from time import perf_counter
 
 import numpy as np
+import numpy.typing as npt
 
 from benchmarking.algorithms.benchmarking_algorithm import BenchmarkingAlgorithm
 from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
-from CPDShell.Core.algorithms.KNNCPD.knn_classifier import KNNClassifier
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.knn.classifier import KNNClassifier
 
 
 class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
@@ -69,11 +69,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
     def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
-<<<<<<< HEAD
-    def detect(self, window: Iterable[float | np.float64]) -> int:
-=======
-    def detect(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> int:
->>>>>>> bb8d211 (fix: typing; wip: performance benchmarking)
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -82,11 +78,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points_count
 
-<<<<<<< HEAD
-    def localize(self, window: Iterable[float | np.float64]) -> list[int]:
-=======
-    def localize(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> list[int]:
->>>>>>> bb8d211 (fix: typing; wip: performance benchmarking)
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -95,11 +87,7 @@ class BenchmarkingKNNAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points.copy()
 
-<<<<<<< HEAD
-    def __process_data(self, window: Iterable[float | np.float64]) -> AlgorithmWindowBenchmarkingInfo:
-=======
-    def __process_data(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> AlgorithmWindowBenchmarkingInfo:
->>>>>>> bb8d211 (fix: typing; wip: performance benchmarking)
+    def __process_data(self, window: npt.NDArray[np.float64]) -> AlgorithmWindowBenchmarkingInfo:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 

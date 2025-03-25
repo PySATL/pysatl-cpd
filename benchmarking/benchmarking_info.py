@@ -8,6 +8,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from dataclasses import dataclass
 
+import numpy.typing as npt
 
 @dataclass
 class ScrubberBenchmarkingInfo:

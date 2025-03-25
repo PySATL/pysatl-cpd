@@ -22,13 +22,8 @@ class KNNClassifier:
 
     def __init__(
         self,
-<<<<<<< HEAD:pysatl_cpd/core/algorithms/knn/classifier.py
         metric: tp.Callable[[np.float64 | npt.NDArray[np.float64], np.float64 | npt.NDArray[np.float64]], float],
         k: int = 7,
-=======
-        metric: tp.Callable[[float | np.ndarray, float | np.ndarray], float],
-        k=7,
->>>>>>> bb8d211 (fix: typing; wip: performance benchmarking):CPDShell/Core/algorithms/KNNCPD/knn_classifier.py
         delta: float = 1e-12,
     ) -> None:
         """
@@ -43,17 +38,10 @@ class KNNClassifier:
         self.__metric = metric
         self.__delta = delta
 
-<<<<<<< HEAD:pysatl_cpd/core/algorithms/knn/classifier.py
         self.__window: npt.NDArray[np.float64] | None = None
         self.__knn_graph: KNNGraph | None = None
 
     def classify(self, window: npt.NDArray[np.float64]) -> None:
-=======
-        self.__window: list[float | np.float64 | np.ndarray] | None = None
-        self.__knn_graph: KNNGraph | None = None
-
-    def classify(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> None:
->>>>>>> bb8d211 (fix: typing; wip: performance benchmarking):CPDShell/Core/algorithms/KNNCPD/knn_classifier.py
         """Applies classificator to the given sample.
 
         :param window: part of global data for finding change points.

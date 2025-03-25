@@ -6,16 +6,16 @@ __author__ = "Artemii Patov"
 __copyright__ = "Copyright (c) 2025 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from collections.abc import Iterable
 from time import perf_counter
 
 import numpy as np
+import numpy.typing as npt
 
 from benchmarking.algorithms.benchmarking_algorithm import BenchmarkingAlgorithm
 from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo, AlgorithmWindowBenchmarkingInfo
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.istatistic_test import TestStatistic
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.iclassifier import Classifier
-from CPDShell.Core.algorithms.ClassificationBasedCPD.abstracts.iquality_metric import QualityMetric
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.classification.abstracts.iclassifier import Classifier
+from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import QualityMetric
 
 
 class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
@@ -68,7 +68,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
     def get_metaparameters(self) -> dict:
         return self.__metaparameters_info
 
-    def detect(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> int:
+    def detect(self, window: npt.NDArray[np.float64]) -> int:
         """Finds change points in window.
 
         :param window: part of global data for finding change points.
@@ -77,7 +77,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points_count
 
-    def localize(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """Finds coordinates of change points (localizes them) in window.
 
         :param window: part of global data for finding change points.
@@ -86,7 +86,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         self.__benchmarking_info.append(self.__process_data(window))
         return self.__change_points.copy()
 
-    def __process_data(self, window: MutableSequence[float | np.float64 | np.ndarray]) -> AlgorithmWindowBenchmarkingInfo:
+    def __process_data(self, window: npt.NDArray[np.float64]) -> AlgorithmWindowBenchmarkingInfo:
         """
         Processes a window of data to detect/localize all change points depending on working mode.
 
@@ -94,10 +94,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         """
         time_start = perf_counter()
 
-        sample = list(window)
-        sample_size = len(sample)
-        if sample_size == 0:
-            return
+        sample_size = len(window)
 
         # Examining each point.
         # Boundaries are always change points.
@@ -106,7 +103,7 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
         assessments = []
 
         for time in range(first_point, last_point):
-            train_sample, test_sample = BenchmarkingClassificationAlgorithm.__split_sample(sample)
+            train_sample, test_sample = BenchmarkingClassificationAlgorithm.__split_sample(window)
             self.__classifier.train(train_sample, int(time / 2))
             classes = self.__classifier.predict(test_sample)
 
@@ -127,20 +124,19 @@ class BenchmarkingClassificationAlgorithm(BenchmarkingAlgorithm):
     # Soon classification algorithm will be more generalized: the split strategy will be one of the parameters.
     @staticmethod
     def __split_sample(
-        sample: MutableSequence[float | np.float64 | np.ndarray],
-    ) -> tuple[np.ndarray, np.ndarray]:
+        sample: npt.NDArray[np.float64],
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         train_sample = []
         test_sample = []
 
+        # Univariate distribution case. We need to make 2-dimensional array manually.
+        if np.ndim(sample) == 1:
+            sample = np.reshape(sample, (-1, 1))
+
         for i, x in enumerate(sample):
-            if isinstance(x, np.ndarray):
-                new_el = x
-            else:
-                new_el = [x]
-            
             if i % 2 == 0:
-                train_sample.append(new_el)
+                train_sample.append(x)
             else:
-                test_sample.append(new_el)
+                test_sample.append(x)
 
         return np.array(train_sample), np.array(test_sample)

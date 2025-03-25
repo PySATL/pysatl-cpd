@@ -8,7 +8,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from abc import abstractmethod
 
-from CPDShell.Core.scrubber.abstract_scrubber import Scrubber
+from pysatl_cpd.core.scrubber.abstract import Scrubber
 
 
 class BenchmarkingScrubber(Scrubber):

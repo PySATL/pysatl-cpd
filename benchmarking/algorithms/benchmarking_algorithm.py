@@ -9,7 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from abc import ABC, abstractmethod
 
 from benchmarking.benchmarking_info import AlgorithmBenchmarkingInfo
-from CPDShell.Core.algorithms.abstract_algorithm import Algorithm
+from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 
 
 class BenchmarkingAlgorithm(Algorithm):
