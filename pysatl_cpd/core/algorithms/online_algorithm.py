@@ -3,7 +3,7 @@ Module for online change point detection algorithm's interface.
 """
 
 __author__ = "Alexey Tatyanenko"
-__copyright__ = "Copyright (c) 2025 Alexey Tatyanenko"
+__copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from typing import Optional, Protocol
