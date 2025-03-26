@@ -3,8 +3,8 @@ import pytest
 
 from pysatl_cpd.core.algorithms.bayesian.detectors.simple import SimpleDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_unknown_mean_and_variance import (
-    GaussianUnknownMeanAndVariance,
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
+    GaussianConjugate,
 )
 from pysatl_cpd.core.algorithms.bayesian.localizers.simple import SimpleLocalizer
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnlineCpd
@@ -17,7 +17,7 @@ def set_seed():
 def construct_bayesian_online_algorithm():
     return BayesianOnlineCpd(
         learning_sample_size=5,
-        likelihood=GaussianUnknownMeanAndVariance(),
+        likelihood=GaussianConjugate(),
         hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
         detector=SimpleDetector(threshold=0.04),
         localizer=SimpleLocalizer(),

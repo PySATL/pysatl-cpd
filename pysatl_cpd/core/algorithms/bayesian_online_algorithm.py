@@ -6,6 +6,8 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2025 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
+from typing import Optional
+
 import numpy as np
 import numpy.typing as npt
 
@@ -40,7 +42,7 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__current_time = 0
 
         self.__is_training: bool = True
-        self.__run_length_probs: np.ndarray = np.array([])
+        self.__run_length_probs: npt.NDArray[np.float64] = np.array([])
 
         self.__was_change_point = False
         self.__change_point: int | None = None
@@ -71,7 +73,7 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
             self.__likelihood.clear()
             self.__detector.clear()
 
-            self.__likelihood.learn(self.__training_data)
+            self.__likelihood.learn(np.array(self.__training_data))
             self.__is_training = False
             self.__run_length_probs = np.array([1.0])
 
@@ -82,8 +84,7 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         :return:
         """
         predictive_prob = self.__likelihood.predict(value)
-        current_run_lengths = np.arange(len(self.__run_length_probs))
-        hazards = self.__hazard.hazard(current_run_lengths)
+        hazards = self.__hazard.hazard(np.arange(self.__run_length_probs.shape[0], dtype=np.intp))
         growth_probs = self.__run_length_probs * (1 - hazards) * predictive_prob
         reset_prob = np.sum(self.__run_length_probs * hazards * predictive_prob)
         new_probs = np.append(reset_prob, growth_probs)
@@ -166,7 +167,7 @@ class BayesianOnlineCpd(OnlineCpdAlgorithm):
         self.__was_change_point = False
         return result
 
-    def localize(self, value: np.float64 | npt.NDArray[np.float64]):
+    def localize(self, value: np.float64 | npt.NDArray[np.float64]) -> Optional[int]:
         """
         Performs a change point localization after processing another value of a time series.
         :param value: new value of a time series.

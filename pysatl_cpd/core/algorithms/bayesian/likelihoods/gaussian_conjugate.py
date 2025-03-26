@@ -15,7 +15,7 @@ from scipy import stats
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood
 
 
-class GaussianUnknownMeanAndVariance(ILikelihood):
+class GaussianConjugate(ILikelihood):
     """
     Likelihood for Gaussian (a.k.a. normal) distribution with unknown mean and variance estimated from normal-inverse
     gamma distribution as a conjugate prior. It uses 4 parameters, which priors are estimated from a learning sample and

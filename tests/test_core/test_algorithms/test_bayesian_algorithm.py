@@ -3,8 +3,8 @@ import pytest
 
 from pysatl_cpd.core.algorithms.bayesian.detectors.simple import SimpleDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_unknown_mean_and_variance import (
-    GaussianUnknownMeanAndVariance,
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
+    GaussianConjugate,
 )
 from pysatl_cpd.core.algorithms.bayesian.localizers.simple import SimpleLocalizer
 from pysatl_cpd.core.algorithms.bayesian_algorithm import BayesianAlgorithm
@@ -17,7 +17,7 @@ def set_seed():
 def construct_bayesian_algorithm():
     return BayesianAlgorithm(
         learning_steps=50,
-        likelihood=GaussianUnknownMeanAndVariance(),
+        likelihood=GaussianConjugate(),
         hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
         detector=SimpleDetector(threshold=0.04),
         localizer=SimpleLocalizer(),
@@ -105,7 +105,7 @@ def test_correctness_of_consecutive_localization(
 @pytest.mark.parametrize("hazard_rate,max_run_length", [(1.1, 50), (10, 100), (200, 250), (500.325251, 500)])
 def test_constant_hazard_for_constants(hazard_rate, max_run_length):
     constant_hazard = ConstantHazard(hazard_rate)
-    run_lengths = np.arange(max_run_length)
+    run_lengths = np.arange(max_run_length, dtype=np.intp)
     hazard_probs = constant_hazard.hazard(run_lengths)
     assert hazard_probs.shape[0] == max_run_length, (
         f"Expected {max_run_length} probabilities, got {hazard_probs.shape[0]}"
@@ -132,11 +132,11 @@ def test_learning_and_update():
                 np.random.normal(loc=5, scale=2, size=size - change_point),
             ]
         )
-        likelihood = GaussianUnknownMeanAndVariance()
-        likelihood.learn(list(data[:learning_steps]))
+        likelihood = GaussianConjugate()
+        likelihood.learn(data[:learning_steps])
 
         for time in range(learning_steps, size):
-            observation = float(data[time])
+            observation = np.float64(data[time])
             pred_probs = np.array(likelihood.predict(observation))
 
             if time == time_after_learning:
@@ -165,15 +165,15 @@ def test_clear():
 
     size = 51
     data = np.random.normal(loc=0, scale=1, size=size)
-    likelihood = GaussianUnknownMeanAndVariance()
+    likelihood = GaussianConjugate()
 
-    likelihood.learn(list(data[:-2]))
-    first = likelihood.predict(float(data[-1]))
+    likelihood.learn(data[:-2])
+    first = likelihood.predict(np.float64(data[-1]))
 
     likelihood.clear()
 
-    likelihood.learn(list(data[:-2]))
-    second = likelihood.predict(float(data[-1]))
+    likelihood.learn(data[:-2])
+    second = likelihood.predict(np.float64(data[-1]))
 
     assert first == second, f"Results differ after clear: {first} vs {second}"
 
