@@ -15,12 +15,12 @@ from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ihazard import IHazard
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilocalizer import ILocalizer
-from pysatl_cpd.core.algorithms.bayesian.detectors.simple import SimpleDetector
+from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
     GaussianConjugate,
 )
-from pysatl_cpd.core.algorithms.bayesian.localizers.simple import SimpleLocalizer
+from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 
 
 class BayesianAlgorithm(Algorithm):
@@ -38,8 +38,8 @@ class BayesianAlgorithm(Algorithm):
         learning_steps: int = 50,
         likelihood: ILikelihood = GaussianConjugate(),
         hazard: IHazard = ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-        detector: IDetector = SimpleDetector(threshold=0.04),
-        localizer: ILocalizer = SimpleLocalizer(),
+        detector: IDetector = ThresholdDetector(threshold=0.04),
+        localizer: ILocalizer = ArgmaxLocalizer(),
     ):
         """
         Initializes a new instance of Bayesian algorithm module with given customization.

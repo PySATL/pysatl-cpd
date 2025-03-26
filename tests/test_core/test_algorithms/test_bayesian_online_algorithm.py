@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from pysatl_cpd.core.algorithms.bayesian.detectors.simple import SimpleDetector
+from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
     GaussianConjugate,
 )
-from pysatl_cpd.core.algorithms.bayesian.localizers.simple import SimpleLocalizer
+from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnlineCpd
 
 
@@ -19,8 +19,8 @@ def construct_bayesian_online_algorithm():
         learning_sample_size=5,
         likelihood=GaussianConjugate(),
         hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-        detector=SimpleDetector(threshold=0.04),
-        localizer=SimpleLocalizer(),
+        detector=ThresholdDetector(threshold=0.04),
+        localizer=ArgmaxLocalizer(),
     )
 
 

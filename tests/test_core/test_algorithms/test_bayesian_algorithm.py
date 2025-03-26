@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from pysatl_cpd.core.algorithms.bayesian.detectors.simple import SimpleDetector
+from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
     GaussianConjugate,
 )
-from pysatl_cpd.core.algorithms.bayesian.localizers.simple import SimpleLocalizer
+from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 from pysatl_cpd.core.algorithms.bayesian_algorithm import BayesianAlgorithm
 
 
@@ -19,8 +19,8 @@ def construct_bayesian_algorithm():
         learning_steps=50,
         likelihood=GaussianConjugate(),
         hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-        detector=SimpleDetector(threshold=0.04),
-        localizer=SimpleLocalizer(),
+        detector=ThresholdDetector(threshold=0.04),
+        localizer=ArgmaxLocalizer(),
     )
 
 
@@ -180,13 +180,13 @@ def test_clear():
 
 def test_detector_detection():
     run_lengths = np.full(100, 0.01)
-    detector = SimpleDetector(threshold=0.04)
+    detector = ThresholdDetector(threshold=0.04)
     assert detector.detect(run_lengths), "Change point should be detected"
 
 
 def test_detector_clear():
     run_lengths = np.full(100, 0.01)
-    detector = SimpleDetector(threshold=0.04)
+    detector = ThresholdDetector(threshold=0.04)
 
     result1 = detector.detect(run_lengths)
     detector.clear()
@@ -199,6 +199,6 @@ def test_localizer_localization():
     change_point = 5
     run_lengths = np.full(11, 0.05)
     run_lengths[change_point] = 0.5
-    localizer = SimpleLocalizer()
+    localizer = ArgmaxLocalizer()
     result = localizer.localize(run_lengths)
     assert result == change_point, f"Expected change at {change_point}, got {result}"
