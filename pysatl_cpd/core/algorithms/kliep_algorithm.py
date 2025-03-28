@@ -1,82 +1,144 @@
-from typing import cast
+"""
+Module for implementation of CPD algorithm using KLIEP-based divergence estimation.
+"""
+
+__author__ = "Aleksandra Listkova"
+__copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
+__license__ = "SPDX-License-Identifier: MIT"
 
 import numpy as np
 import numpy.typing as npt
-from numpy import dtype, float64, ndarray
+from scipy.optimize import minimize
 
+from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
 
 
-class KliepAlgorithm(DensityBasedAlgorithm):
-    """Kullback-Leibler Importance Estimation Procedure (KLIEP) algorithm
-    for change point detection.
-
-    KLIEP estimates the density ratio between two distributions and uses
-    the importance weights for detecting changes in the data distribution.
-    """
-
-    def __init__(self, bandwidth: float, regularization_coef: float, threshold: float = 1.1):
-        """Initialize the KLIEP algorithm.
-
-        Args:
-            bandwidth (float): bandwidth parameter for density estimation.
-            regularization_coef (float): regularization parameter.
-            threshold (float, optional): threshold for detecting change points.
-            Defaults to 1.1.
+class KliepAlgorithm(Algorithm):
+    def __init__(
+        self,
+        bandwidth: float = 1.0,
+        regularization: float = 0.1,
+        threshold: float = 1.1,
+        max_iter: int = 100,
+        min_window_size: int = 10
+    ):
         """
-        self.bandwidth = bandwidth
-        self.regularization_coef = regularization_coef
-        self.threshold = np.float64(threshold)
+        Initializes a new instance of KLIEP based change point detection algorithm.
 
-    def _loss_function(self, density_ratio: npt.NDArray[np.float64], alpha: npt.NDArray[np.float64]) -> float:
-        """Loss function for KLIEP.
-
-        Args:
-            density_ratio (np.ndarray): estimated density ratio.
-            alpha (np.ndarray): coefficients for the density ratio.
-
-        Returns:
-            float: the computed loss value.
+        :param bandwidth: the bandwidth parameter for the kernel density estimation.
+        :param regularization: L2 regularization coefficient for the KLIEP optimization.
+        :param threshold: detection threshold for significant change points.
+        :param max_iter: maximum number of iterations for the L-BFGS-B optimizer.
+        :param min_window_size: minimum size of data segments to consider.
         """
-        return -np.mean(density_ratio) + self.regularization_coef * np.sum(alpha**2)
+        self.bandwidth = bandwidth,
+        self.regularisation = regularization,
+        self.threshold = threshold,
+        self.max_iter = max_iter,
+        self.min_window_size = min_window_size
 
     def detect(self, window: npt.NDArray[np.float64]) -> int:
-        """Detect the number of change points in the given data window
-        using KLIEP.
-
-        Args:
-            window (Iterable[float]): the data window to detect change points.
-
-        Returns:
-            int: the number of detected change points.
         """
+        Finds change points in the given window.
 
-        window_sample = np.array(window)
-        weights = self._calculate_weights(
-            test_value=window_sample,
-            reference_value=window_sample,
-            bandwidth=self.bandwidth,
-            objective_function=self._loss_function,
-        )
-
-        return np.count_nonzero(weights > self.threshold)
+        :param window: input data window for change point detection.
+        :return: number of detected change points in the window.
+        """
+        return len(self.localize(window))
 
     def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
-        """Localize the change points in the given data window using KLIEP.
-
-        Args:
-            window (Iterable[float]): the data window to localize
-            change points.
-
-        Returns:
-            List[int]: the indices of the detected change points.
         """
-        window_sample = np.array(window)
-        weights: ndarray[tuple[int, ...], dtype[float64]] = self._calculate_weights(
-            test_value=window_sample,
-            reference_value=window_sample,
-            bandwidth=self.bandwidth,
-            objective_function=self._loss_function,
-        )
+        Identifies and returns the locations of change points in the window.
 
-        return cast(list[int], np.where(weights > self.threshold)[0].tolist())
+        :param window: input data window for change point localization.
+        :return: list of indices where change points were detected.
+        """
+        window = self._validate_window(window)
+        if len(window) < self.min_window_size:
+            return []
+
+        scores = self._compute_kliep_scores(window)
+        return self._find_change_points(scores)
+
+    def _validate_window(self, window: np.ndarray) -> np.ndarray:
+        """
+        Validates and prepares the input window for processing.
+
+        :param window: input data window.
+        :return: validated window in 2D format.
+        """
+        window = np.asarray(window)
+        if window.ndim == 1:
+            window = window.reshape(-1, 1)
+        return window
+
+    def _compute_kliep_scores(self, window: np.ndarray) -> np.ndarray:
+        """
+        Computes KLIEP anomaly scores for each point in the window.
+
+        :param window: validated input data window.
+        :return: array of KLIEP scores for each point.
+        """
+        n_points = window.shape(0)
+        scores = np.zeros(n_points)
+
+        for i in range(self.min_window_size, n_points - self.min_window_size):
+            before = window[:i]
+            after = window[i:]
+
+            before_density = DensityBasedAlgorithm._kernel_density_estimation(
+                before, self.bandwidth
+            )
+            after_density = DensityBasedAlgorithm._kernel_density_estimation(
+                after, self.bandwidth
+            )
+
+            alpha = self._optimize_alpha(after_density, before_density)
+            scores[i] = np.mean(np.exp(after_density - before_density - alpha))
+
+        return scores
+
+    def _optimize_alpha(
+            self,
+            test_density: np.ndarray,
+            ref_density: np.ndarray
+    ) -> np.ndarray:
+        """
+        Optimizes the alpha parameters for KLIEP density ratio estimation.
+
+        :param test_density: density estimates for the test window.
+        :param ref_density: density estimates for the reference window.
+        :return: optimized alpha parameters.
+        """
+        def loss(alpha: np.ndarray) -> float:
+            """Objective function for KLIEP optimization."""
+            ratio = np.exp(test_density - ref_density - alpha)
+            return -np.mean(np.log(ratio)) + self.regularisation * np.sum(alpha**2)
+
+        res = minimize(
+            loss,
+            np.zeros_like(test_density),
+            method='L-BFGS-B',
+            options={'maxiter': self.max_iter},
+            bounds=[(0, None)] * len(test_density)
+        )
+        return res.x
+
+    def _find_change_points(self, scores: np.ndarray) -> list[int]:
+        """
+        Identifies change points from computed KLIEP scores.
+
+        :param scores: array of KLIEP scores for each point.
+        :return: list of detected change point indices.
+        """
+        candidates = np.where(scores > self.threshold)[0]
+        if len(candidates) == 0:
+            return []
+
+        change_points = [candidates[0]]
+        for points in candidates[1:]:
+            if points - change_points[-1] > self.min_window_size:
+                change_points.append(points)
+
+        return change_points
