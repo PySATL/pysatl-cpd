@@ -15,7 +15,7 @@ import numpy.typing as npt
 
 class ILikelihood(Protocol):
     """
-    Likelihood function's abstract base class.
+    Likelihood function's protocol.
     """
 
     def learn(self, learning_sample: npt.NDArray[np.float64]) -> None:

@@ -15,7 +15,7 @@ import numpy.typing as npt
 
 class ILocalizer(Protocol):
     """
-    Abstract base class for localizers that localize a change point with given growth probabilities for run lengths.
+    Protocol for localizers that localize a change point with given growth probabilities for run lengths.
     """
 
     def localize(self, growth_probs: npt.NDArray[np.float64]) -> int:

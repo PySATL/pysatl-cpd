@@ -15,7 +15,7 @@ import numpy.typing as npt
 
 class IHazard(Protocol):
     """
-    Hazard function abstract base class.
+    Hazard function protocol.
     """
 
     def hazard(self, run_lengths: npt.NDArray[np.intp]) -> npt.NDArray[np.float64]:

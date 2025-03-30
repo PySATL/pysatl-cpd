@@ -15,7 +15,7 @@ import numpy.typing as npt
 
 class IDetector(Protocol):
     """
-    Abstract base class for detectors that detect a change point with given growth probabilities for run lengths.
+    Protocol for detectors that detect a change point with given growth probabilities for run lengths.
     """
 
     def detect(self, growth_probs: npt.NDArray[np.float64]) -> bool:

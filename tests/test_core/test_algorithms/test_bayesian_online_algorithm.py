@@ -7,7 +7,7 @@ from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
     GaussianConjugate,
 )
 from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
-from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnlineCpd
+from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
 
 
 def set_seed():
@@ -15,7 +15,7 @@ def set_seed():
 
 
 def construct_bayesian_online_algorithm():
-    return BayesianOnlineCpd(
+    return BayesianOnline(
         learning_sample_size=5,
         likelihood=GaussianConjugate(),
         hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),

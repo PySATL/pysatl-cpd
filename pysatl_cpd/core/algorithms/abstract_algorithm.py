@@ -5,7 +5,7 @@ import numpy.typing as npt
 
 
 class Algorithm(Protocol):
-    """Abstract class for change point detection algorithms"""
+    """Protocol for change point detection algorithms' interface"""
 
     def detect(self, window: npt.NDArray[np.float64]) -> int:
         """Function for finding change points in window
