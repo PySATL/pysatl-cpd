@@ -35,15 +35,15 @@ class OnlineCpdSolver(ICpdSolver):
         self._labeled_data: LabeledCpdData | None = None
         self._cpd_core: OnlineCpdCore
         match algorithm_input:
-            case DataProvider() as data_provider:
-                self._cpd_core = OnlineCpdCore(
-                    data_provider=data_provider,
-                    algorithm=algorithm,
-                )
             case LabeledCpdData() as data:
                 self._labeled_data = data
                 self._cpd_core = OnlineCpdCore(
                     data_provider=LabeledDataProvider(data),
+                    algorithm=algorithm,
+                )
+            case DataProvider() as data_provider:
+                self._cpd_core = OnlineCpdCore(
+                    data_provider=data_provider,
                     algorithm=algorithm,
                 )
 
