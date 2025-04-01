@@ -77,6 +77,10 @@ class BayesianOnline(OnlineAlgorithm):
             self.__is_training = False
             self.__run_length_probs = np.array([1.0])
 
+        assert len(self.__training_data) <= self.__learning_sample_size, (
+            "Training data should not be longer than learning sample size"
+        )
+
     def __bayesian_update(self, observation: np.float64) -> None:
         """
         Performs a bayesian update of the algorithm's state.
@@ -85,10 +89,16 @@ class BayesianOnline(OnlineAlgorithm):
         """
         predictive_prob = self.__likelihood.predict(observation)
         hazards = self.__hazard.hazard(np.arange(self.__run_length_probs.shape[0], dtype=np.intp))
+
         growth_probs = self.__run_length_probs * (1 - hazards) * predictive_prob
-        reset_prob = np.sum(self.__run_length_probs * hazards * predictive_prob)
-        new_probs = np.append(reset_prob, growth_probs)
-        new_probs /= np.sum(new_probs)
+        change_point_prob = np.sum(self.__run_length_probs * hazards * predictive_prob)
+        new_probs = np.append(change_point_prob, growth_probs)
+
+        evidence = np.sum(new_probs)
+        assert evidence > 0.0, "Evidence must be > 0.0"
+        new_probs /= evidence
+        assert np.all(np.logical_and(new_probs >= 0.0, new_probs <= 1.0))
+
         self.__run_length_probs = new_probs
         self.__likelihood.update(observation)
 
@@ -100,6 +110,11 @@ class BayesianOnline(OnlineAlgorithm):
         """
         run_length = self.__localizer.localize(self.__run_length_probs)
         change_point_location = self.__current_time - run_length
+        assert 0 <= change_point_location <= self.__current_time, (
+            "Change point shouldn't be outside the available scope"
+        )
+
+        assert len(self.__data_history) >= run_length, "Run length shouldn't exceed available data length"
         self.__training_data = self.__data_history[-run_length:]
         self.__data_history = self.__data_history[-run_length:]
         self.__change_point = change_point_location
