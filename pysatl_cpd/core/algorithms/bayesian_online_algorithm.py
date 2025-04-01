@@ -52,7 +52,7 @@ class BayesianOnline(OnlineAlgorithm):
         Clears the state of the algorithm's instance.
         :return:
         """
-        self.__training_data = []
+        self.__clear_training_data()
         self.__data_history = []
         self.__current_time = 0
 
@@ -61,6 +61,13 @@ class BayesianOnline(OnlineAlgorithm):
 
         self.__was_change_point = False
         self.__change_point = None
+
+    def __clear_training_data(self) -> None:
+        """
+        Clears list of training data.
+        :return:
+        """
+        self.__training_data = []
 
     def __learn(self, observation: np.float64) -> None:
         """
@@ -115,19 +122,23 @@ class BayesianOnline(OnlineAlgorithm):
         )
 
         assert len(self.__data_history) >= run_length, "Run length shouldn't exceed available data length"
-        self.__training_data = self.__data_history[-run_length:]
         self.__data_history = self.__data_history[-run_length:]
+        self.__clear_training_data()
         self.__change_point = change_point_location
 
         self.__likelihood.clear()
         self.__detector.clear()
         self.__is_training = True
 
-        if len(self.__training_data) >= self.__learning_sample_size:
-            self.__training_data = self.__training_data[: self.__learning_sample_size]
-            for observation in self.__training_data:
-                self.__learn(observation)
+        observations_to_learn = min(len(self.__data_history), self.__learning_sample_size)
+        data_to_train = self.__data_history[:observations_to_learn]
 
+        # Learning as much as we can until we reach learning sample size limit
+        for observation in data_to_train:
+            self.__learn(observation)
+
+        # Modeling run length probabilities on the rest data
+        if len(self.__data_history) >= self.__learning_sample_size:
             for observation in self.__data_history[self.__learning_sample_size :]:
                 self.__bayesian_update(observation)
 
@@ -137,11 +148,11 @@ class BayesianOnline(OnlineAlgorithm):
         :return:
         """
         self.__data_history = self.__data_history[-1:]
-        self.__training_data = self.__data_history[:]
+        self.__clear_training_data()
         self.__likelihood.clear()
         self.__detector.clear()
         self.__is_training = True
-        self.__learn(self.__training_data[-1])
+        self.__learn(self.__data_history[-1])
 
     def __process_point(self, observation: np.float64, with_localization: bool) -> None:
         """
