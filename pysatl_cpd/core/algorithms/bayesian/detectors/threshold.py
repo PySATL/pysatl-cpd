@@ -14,7 +14,7 @@ import numpy.typing as npt
 from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
 
 
-class SimpleDetector(IDetector):
+class ThresholdDetector(IDetector):
     """
     A detector that detects a change point if the probability of the maximum run length drops below the threshold.
     """
