@@ -7,11 +7,10 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
-
 import numpy as np
 import numpy.typing as npt
 from scipy import stats
-from sklearn.utils import deprecated
+from typing_extensions import deprecated
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood
 
