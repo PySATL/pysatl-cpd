@@ -56,16 +56,9 @@ class OnlineCpdSolver(ICpdSolver):
         """
         time_start = time.perf_counter()
         if not self._scenario.to_localize:
-            change_points_count = 0
-            for was_changepoint in self._cpd_core.detect():
-                if was_changepoint:
-                    change_points_count += 1
-            return change_points_count
+            return sum(self._cpd_core.detect())
 
-        algo_results = []
-        for change_point in self._cpd_core.localize():
-            if change_point is not None:
-                algo_results.append(change_point)
+        algo_results = [cp for cp in self._cpd_core.localize() if cp is not None]
 
         time_end = time.perf_counter()
         expected_change_points: list[int] | None = None
