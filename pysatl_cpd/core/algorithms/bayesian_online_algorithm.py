@@ -197,7 +197,8 @@ class BayesianOnline(OnlineAlgorithm):
         """
         Performs a change point localization after processing another observation of a time series.
         :param observation: new observation of a time series.
-        :return: location of a change point, acquired after processing the new observation, or None if there wasn't any.
+        :return: absolute location of a change point, acquired after processing the new observation,
+        or None if there wasn't any.
         """
         if observation is npt.NDArray[np.float64]:
             raise TypeError("Multivariate observations are not supported")

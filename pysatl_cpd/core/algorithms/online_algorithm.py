@@ -29,6 +29,7 @@ class OnlineAlgorithm(Protocol):
         """
         Method for a step of localization of a change point.
         :param observation: new observation of a time series
-        :return: location of a change point, acquired after processing the new observation, or None if there wasn't any.
+        :return: absolute location of a change point, acquired after processing the new observation,
+        or None if there wasn't any.
         """
         ...
