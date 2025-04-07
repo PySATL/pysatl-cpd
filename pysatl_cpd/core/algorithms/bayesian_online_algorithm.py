@@ -102,6 +102,10 @@ class BayesianOnline(OnlineAlgorithm):
         new_probs = np.append(change_point_prob, growth_probs)
 
         evidence = np.sum(new_probs)
+        if evidence == 0.0:
+            self.__was_change_point = True
+            return
+
         assert evidence > 0.0, "Evidence must be > 0.0"
         new_probs /= evidence
         assert np.all(np.logical_and(new_probs >= 0.0, new_probs <= 1.0))
@@ -170,7 +174,7 @@ class BayesianOnline(OnlineAlgorithm):
             self.__bayesian_update(observation)
             detected = self.__detector.detect(self.__run_length_probs)
 
-            if not detected:
+            if not (self.__was_change_point or detected):
                 return
 
             self.__was_change_point = True
