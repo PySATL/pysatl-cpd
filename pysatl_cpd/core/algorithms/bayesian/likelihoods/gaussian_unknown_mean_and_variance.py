@@ -15,7 +15,7 @@ from scipy import stats
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood
 
 
-class GaussianConjugate(ILikelihood):
+class GaussianUnknownMeanAndVariance(ILikelihood):
     """
     Likelihood for Gaussian (a.k.a. normal) distribution with unknown mean and variance estimated from normal-inverse
     gamma distribution as a conjugate prior. It uses 4 parameters, which priors are estimated from a learning sample and
@@ -89,7 +89,7 @@ class GaussianConjugate(ILikelihood):
         self.__alpha_params = new_alpha_params
         self.__beta_params = new_beta_params
 
-    def predict(self, observation: np.float64) -> npt.NDArray[np.float64]:
+    def predict(self, observation: np.float64) -> npt.ArrayLike:
         """
         Returns predictive probabilities for a given observation based on posterior parameters. Predictive distribution
         is Student's t-distribution with 2 * alpha degrees of freedom.
@@ -110,7 +110,7 @@ class GaussianConjugate(ILikelihood):
             scale=scales,
         )
 
-        return np.array(predictive_probabilities)
+        return predictive_probabilities
 
     def clear(self) -> None:
         """

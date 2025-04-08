@@ -15,12 +15,12 @@ from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ihazard import IHazard
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilocalizer import ILocalizer
-from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
+from pysatl_cpd.core.algorithms.bayesian.detectors.simple import SimpleDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
-    GaussianConjugate,
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_unknown_mean_and_variance import (
+    GaussianUnknownMeanAndVariance,
 )
-from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
+from pysatl_cpd.core.algorithms.bayesian.localizers.simple import SimpleLocalizer
 
 
 class BayesianAlgorithm(Algorithm):
@@ -36,10 +36,10 @@ class BayesianAlgorithm(Algorithm):
     def __init__(
         self,
         learning_steps: int = 50,
-        likelihood: ILikelihood = GaussianConjugate(),
+        likelihood: ILikelihood = GaussianUnknownMeanAndVariance(),
         hazard: IHazard = ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-        detector: IDetector = ThresholdDetector(threshold=0.04),
-        localizer: ILocalizer = ArgmaxLocalizer(),
+        detector: IDetector = SimpleDetector(threshold=0.04),
+        localizer: ILocalizer = SimpleLocalizer(),
     ):
         """
         Initializes a new instance of Bayesian algorithm module with given customization.
@@ -122,7 +122,7 @@ class BayesianAlgorithm(Algorithm):
 
         while self.__bayesian_condition(sample_size):
             assert self.__time >= 0
-            observation = np.float64(sample[self.__time])
+            observation = sample[self.__time]
             self.__shift_time(1)
             self.__gap_size += 1
             assert self.__gap_size > 0
@@ -180,7 +180,7 @@ class BayesianAlgorithm(Algorithm):
             return
 
         # 4. Evaluate the hazard function for the gap.
-        hazard_val = np.array(self.__hazard.hazard(np.arange(self.__gap_size, dtype=np.intp)))
+        hazard_val = np.array(self.__hazard.hazard(np.array(range(self.__gap_size))))
 
         # Evaluate the changepoint probability at *this* step (NB: generally it can be found later, with some delay).
         changepoint_prob = np.sum(self.__growth_probs[0 : self.__gap_size] * predictive_probs * hazard_val)

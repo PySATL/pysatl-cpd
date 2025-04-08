@@ -27,7 +27,7 @@ class ConstantHazard(IHazard):
         self._rate = np.float64(rate)
         assert self._rate >= 1.0, "Hazard rate cannot be less than 1.0"
 
-    def hazard(self, run_lengths: npt.NDArray[np.intp]) -> npt.NDArray[np.float64]:
+    def hazard(self, run_lengths: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """
         Calculates the constant hazard function.
         :param run_lengths: run lengths at the time.

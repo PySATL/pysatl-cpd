@@ -12,7 +12,7 @@ import numpy.typing as npt
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilocalizer import ILocalizer
 
 
-class ArgmaxLocalizer(ILocalizer):
+class SimpleLocalizer(ILocalizer):
     """
     A localizer that localizes a change point corresponding with the most probable non-max run length.
     """

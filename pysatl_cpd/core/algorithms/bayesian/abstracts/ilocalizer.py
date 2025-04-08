@@ -7,21 +7,22 @@ __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
 
-from typing import Protocol
+from abc import ABC, abstractmethod
 
 import numpy as np
 import numpy.typing as npt
 
 
-class ILocalizer(Protocol):
+class ILocalizer(ABC):
     """
-    Protocol for localizers that localize a change point with given growth probabilities for run lengths.
+    Abstract base class for localizers that localize a change point with given growth probabilities for run lengths.
     """
 
+    @abstractmethod
     def localize(self, growth_probs: npt.NDArray[np.float64]) -> int:
         """
         Localizes a change point with given growth probabilities for run lengths.
         :param growth_probs: growth probabilities for run lengths at the time.
         :return: run length corresponding with a change point.
         """
-        ...
+        raise NotImplementedError

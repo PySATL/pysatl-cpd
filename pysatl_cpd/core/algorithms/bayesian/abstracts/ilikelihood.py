@@ -7,17 +7,18 @@ __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
 
-from typing import Protocol
+from abc import ABC, abstractmethod
 
 import numpy as np
 import numpy.typing as npt
 
 
-class ILikelihood(Protocol):
+class ILikelihood(ABC):
     """
-    Likelihood function's protocol.
+    Likelihood function's abstract base class.
     """
 
+    @abstractmethod
     def learn(self, learning_sample: npt.NDArray[np.float64]) -> None:
         """
         Learns first parameters of a likelihood function on a given sample.
@@ -25,7 +26,8 @@ class ILikelihood(Protocol):
         """
         ...
 
-    def predict(self, observation: np.float64) -> npt.NDArray[np.float64]:
+    @abstractmethod
+    def predict(self, observation: np.float64) -> npt.ArrayLike:
         """
         Returns predictive probabilities for a given observation based on stored parameters.
         :param observation: an observation from a sample.
@@ -33,15 +35,17 @@ class ILikelihood(Protocol):
         """
         ...
 
+    @abstractmethod
     def update(self, observation: np.float64) -> None:
         """
         Updates parameters of a likelihood function according to the given observation.
         :param observation: an observation from a sample.
         """
-        ...
+        raise NotImplementedError
 
+    @abstractmethod
     def clear(self) -> None:
         """
         Clears likelihood function's state.
         """
-        ...
+        raise NotImplementedError

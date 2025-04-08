@@ -7,16 +7,15 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
+
 import numpy as np
 import numpy.typing as npt
 from scipy import stats
-from typing_extensions import deprecated
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood
 
 
-@deprecated("Use GaussianConjugate instead")
-class Gaussian(ILikelihood):
+class GaussianLikelihood(ILikelihood):
     """
     Likelihood for Gaussian (a.k.a. normal) distribution, parametrized by mean and standard deviation.
     """
@@ -77,13 +76,13 @@ class Gaussian(ILikelihood):
 
         self.__update_parameters_lists()
 
-    def predict(self, observation: np.float64) -> npt.NDArray[np.float64]:
+    def predict(self, observation: np.float64) -> npt.ArrayLike:
         """
         Returns predictive probabilities for a given observation based on stored means and standard deviations.
         :param observation: an observation from a sample.
         :return: predictive probabilities for a given observation.
         """
-        return np.array(stats.norm(self.__means, self.__standard_deviations).pdf(observation))
+        return stats.norm(self.__means, self.__standard_deviations).pdf(observation)
 
     def clear(self) -> None:
         """
