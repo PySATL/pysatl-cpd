@@ -41,7 +41,11 @@ def generate_data(data_params):
         return np.concatenate(
             [
                 np.random.normal(loc=0, scale=1, size=data_params["change_point"]),
-                np.random.normal(loc=5, scale=2, size=data_params["size"] - data_params["change_point"]),
+                np.random.normal(
+                    loc=5,
+                    scale=2,
+                    size=data_params["size"] - data_params["change_point"],
+                ),
             ]
         )
 

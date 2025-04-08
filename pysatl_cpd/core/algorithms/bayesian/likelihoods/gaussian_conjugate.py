@@ -76,7 +76,10 @@ class GaussianConjugate(ILikelihood):
         beta_divider = 2.0 * self.__k_params + 1.0
         assert np.count_nonzero(beta_divider) == beta_divider.shape[0], "Beta dividers cannot be 0.0"
 
-        new_mu_params = np.append([self.__mu_0], (self.__mu_params * self.__k_params + observation) / mu_divider)
+        new_mu_params = np.append(
+            [self.__mu_0],
+            (self.__mu_params * self.__k_params + observation) / mu_divider,
+        )
         new_k_params = np.append([self.__k_0], self.__k_params + 1.0)
         new_alpha_params = np.append([self.__alpha_0], self.__alpha_params + 0.5)
         new_beta_params = np.append(

@@ -19,7 +19,10 @@ class TestGenerator:
                 ScipyDatasetGenerator(),
                 {
                     "20-normal-0-1-20-normal-10-1": [40, [20]],
-                    "20-multivariate_normal-0-0-20-multivariate_normal-10-10": [40, [20]],
+                    "20-multivariate_normal-0-0-20-multivariate_normal-10-10": [
+                        40,
+                        [20],
+                    ],
                     "20-normal-0-1-no-change-point": [20, []],
                     "20-exponential-1-no-change-point": [20, []],
                     "20-weibull-1-1-no-change-point": [20, []],

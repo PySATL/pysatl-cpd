@@ -3,7 +3,9 @@ import pytest
 
 from pysatl_cpd.core.online_cpd_core import OnlineCpdCore
 from pysatl_cpd.core.scrubber.data_providers import ListUnivariateProvider
-from tests.test_core.test_algorithms.test_bayesian_online_algorithm import construct_bayesian_online_algorithm
+from tests.test_core.test_algorithms.test_bayesian_online_algorithm import (
+    construct_bayesian_online_algorithm,
+)
 
 DATA_PARAMS = {
     "num_of_tests": 10,
@@ -39,7 +41,8 @@ def dataset(request, data_params):
 @pytest.fixture
 def online_core(dataset):
     return OnlineCpdCore(
-        algorithm=construct_bayesian_online_algorithm(), data_provider=ListUnivariateProvider(list(dataset))
+        algorithm=construct_bayesian_online_algorithm(),
+        data_provider=ListUnivariateProvider(list(dataset)),
     )
 
 

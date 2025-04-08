@@ -20,7 +20,10 @@ class SVMClassifier(Classifier):
     The class implementing svm classifier for cpd.
     """
 
-    def __init__(self, kernel: tp.Literal["linear", "poly", "rbf", "sigmoid", "precomputed"] = "rbf") -> None:
+    def __init__(
+        self,
+        kernel: tp.Literal["linear", "poly", "rbf", "sigmoid", "precomputed"] = "rbf",
+    ) -> None:
         """
         Initializes a new instance of svm classifier for cpd.
         :param kernel: specifies the kernel type to be used in the algorithm. If none is given, 'rbf' will be used.
