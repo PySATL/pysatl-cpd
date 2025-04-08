@@ -6,11 +6,11 @@ __author__ = "Aleksandra Listkova"
 __copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
 __license__ = "SPDX-License-Identifier: MIT"
 
+from typing import Any, cast
+
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
-from typing import List, Any
-from typing import cast
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
@@ -131,7 +131,7 @@ class KliepAlgorithm(Algorithm):
         )
         return cast(npt.NDArray[np.float64], res.x)
 
-    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> List[int]:
+    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> list[int]:
         """
         Identifies change points from computed KLIEP scores.
 
