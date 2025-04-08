@@ -7,22 +7,21 @@ __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
 
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 import numpy as np
 import numpy.typing as npt
 
 
-class IHazard(ABC):
+class IHazard(Protocol):
     """
-    Hazard function abstract base class.
+    Hazard function protocol.
     """
 
-    @abstractmethod
-    def hazard(self, run_lengths: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    def hazard(self, run_lengths: npt.NDArray[np.intp]) -> npt.NDArray[np.float64]:
         """
         Calculates the hazard function for given run lengths.
         :param run_lengths: run lengths at the time.
         :return: hazard function's values for given run lengths.
         """
-        raise NotImplementedError
+        ...

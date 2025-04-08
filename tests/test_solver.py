@@ -5,11 +5,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from pysatl_cpd.analysis.results_analyzer import CpdResultsAnalyzer
 from pysatl_cpd.core.algorithms.graph_algorithm import GraphAlgorithm
 from pysatl_cpd.core.problem import CpdProblem
 from pysatl_cpd.core.scrubber.data_providers import ListUnivariateProvider
 from pysatl_cpd.core.scrubber.linear import LinearScrubber
-from pysatl_cpd.cpd_solver import CpdLocalizationResults, CpdResultsAnalyzer, CpdSolver, LabeledCpdData
+from pysatl_cpd.cpd_solver import CpdLocalizationResults, CpdSolver, LabeledCpdData
 
 
 def custom_comparison(node1, node2):  # TODO: Remove it everywhere
