@@ -45,7 +45,7 @@ class BayesianOnline(OnlineAlgorithm):
         self.__run_length_probs: npt.NDArray[np.float64] = np.array([])
 
         self.__was_change_point = False
-        self.__change_point: int | None = None
+        self.__change_point: Optional[int] = None
 
     def clear(self) -> None:
         """

@@ -26,4 +26,4 @@ class ArgmaxLocalizer(ILocalizer):
         if len(growth_probs) == 0:
             return 0
 
-        return int(growth_probs[0:-1].argmax())
+        return int(growth_probs[:-1].argmax())

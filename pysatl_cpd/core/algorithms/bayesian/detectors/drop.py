@@ -6,6 +6,8 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
+from typing import Optional
+
 import numpy as np
 import numpy.typing as npt
 
@@ -23,7 +25,7 @@ class DropDetector(IDetector):
         Initializes the detector with given drop threshold.
         :param threshold: threshold for a drop of the maximum run length's probability.
         """
-        self.__previous_growth_prob: None | float = None
+        self.__previous_growth_prob: Optional[float] = None
 
         self._threshold = threshold
         assert 0.0 <= self._threshold <= 1.0, "Drop threshold must be in [0.0, 1.0]"

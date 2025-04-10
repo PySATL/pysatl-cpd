@@ -8,6 +8,8 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
+from typing import Optional
+
 import numpy as np
 import numpy.typing as npt
 from scipy import stats
@@ -27,10 +29,10 @@ class GaussianConjugate(ILikelihood):
         """
         Initializes model. There are no known parameters at this moment.
         """
-        self.__mu_0: np.float64 | None = None
-        self.__k_0: int | None = None
-        self.__alpha_0: float | None = None
-        self.__beta_0: np.float64 | None = None
+        self.__mu_0: Optional[np.float64] = None
+        self.__k_0: Optional[int] = None
+        self.__alpha_0: Optional[float] = None
+        self.__beta_0: Optional[np.float64] = None
 
         self.__mu_params = np.array([])
         self.__k_params = np.array([])
