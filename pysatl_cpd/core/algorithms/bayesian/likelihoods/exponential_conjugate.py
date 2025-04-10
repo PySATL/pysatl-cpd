@@ -69,6 +69,8 @@ class ExponentialConjugate(ILikelihood):
             scale=self.__scales,
         )
 
+        # In case of negative scale parameter corresponding distribution does not exist, so substitution of
+        # an observation results in a NaN-value. In context of algorithm it can be assumed that this probability is 0.
         without_nans = np.nan_to_num(x=predictive_probabilities, nan=0.0)
 
         return np.array(without_nans)
