@@ -157,7 +157,7 @@ class PermutationEntropyAlgorithm(OnlineAlgorithm):
             if entropy_diff > self._threshold:
                 self._last_change_point = self._position - self._window_size // 2
 
-    def _calculate_permutation_entropy(self, time_series: np.ndarray) -> float:
+    def _calculate_permutation_entropy(self, time_series: npt.NDArray[np.float64]) -> float:
         """
         Calculates the permutation entropy of a time series using the order of values in the sliding windows.
         The entropy is computed based on the frequency of different permutations of the state vectors.
@@ -184,4 +184,4 @@ class PermutationEntropyAlgorithm(OnlineAlgorithm):
             [probability * np.log2(probability) for probability in permutation_probabilities if probability > 0]
         )
 
-        return permutation_entropy
+        return float(permutation_entropy)

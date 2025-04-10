@@ -144,7 +144,7 @@ class ShannonEntropyAlgorithm(OnlineAlgorithm):
             if entropy_diff > self._threshold:
                 self._last_change_point = self._position - self._window_size // 2
 
-    def _compute_entropy(self, probabilities: np.ndarray) -> float:
+    def _compute_entropy(self, probabilities: npt.NDArray[np.float64]) -> float:
         """
         Computes Shannon entropy based on a probability distribution.
 
@@ -157,4 +157,4 @@ class ShannonEntropyAlgorithm(OnlineAlgorithm):
         probabilities = probabilities[probabilities > 0]
         if len(probabilities) == 0:
             return 0.0
-        return -np.sum(probabilities * np.log2(probabilities))
+        return float(-np.sum(probabilities * np.log2(probabilities)))

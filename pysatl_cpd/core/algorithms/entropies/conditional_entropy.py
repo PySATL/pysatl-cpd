@@ -229,7 +229,9 @@ class ConditionalEntropyAlgorithm(OnlineAlgorithm):
             if entropy_diff > self._threshold:
                 self._last_change_point = self._position - self._window_size // 2
 
-    def _compute_conditional_entropy(self, time_series_x: np.ndarray, time_series_y: np.ndarray) -> float:
+    def _compute_conditional_entropy(
+        self, time_series_x: npt.NDArray[np.float64], time_series_y: npt.NDArray[np.float64]
+    ) -> float:
         """
         Computes the conditional entropy of the time series using joint and conditional probability distributions.
 
@@ -244,4 +246,4 @@ class ConditionalEntropyAlgorithm(OnlineAlgorithm):
         H_X_given_Y = -np.nansum(
             joint_probability_matrix * np.log2(conditional_probability, where=conditional_probability > 0)
         )
-        return H_X_given_Y
+        return float(H_X_given_Y)

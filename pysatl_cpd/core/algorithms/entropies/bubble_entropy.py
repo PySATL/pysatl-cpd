@@ -118,7 +118,7 @@ class BubbleEntropyAlgorithm(OnlineAlgorithm):
             if entropy_diff > self._threshold:
                 self._last_change_point = self._position - self._window_size // 2
 
-    def _calculate_bubble_entropy(self, time_series: np.ndarray) -> float:
+    def _calculate_bubble_entropy(self, time_series: npt.NDArray[np.float64]) -> float:
         """
         Calculates the bubble entropy of a time series by computing the difference in permutation entropy
         between two different embedding dimensions.
@@ -132,9 +132,9 @@ class BubbleEntropyAlgorithm(OnlineAlgorithm):
         denom = np.log((self._embedding_dimension + 1) / self._embedding_dimension)
         bubble_entropy = (H_swaps_m_plus_1 - H_swaps_m) / denom
 
-        return bubble_entropy
+        return float(bubble_entropy)
 
-    def _calculate_permutation_entropy(self, time_series: np.ndarray, embedding_dimension: int) -> float:
+    def _calculate_permutation_entropy(self, time_series: npt.NDArray[np.float64], embedding_dimension: int) -> float:
         """
         Calculates the permutation entropy of a time series based on the given embedding dimension.
 
