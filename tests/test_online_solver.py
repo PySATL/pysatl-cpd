@@ -3,6 +3,7 @@ import pytest
 
 from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate import ExponentialConjugate
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import GaussianConjugate
 from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
@@ -125,3 +126,30 @@ class TestOnlineCpdSolver:
             assert result == (1 if has_cp else 0), (
                 "Number of change points must be equal to expected in the generated data"
             )
+
+    def test_exponential_with_negatives(self, data_params):
+        np.random.seed(42)
+        data = np.concatenate(
+            [
+                np.random.exponential(1 / 2, data_params["change_point"]),
+                np.random.normal(0, 1, data_params["size"] - data_params["change_point"]),
+            ]
+        )
+
+        algorithm = BayesianOnline(
+            learning_sample_size=20,
+            likelihood=ExponentialConjugate(),
+            hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
+            detector=ThresholdDetector(threshold=0.04),
+            localizer=ArgmaxLocalizer(),
+        )
+
+        data_provider = ListUnivariateProvider(list(data))
+
+        cpd = OnlineCpdSolver(
+            scenario=CpdProblem(True),
+            algorithm=algorithm,
+            algorithm_input=data_provider,
+        )
+
+        cpd.run()
