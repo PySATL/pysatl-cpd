@@ -152,11 +152,11 @@ class BubbleEntropyAlgorithm(OnlineAlgorithm):
         total_permutations = len(permutation_vectors)
 
         if total_permutations == 0:
-            return 0.0
+            return float(0)
 
         permutation_probabilities = [count / total_permutations for count in permutation_counts.values()]
         permutation_entropy = -np.sum(
             [probability * np.log2(probability) for probability in permutation_probabilities if probability > 0]
         )
 
-        return permutation_entropy
+        return float(permutation_entropy)
