@@ -1,12 +1,16 @@
 import numpy as np
 import pytest
 
+from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
+from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import GaussianConjugate
+from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
+from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
 from pysatl_cpd.core.problem import CpdProblem
 from pysatl_cpd.core.scrubber.data_providers import ListUnivariateProvider
 from pysatl_cpd.icpd_solver import CpdLocalizationResults
 from pysatl_cpd.labeled_data import LabeledCpdData
 from pysatl_cpd.online_cpd_solver import OnlineCpdSolver
-from tests.test_core.test_algorithms.test_bayesian_online_algorithm import construct_bayesian_online_algorithm
 
 DATA_PARAMS = {
     "num_tests": 10,
@@ -50,7 +54,13 @@ def labeled_data_factory(data_params):
 def solver_factory():
     def _factory(data_input, with_localization):
         return OnlineCpdSolver(
-            algorithm=construct_bayesian_online_algorithm(),
+            algorithm=BayesianOnline(
+                learning_sample_size=50,
+                likelihood=GaussianConjugate(),
+                hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
+                detector=ThresholdDetector(threshold=0.04),
+                localizer=ArgmaxLocalizer(),
+            ),
             algorithm_input=data_input,
             scenario=CpdProblem(with_localization),
         )
