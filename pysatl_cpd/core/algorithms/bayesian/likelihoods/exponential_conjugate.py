@@ -69,7 +69,9 @@ class ExponentialConjugate(ILikelihood):
             scale=self.__scales,
         )
 
-        return np.array(predictive_probabilities)
+        without_nans = np.nan_to_num(x=predictive_probabilities, nan=0.0)
+
+        return np.array(without_nans)
 
     def clear(self) -> None:
         """

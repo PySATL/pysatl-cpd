@@ -21,9 +21,10 @@ class ArgmaxLocalizer(ILocalizer):
         """
         Localizes a change point corresponding with the most probable non-max run length.
         :param growth_probs: growth probabilities for run lengths at the time.
-        :return: the most probable non-max run length corresponding change point.
+        :return: the most probable non-max run length corresponding change point;
+        in case of one-element array returns it.
         """
-        if len(growth_probs) == 0:
-            return 0
+        max_run_length = growth_probs.shape[0]
+        assert max_run_length > 0, "Run length distribution should not be empty"
 
-        return int(growth_probs[:-1].argmax())
+        return 0 if max_run_length == 1 else int(growth_probs[:-1].argmax())
