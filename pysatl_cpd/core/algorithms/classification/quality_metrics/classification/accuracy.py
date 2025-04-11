@@ -9,7 +9,9 @@ __license__ = "SPDX-License-Identifier: MIT"
 import numpy as np
 import numpy.typing as npt
 
-from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import QualityMetric
+from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import (
+    QualityMetric,
+)
 
 
 class Accuracy(QualityMetric):

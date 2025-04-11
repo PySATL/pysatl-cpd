@@ -21,7 +21,9 @@ class KNNClassifier(Classifier):
     """
 
     def __init__(
-        self, k: int, distance: tp.Literal["manhattan", "euclidean", "minkowski", "hamming"] = "minkowski"
+        self,
+        k: int,
+        distance: tp.Literal["manhattan", "euclidean", "minkowski", "hamming"] = "minkowski",
     ) -> None:
         """
         Initializes a new instance of knn classifier for cpd.

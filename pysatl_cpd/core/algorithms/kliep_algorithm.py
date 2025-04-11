@@ -4,7 +4,9 @@ import numpy as np
 import numpy.typing as npt
 from numpy import dtype, float64, ndarray
 
-from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
+from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import (
+    DensityBasedAlgorithm,
+)
 
 
 class KliepAlgorithm(DensityBasedAlgorithm):

@@ -5,13 +5,21 @@ import numpy.typing as npt
 import pytest
 
 import pysatl_cpd.generator.distributions as dstr
-from pysatl_cpd.core.algorithms.classification.classifiers.decision_tree import DecisionTreeClassifier
+from pysatl_cpd.core.algorithms.classification.classifiers.decision_tree import (
+    DecisionTreeClassifier,
+)
 from pysatl_cpd.core.algorithms.classification.classifiers.knn import KNNClassifier
 from pysatl_cpd.core.algorithms.classification.classifiers.rf import RFClassifier
 from pysatl_cpd.core.algorithms.classification.classifiers.svm import SVMClassifier
-from pysatl_cpd.core.algorithms.classification.quality_metrics.classification.f1 import F1
-from pysatl_cpd.core.algorithms.classification.quality_metrics.classification.mcc import MCC
-from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import ThresholdOvercome
+from pysatl_cpd.core.algorithms.classification.quality_metrics.classification.f1 import (
+    F1,
+)
+from pysatl_cpd.core.algorithms.classification.quality_metrics.classification.mcc import (
+    MCC,
+)
+from pysatl_cpd.core.algorithms.classification.test_statistics.threshold_overcome import (
+    ThresholdOvercome,
+)
 from pysatl_cpd.core.algorithms.classification_algorithm import ClassificationAlgorithm
 from pysatl_cpd.core.algorithms.knn_algorithm import KNNAlgorithm
 from pysatl_cpd.core.scrubber.data_providers import LabeledDataProvider
@@ -36,7 +44,7 @@ def assert_result(actual):
     def in_interval(cp):
         return EXPECTED_CP - TOLERABLE_DEVIATION <= cp <= EXPECTED_CP + TOLERABLE_DEVIATION
 
-    assert (len(actual) > 0 and all(in_interval(cp) for cp in actual)), "Incorrect change point localization"
+    assert len(actual) > 0 and all(in_interval(cp) for cp in actual), "Incorrect change point localization"
 
 
 def build_classification_alg(classifier_name, metric_name):
@@ -62,10 +70,12 @@ def build_classification_alg(classifier_name, metric_name):
         case _:
             raise NotImplementedError("No such classifier yet.")
 
-    return ClassificationAlgorithm(classifier=classifier,
-                                quality_metric=quality_metric,
-                                test_statistic=ThresholdOvercome(threshold),
-                                indent_coeff=INDENT_COEFF)
+    return ClassificationAlgorithm(
+        classifier=classifier,
+        quality_metric=quality_metric,
+        test_statistic=ThresholdOvercome(threshold),
+        indent_coeff=INDENT_COEFF,
+    )
 
 
 def build_solver(alg, data):
@@ -77,12 +87,8 @@ def build_solver(alg, data):
 @pytest.fixture(scope="session")
 def univariate_data():
     np.random.seed(1)
-    left_distr = dstr.Distribution.from_str(
-        str(dstr.Distributions.UNIFORM),
-            {"min": "2.0", "max": "2.1"})
-    right_distr = dstr.Distribution.from_str(
-        str(dstr.Distributions.UNIFORM),
-            {"min": "0.0", "max": "0.1"})
+    left_distr = dstr.Distribution.from_str(str(dstr.Distributions.UNIFORM), {"min": "2.0", "max": "2.1"})
+    right_distr = dstr.Distribution.from_str(str(dstr.Distributions.UNIFORM), {"min": "0.0", "max": "0.1"})
     return np.concatenate(
         [
             left_distr.scipy_sample(EXPECTED_CP),
@@ -94,24 +100,20 @@ def univariate_data():
 @pytest.fixture(scope="session")
 def multivariate_data():
     np.random.seed(1)
-    left_distr = dstr.Distribution.from_str(
-        str(dstr.Distributions.MULTIVARIATIVE_NORMAL),
-            {"mean": str([0.0] * 10)})
-    right_distr = dstr.Distribution.from_str(
-        str(dstr.Distributions.MULTIVARIATIVE_NORMAL),
-            {"mean": str([5.0] * 10)})
+    left_distr = dstr.Distribution.from_str(str(dstr.Distributions.MULTIVARIATIVE_NORMAL), {"mean": str([0.0] * 10)})
+    right_distr = dstr.Distribution.from_str(str(dstr.Distributions.MULTIVARIATIVE_NORMAL), {"mean": str([5.0] * 10)})
     return np.concatenate(
         [
             left_distr.scipy_sample(EXPECTED_CP),
-            right_distr.scipy_sample(SIZE - EXPECTED_CP)
+            right_distr.scipy_sample(SIZE - EXPECTED_CP),
         ]
     )
 
 
 class TestClassificationCpd:
     @pytest.mark.parametrize(
-            "classifier_name, metric",
-            list(product(CLASSIFIERS, METRICS)),
+        "classifier_name, metric",
+        list(product(CLASSIFIERS, METRICS)),
     )
     def test_classification_cpd_univariate(self, classifier_name, metric, univariate_data):
         alg = build_classification_alg(classifier_name, metric)
@@ -120,8 +122,8 @@ class TestClassificationCpd:
         assert_result(actual)
 
     @pytest.mark.parametrize(
-            "classifier_name, metric",
-            list(product(CLASSIFIERS, METRICS)),
+        "classifier_name, metric",
+        list(product(CLASSIFIERS, METRICS)),
     )
     def test_classification_cpd_multivariate(self, classifier_name, metric, multivariate_data):
         alg = build_classification_alg(classifier_name, metric)
@@ -136,20 +138,24 @@ class TestKnnCpd:
         def metric(obs1: float, obs2: float) -> float:
             return abs(obs1 - obs2)
 
-        return KNNAlgorithm(distance_func=metric,
-                            test_statistic=ThresholdOvercome(CM_THRESHOLD),
-                            indent_coeff=INDENT_COEFF,
-                            k=K)
+        return KNNAlgorithm(
+            distance_func=metric,
+            test_statistic=ThresholdOvercome(CM_THRESHOLD),
+            indent_coeff=INDENT_COEFF,
+            k=K,
+        )
 
     @pytest.fixture(scope="function")
     def knn_cpd_multivariate(self):
         def metric(obs1: npt.NDArray[np.float64], obs2: npt.NDArray[np.float64]) -> float:
             return float(np.linalg.norm(obs1 - obs2))
 
-        return KNNAlgorithm(distance_func=metric,
-                        test_statistic=ThresholdOvercome(CM_THRESHOLD),
-                        indent_coeff=INDENT_COEFF,
-                        k=K)
+        return KNNAlgorithm(
+            distance_func=metric,
+            test_statistic=ThresholdOvercome(CM_THRESHOLD),
+            indent_coeff=INDENT_COEFF,
+            k=K,
+        )
 
     def test_knn_cpd_univariate(self, knn_cpd_univariate, univariate_data):
         solver = build_solver(knn_cpd_univariate, univariate_data)

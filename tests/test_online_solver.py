@@ -6,7 +6,9 @@ from pysatl_cpd.core.scrubber.data_providers import ListUnivariateProvider
 from pysatl_cpd.icpd_solver import CpdLocalizationResults
 from pysatl_cpd.labeled_data import LabeledCpdData
 from pysatl_cpd.online_cpd_solver import OnlineCpdSolver
-from tests.test_core.test_algorithms.test_bayesian_online_algorithm import construct_bayesian_online_algorithm
+from tests.test_core.test_algorithms.test_bayesian_online_algorithm import (
+    construct_bayesian_online_algorithm,
+)
 
 DATA_PARAMS = {
     "num_tests": 10,
@@ -41,7 +43,10 @@ def data_generator(data_params):
 @pytest.fixture
 def labeled_data_factory(data_params):
     def _factory(data, has_cp):
-        return LabeledCpdData(raw_data=data, change_points=[data_params["change_point"]] if has_cp else None)
+        return LabeledCpdData(
+            raw_data=data,
+            change_points=[data_params["change_point"]] if has_cp else None,
+        )
 
     return _factory
 

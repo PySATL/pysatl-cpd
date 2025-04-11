@@ -117,7 +117,10 @@ class DatasetDescriptionBuilder:
         self._name = name
 
     def add_distribution(
-        self, distribution_type: str, distribution_length: int, distribution_parameters: dict[str, str]
+        self,
+        distribution_type: str,
+        distribution_length: int,
+        distribution_parameters: dict[str, str],
     ) -> None:
         """Add new distribution to dataset
 

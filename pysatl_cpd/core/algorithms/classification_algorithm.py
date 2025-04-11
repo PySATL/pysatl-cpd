@@ -12,8 +12,12 @@ import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.classification.abstracts.iclassifier import Classifier
-from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import QualityMetric
-from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.classification.abstracts.iquality_metric import (
+    QualityMetric,
+)
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import (
+    TestStatistic,
+)
 
 
 class ClassificationAlgorithm(Algorithm):
@@ -22,7 +26,11 @@ class ClassificationAlgorithm(Algorithm):
     """
 
     def __init__(
-        self, classifier: Classifier, quality_metric: QualityMetric, test_statistic: TestStatistic, indent_coeff: float
+        self,
+        classifier: Classifier,
+        quality_metric: QualityMetric,
+        test_statistic: TestStatistic,
+        indent_coeff: float,
     ) -> None:
         """
         Initializes a new instance of classification based change point detection algorithm.
