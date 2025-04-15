@@ -7,6 +7,9 @@ from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate impor
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
     GaussianConjugate,
 )
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.heuristic_gaussian_vs_exponential import (
+    HeuristicGaussianVsExponential,
+)
 from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
 
@@ -24,7 +27,16 @@ def distribution_type(request):
 @pytest.fixture
 def algorithm_factory(distribution_type):
     def _factory():
-        likelihood = GaussianConjugate() if distribution_type == "normal" else ExponentialConjugate()
+        likelihood = None
+        match distribution_type:
+            case "normal":
+                likelihood = GaussianConjugate()
+            case "exponential":
+                likelihood = ExponentialConjugate()
+            case "heuristic":
+                likelihood = HeuristicGaussianVsExponential()
+            case _:
+                raise ValueError("Unsupported likelihood")
 
         return BayesianOnline(
             learning_sample_size=5,
@@ -44,10 +56,15 @@ def generate_data(distribution_type, data_params):
         cp = data_params["change_point"]
         size = data_params["size"]
 
-        if distribution_type == "normal":
-            return np.concatenate([np.random.normal(0, 1, cp), np.random.normal(5, 2, size - cp)])
-        else:
-            return np.concatenate([np.random.exponential(1.0, cp), np.random.exponential(0.5, size - cp)])
+        match distribution_type:
+            case "normal":
+                return np.concatenate([np.random.normal(0, 1, cp), np.random.normal(5, 2, size - cp)])
+            case "exponential":
+                return np.concatenate([np.random.exponential(1.0, cp), np.random.exponential(0.5, size - cp)])
+            case "heuristic":
+                return np.concatenate([np.random.exponential(1.0, cp), np.random.normal(5, 2, size - cp)])
+            case _:
+                raise ValueError("Unsupported likelihood")
 
     return _generate
 
@@ -63,7 +80,7 @@ def data_params(distribution_type):
     return base_params
 
 
-@pytest.mark.parametrize("distribution_type", ["normal", "exponential"])
+@pytest.mark.parametrize("distribution_type", ["normal", "exponential", "heuristic"])
 class TestBayesianOnlineAlgorithm:
     @pytest.fixture(autouse=True)
     def setup(self, algorithm_factory):

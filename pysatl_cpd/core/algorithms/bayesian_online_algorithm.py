@@ -104,6 +104,8 @@ class BayesianOnline(OnlineAlgorithm):
         evidence = np.sum(new_probs)
         if evidence == 0.0:
             self.__was_change_point = True
+            self.__run_length_probs = np.zeros(self.__run_length_probs.shape[0])
+            self.__run_length_probs[0] = 1.0
             return
 
         assert evidence > 0.0, "Evidence must be > 0.0"
@@ -126,7 +128,7 @@ class BayesianOnline(OnlineAlgorithm):
         )
 
         assert len(self.__data_history) >= run_length, "Run length shouldn't exceed available data length"
-        self.__data_history = self.__data_history[-run_length:]
+        self.__data_history = self.__data_history[-run_length:] if run_length > 0 else []
         self.__clear_training_data()
         self.__change_point = change_point_location
 

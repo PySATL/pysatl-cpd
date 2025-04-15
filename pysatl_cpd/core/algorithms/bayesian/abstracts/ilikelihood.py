@@ -1,9 +1,10 @@
 """
-Module for Bayesian CPD algorithm likelihood function's abstract base class.
+Module for Bayesian CPD algorithm likelihood function's abstract base class and its' extension for a sample's
+probability evaluation with estimated prior parameters.
 """
 
 __author__ = "Alexey Tatyanenko"
-__copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
+__copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
 
@@ -43,5 +44,19 @@ class ILikelihood(Protocol):
     def clear(self) -> None:
         """
         Clears likelihood function's state.
+        """
+        ...
+
+
+class ILikelihoodWithPriorProbability(ILikelihood, Protocol):
+    """
+    Likelihood which also allows to evaluate how probable is learning sample with learned prior parameters.
+    """
+
+    def probability_of_learned_prior(self, sample: npt.NDArray[np.float64]) -> np.float64:
+        """
+        Evaluation of how probable is learning sample with learned prior parameters.
+        :param sample: a sample for the likelihood.
+        :return: probability of getting a learning sample with learned prior parameters.
         """
         ...
