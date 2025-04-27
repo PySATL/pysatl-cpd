@@ -39,7 +39,7 @@ class BayesianOnline(OnlineAlgorithm):
 
         self.__training_data: list[np.float64] = []
         self.__data_history: list[np.float64] = []
-        self.__current_time = 0
+        self.__current_time = -1
 
         self.__is_training: bool = True
         self.__run_length_probs: npt.NDArray[np.float64] = np.array([])
@@ -54,7 +54,7 @@ class BayesianOnline(OnlineAlgorithm):
         """
         self.__clear_training_data()
         self.__data_history = []
-        self.__current_time = 0
+        self.__current_time = -1
 
         self.__is_training = True
         self.__run_length_probs = np.array([])

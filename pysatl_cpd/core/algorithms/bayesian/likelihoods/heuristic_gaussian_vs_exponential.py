@@ -23,6 +23,7 @@ class HeuristicGaussianVsExponential(ILikelihood):
 
     def __init__(self) -> None:
         self.__likelihood: Optional[ILikelihoodWithPriorProbability] = None
+        self.likelihoods_history = []
 
     def learn(self, learning_sample: npt.NDArray[np.float64]) -> None:
         """
@@ -41,6 +42,7 @@ class HeuristicGaussianVsExponential(ILikelihood):
         exponential_probability = exponential.probability_of_learned_prior(learning_sample)
 
         self.__likelihood = gaussian if gaussian_probability >= exponential_probability else exponential
+        self.likelihoods_history.append("N" if gaussian_probability >= exponential_probability else "E")
 
     def predict(self, observation: np.float64) -> npt.NDArray[np.float64]:
         """

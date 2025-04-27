@@ -22,7 +22,9 @@ numpy = "^2.0.0"
 scipy = "^1.14.0"
 matplotlib = "^3.9.1"
 scikit-learn = "^1.5.2"
-PyQt5 = "^5.15.11"
+# PyQt5 = "^5.15.11"
+polars = "^1.27.1"
+pyarrow = "^19.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
