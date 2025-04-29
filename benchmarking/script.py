@@ -96,8 +96,8 @@ def benchmark(configurations, num_of_experiments, parameters, input_path, output
 
 def run_benchmark():
     # Data: https://drive.google.com/drive/folders/1cp0V29ZTuOW0tqDAdSiaDHopFhOtfVPj?usp=sharing
-    input_path = "D:\\Alexey\\PyCharmProjects\\experiment_data"
-    output_path = "D:\\Alexey\\PyCharmProjects\\PySATL-CPD-Module\\benchmarking"
+    input_path = "input/path"
+    output_path = "output/path"
 
     thresholds = [0.27, 0.18, 0.07, 0.04]
     learning_sample_sizes = [50, 20, 10, 5]
