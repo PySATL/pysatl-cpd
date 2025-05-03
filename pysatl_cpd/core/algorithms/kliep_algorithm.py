@@ -6,8 +6,7 @@ __author__ = "Aleksandra Listkova"
 __copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from typing import Any, List, Tuple, Optional, cast
-
+from typing import Any, Optional, cast
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize  # type: ignore[import-untyped]
@@ -49,7 +48,7 @@ class KliepAlgorithm(Algorithm):
         """
         return len(self.localize(window))
 
-    def localize(self, window: npt.NDArray[np.float64]) -> List[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
         """
         Identifies and returns the locations of change points in the window.
 
@@ -102,9 +101,9 @@ class KliepAlgorithm(Algorithm):
         return scores
 
     def _optimize_alpha(
-        self,
-        test_density: npt.NDArray[np.float64],
-        ref_density: npt.NDArray[np.float64]
+            self,
+            test_density: npt.NDArray[np.float64],
+            ref_density: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
         """
         Optimizes the alpha parameters for KLIEP density ratio estimation.
@@ -114,8 +113,8 @@ class KliepAlgorithm(Algorithm):
             return np.float64(-np.mean(np.log(ratio)) + self.regularisation * np.sum(alpha**2))
 
         initial_alpha: npt.NDArray[np.float64] = np.zeros_like(test_density).flatten()
-        bounds: List[Tuple[float, Optional[float]]] = [(0.0, None) for _ in test_density.flatten()]
-    
+        bounds: list[tuple[float, Optional[float]]] = [(0.0, None) for _ in test_density.flatten()]
+        
         def wrapped_loss(alpha_flat: npt.NDArray[np.float64]) -> float:
             alpha = alpha_flat.reshape(test_density.shape)
             return float(loss(alpha))
@@ -127,10 +126,10 @@ class KliepAlgorithm(Algorithm):
             options={'maxiter': self.max_iter},
             bounds=bounds
         )
-    
+        
         return cast(npt.NDArray[np.float64], res.x.reshape(test_density.shape))
 
-    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> List[int]:
+    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> list[int]:
         """
         Identifies change points from computed KLIEP scores.
 
