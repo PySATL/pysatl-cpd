@@ -13,8 +13,7 @@ import numpy.typing as npt
 from scipy.optimize import minimize  # type: ignore[import-untyped]
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
-from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import \
-    DensityBasedAlgorithm
+from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
 
 
 class KliepAlgorithm(Algorithm):
