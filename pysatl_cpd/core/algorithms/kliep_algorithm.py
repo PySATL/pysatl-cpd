@@ -7,12 +7,14 @@ __copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
 __license__ = "SPDX-License-Identifier: MIT"
 
 from typing import Any, Optional, cast
+
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize  # type: ignore[import-untyped]
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
-from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
+from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import \
+    DensityBasedAlgorithm
 
 
 class KliepAlgorithm(Algorithm):
@@ -114,7 +116,7 @@ class KliepAlgorithm(Algorithm):
 
         initial_alpha: npt.NDArray[np.float64] = np.zeros_like(test_density).flatten()
         bounds: list[tuple[float, Optional[float]]] = [(0.0, None) for _ in test_density.flatten()]
-        
+
         def wrapped_loss(alpha_flat: npt.NDArray[np.float64]) -> float:
             alpha = alpha_flat.reshape(test_density.shape)
             return float(loss(alpha))
@@ -126,7 +128,7 @@ class KliepAlgorithm(Algorithm):
             options={'maxiter': self.max_iter},
             bounds=bounds
         )
-        
+
         return cast(npt.NDArray[np.float64], res.x.reshape(test_density.shape))
 
     def _find_change_points(self, scores: npt.NDArray[np.float64]) -> list[int]:
@@ -146,4 +148,3 @@ class KliepAlgorithm(Algorithm):
                 change_points.append(int(point))
 
         return change_points
-    
