@@ -6,11 +6,11 @@ __author__ = "Aleksandra Listkova"
 __copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from typing import Any, cast
+from typing import Any, List, Tuple, Optional, cast
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize
+from scipy.optimize import minimize  # type: ignore[import-untyped]
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
@@ -49,7 +49,7 @@ class KliepAlgorithm(Algorithm):
         """
         return len(self.localize(window))
 
-    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
+    def localize(self, window: npt.NDArray[np.float64]) -> List[int]:
         """
         Identifies and returns the locations of change points in the window.
 
@@ -102,36 +102,35 @@ class KliepAlgorithm(Algorithm):
         return scores
 
     def _optimize_alpha(
-            self,
-            test_density: npt.NDArray[np.float64],
-            ref_density: npt.NDArray[np.float64]
+        self,
+        test_density: npt.NDArray[np.float64],
+        ref_density: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
         """
         Optimizes the alpha parameters for KLIEP density ratio estimation.
-
-        :param test_density: density estimates for the test window.
-        :param ref_density: density estimates for the reference window.
-        :return: optimized alpha parameters.
         """
-        def loss(alpha: npt.NDArray[np.float64]) -> float:
-            """Objective function for KLIEP optimization."""
+        def loss(alpha: npt.NDArray[np.float64]) -> np.float64:
             ratio = np.exp(test_density - ref_density - alpha)
-            loss_val = -np.mean(np.log(ratio)) + self.regularisation * np.sum(alpha**2)
-            return float(loss_val)
+            return np.float64(-np.mean(np.log(ratio)) + self.regularisation * np.sum(alpha**2))
 
-        initial_alpha = np.zeros_like(test_density, dtype=np.float64)
-        bounds = [(0, None)] * len(test_density)
+        initial_alpha: npt.NDArray[np.float64] = np.zeros_like(test_density).flatten()
+        bounds: List[Tuple[float, Optional[float]]] = [(0.0, None) for _ in test_density.flatten()]
+    
+        def wrapped_loss(alpha_flat: npt.NDArray[np.float64]) -> float:
+            alpha = alpha_flat.reshape(test_density.shape)
+            return float(loss(alpha))
 
         res = minimize(
-            loss,
+            wrapped_loss,
             initial_alpha,
             method='L-BFGS-B',
             options={'maxiter': self.max_iter},
             bounds=bounds
         )
-        return cast(npt.NDArray[np.float64], res.x)
+    
+        return cast(npt.NDArray[np.float64], res.x.reshape(test_density.shape))
 
-    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> list[int]:
+    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> List[int]:
         """
         Identifies change points from computed KLIEP scores.
 
@@ -142,9 +141,10 @@ class KliepAlgorithm(Algorithm):
         if len(candidates) == 0:
             return []
 
-        change_points = [candidates[0]]
-        for points in candidates[1:]:
-            if points - change_points[-1] > self.min_window_size:
-                change_points.append(points)
+        change_points = [int(candidates[0])]
+        for point in candidates[1:]:
+            if point - change_points[-1] > self.min_window_size:
+                change_points.append(int(point))
 
         return change_points
+    
