@@ -3,6 +3,10 @@ Module for chanhe point detection online algorithm, based on Bayesian online alg
 an algorithm with linear time complexity with a cost of some information loss.
 """
 
+__author__ = "Alexey Tatyanenko"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import copy
 from typing import Optional
 
