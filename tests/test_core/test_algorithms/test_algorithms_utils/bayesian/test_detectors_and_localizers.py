@@ -7,7 +7,10 @@ from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalize
 
 
 @pytest.fixture(
-    params=[pytest.param((ThresholdDetector, 0.8), id="Threshold"), pytest.param((DropDetector, 0.1), id="Drop")],
+    params=[
+        pytest.param((ThresholdDetector, 0.8), id="Threshold"),
+        pytest.param((DropDetector, 0.1), id="Drop"),
+    ],
     scope="function",
 )
 def detector(request):

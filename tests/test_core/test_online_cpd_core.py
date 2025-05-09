@@ -3,7 +3,9 @@ import pytest
 
 from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import GaussianConjugate
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
+    GaussianConjugate,
+)
 from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
 from pysatl_cpd.core.online_cpd_core import OnlineCpdCore
@@ -53,7 +55,8 @@ def dataset(request, data_params):
 @pytest.fixture
 def online_core(dataset):
     return OnlineCpdCore(
-        algorithm=construct_bayesian_online_algorithm(), data_provider=ListUnivariateProvider(list(dataset))
+        algorithm=construct_bayesian_online_algorithm(),
+        data_provider=ListUnivariateProvider(list(dataset)),
     )
 
 

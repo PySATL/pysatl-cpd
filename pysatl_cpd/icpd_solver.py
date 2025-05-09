@@ -111,7 +111,12 @@ class CpdLocalizationResults:
             raise ValueError("this object is not provided with expected result, recall cannot be calculated")
         return CpdResultsAnalyzer.count_recall(self.result, self.expected_result, window)
 
-    def visualize(self, to_show: bool = True, output_directory: Path | None = None, name: str = "plot") -> None:
+    def visualize(
+        self,
+        to_show: bool = True,
+        output_directory: Path | None = None,
+        name: str = "plot",
+    ) -> None:
         """method for building and analyzing graph
 
         :param to_show: is it necessary to show a graph
@@ -122,7 +127,13 @@ class CpdLocalizationResults:
         data: npt.NDArray[np.float64] = np.array(list(self.data))
         plt.plot(data)
         if self.expected_result is None:
-            plt.vlines(x=self.result, ymin=data.min(), ymax=data.max(), colors="orange", ls="--")
+            plt.vlines(
+                x=self.result,
+                ymin=data.min(),
+                ymax=data.max(),
+                colors="orange",
+                ls="--",
+            )
             plt.gca().legend(("data", "detected"))
         else:
             correct, incorrect, undetected = set(), set(), set(self.expected_result)
@@ -132,9 +143,27 @@ class CpdLocalizationResults:
                     undetected.remove(point)
                 elif point not in undetected:
                     incorrect.add(point)
-            plt.vlines(x=list(correct), ymin=data.min(), ymax=data.max(), colors="green", ls="--")
-            plt.vlines(x=list(incorrect), ymin=data.min(), ymax=data.max(), colors="red", ls="--")
-            plt.vlines(x=list(undetected), ymin=data.min(), ymax=data.max(), colors="orange", ls="--")
+            plt.vlines(
+                x=list(correct),
+                ymin=data.min(),
+                ymax=data.max(),
+                colors="green",
+                ls="--",
+            )
+            plt.vlines(
+                x=list(incorrect),
+                ymin=data.min(),
+                ymax=data.max(),
+                colors="red",
+                ls="--",
+            )
+            plt.vlines(
+                x=list(undetected),
+                ymin=data.min(),
+                ymax=data.max(),
+                colors="orange",
+                ls="--",
+            )
             plt.gca().legend(("data", "correct detected", "incorrect detected", "undetected"))
         if output_directory:
             if not output_directory.exists():

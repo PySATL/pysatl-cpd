@@ -3,7 +3,9 @@ import pytest
 
 from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate import ExponentialConjugate
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate import (
+    ExponentialConjugate,
+)
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
     GaussianConjugate,
 )
@@ -60,7 +62,12 @@ def generate_data(distribution_type, data_params):
             case "normal":
                 return np.concatenate([np.random.normal(0, 1, cp), np.random.normal(5, 2, size - cp)])
             case "exponential":
-                return np.concatenate([np.random.exponential(1.0, cp), np.random.exponential(0.5, size - cp)])
+                return np.concatenate(
+                    [
+                        np.random.exponential(1.0, cp),
+                        np.random.exponential(0.5, size - cp),
+                    ]
+                )
             case "heuristic":
                 return np.concatenate([np.random.exponential(1.0, cp), np.random.normal(5, 2, size - cp)])
             case _:

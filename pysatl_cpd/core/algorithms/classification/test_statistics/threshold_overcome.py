@@ -6,7 +6,9 @@ __author__ = "Artemii Patov"
 __copyright__ = "Copyright (c) 2024 Artemii Patov"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import (
+    TestStatistic,
+)
 
 
 class ThresholdOvercome(TestStatistic):

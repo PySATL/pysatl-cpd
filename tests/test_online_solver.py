@@ -3,8 +3,12 @@ import pytest
 
 from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate import ExponentialConjugate
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import GaussianConjugate
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate import (
+    ExponentialConjugate,
+)
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
+    GaussianConjugate,
+)
 from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
 from pysatl_cpd.core.problem import CpdProblem
@@ -46,7 +50,10 @@ def data_generator(data_params):
 @pytest.fixture
 def labeled_data_factory(data_params):
     def _factory(data, has_cp):
-        return LabeledCpdData(raw_data=data, change_points=[data_params["change_point"]] if has_cp else None)
+        return LabeledCpdData(
+            raw_data=data,
+            change_points=[data_params["change_point"]] if has_cp else None,
+        )
 
     return _factory
 

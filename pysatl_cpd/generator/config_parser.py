@@ -46,7 +46,10 @@ class ConfigParser:
         descriptions: list[SampleDescription] = []
         for descr in config:
             db = DatasetDescriptionBuilder()
-            match (descr[ConfigParser.NAME_FIELD], descr[ConfigParser.DISTRIBUTION_FIELD]):
+            match (
+                descr[ConfigParser.NAME_FIELD],
+                descr[ConfigParser.DISTRIBUTION_FIELD],
+            ):
                 case (str(name), list(distributions)):
                     pass
                 case _:

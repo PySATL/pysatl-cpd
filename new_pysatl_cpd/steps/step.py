@@ -1,19 +1,28 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
-from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
-from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
-from new_pysatl_cpd.steps.test_execution_step.test_execution_step import TestExecutionStep
+from new_pysatl_cpd.steps.data_generation_step.data_generation_step import (
+    DataGenerationStep,
+)
+from new_pysatl_cpd.steps.report_generation_step.report_generation_step import (
+    ReportGenerationStep,
+)
+from new_pysatl_cpd.steps.test_execution_step.test_execution_step import (
+    TestExecutionStep,
+)
 
 
 class Step(ABC):
-    def __init__(self, name: str = "Step",
-                 input_storage_names: Optional[set[str]] = None,
-                 output_storage_names: Optional[set[str] | dict[str, str]] = None,
-                 input_step_names: Optional[set[str] | dict[str, str]] = None,
-                 output_step_names: Optional[set[str] | dict[str, str]] = None,
-                 config: Optional[Path] = None):
+    def __init__(
+        self,
+        name: str = "Step",
+        input_storage_names: Optional[set[str]] = None,
+        output_storage_names: Optional[set[str] | dict[str, str]] = None,
+        input_step_names: Optional[set[str] | dict[str, str]] = None,
+        output_step_names: Optional[set[str] | dict[str, str]] = None,
+        config: Optional[Path] = None,
+    ):
         self.name = name
         self.input_storage_names = input_storage_names if input_storage_names else set()
         self.output_storage_names = output_storage_names if output_storage_names else set()
@@ -34,12 +43,15 @@ class Step(ABC):
     def set_next(self, next_step: "Step") -> None:
         available_next_classes = self._available_next_classes()
 
-        if next_step not in available_next_classes:
+        if type(next_step) not in available_next_classes:
             raise ValueError(
-                f"Only {available_next_classes} available for {self.name}. But {type(next_step)}({next_step._next.name}) was given")
+                f"Only {available_next_classes} available for {self.name} ({type(self)})."
+                f" But {next_step.name} ({type(next_step)}) was given"
+            )
 
-    def _filter_and_rename(self, source_dict: dict[str, float], reference_dict: dict[str, str] | set[str]) -> dict[
-        str, float]:
+    def _filter_and_rename(
+        self, source_dict: dict[str, float], reference_dict: dict[str, str] | set[str]
+    ) -> dict[str, float]:
         result = dict()
         for key in reference_dict:
             if key not in source_dict:
@@ -66,5 +78,4 @@ class Step(ABC):
         return self._filter_and_rename(output_data, self.output_storage_names)
 
     @abstractmethod
-    def __call__(self, **kwargs) -> dict[str, float]:
-        ...
+    def __call__(self, **kwargs: Any) -> dict[str, float]: ...

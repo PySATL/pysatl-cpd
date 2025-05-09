@@ -1,5 +1,4 @@
 from abc import ABC
 
 
-class ReportBuilder(ABC):
-    ...
+class ReportBuilder(ABC): ...

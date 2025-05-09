@@ -41,7 +41,11 @@ def generate_data(data_params):
         return np.concatenate(
             [
                 np.random.normal(loc=0, scale=1, size=data_params["change_point"]),
-                np.random.normal(loc=5, scale=2, size=data_params["size"] - data_params["change_point"]),
+                np.random.normal(
+                    loc=5,
+                    scale=2,
+                    size=data_params["size"] - data_params["change_point"],
+                ),
             ]
         )
 
@@ -69,7 +73,11 @@ class TestBayesianAlgorithm:
             assert result, "There was undetected change point in data"
 
     def test_correctness_of_consecutive_detection(
-        self, outer_bayesian_algorithm, inner_algorithm_factory, generate_data, data_params
+        self,
+        outer_bayesian_algorithm,
+        inner_algorithm_factory,
+        generate_data,
+        data_params,
     ):
         for _ in range(data_params["num_of_tests"]):
             data = generate_data()
@@ -90,7 +98,11 @@ class TestBayesianAlgorithm:
             ), "Incorrect change point localization"
 
     def test_correctness_of_consecutive_localization(
-        self, outer_bayesian_algorithm, inner_algorithm_factory, generate_data, data_params
+        self,
+        outer_bayesian_algorithm,
+        inner_algorithm_factory,
+        generate_data,
+        data_params,
     ):
         for _ in range(data_params["num_of_tests"]):
             data = generate_data()
