@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
 from new_pysatl_cpd.steps.test_execution_step.workers.worker import Worker
 from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
@@ -33,6 +34,7 @@ class TestExecutionStep(Step):
         self._worker = worker
         self._loader = loader if saver else DefaultLoader()
         self._saver = saver if saver else DefaultSaver()
+        self._available_next_classes = [TestExecutionStep, ReportGenerationStep]
 
     def __call__(self, **kwargs: Any) -> dict[str, float]:
         # TODO: load data

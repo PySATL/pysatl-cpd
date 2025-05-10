@@ -29,6 +29,7 @@ class ReportGenerationStep(Step):
         )
         self._reporter = reporter
         self._loader = loader if loader else DefaultLoader()
+        self._available_next_classes = [ReportGenerationStep]
 
     def __call__(self, **kwargs: Any) -> dict[str, float]:
         # TODO: load data

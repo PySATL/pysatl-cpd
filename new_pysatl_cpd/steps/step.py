@@ -2,16 +2,6 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Optional
 
-from new_pysatl_cpd.steps.data_generation_step.data_generation_step import (
-    DataGenerationStep,
-)
-from new_pysatl_cpd.steps.report_generation_step.report_generation_step import (
-    ReportGenerationStep,
-)
-from new_pysatl_cpd.steps.test_execution_step.test_execution_step import (
-    TestExecutionStep,
-)
-
 
 class Step(ABC):
     def __init__(
@@ -30,18 +20,10 @@ class Step(ABC):
         self.output_step_names = output_step_names if output_step_names else set()
         self._config = config
         self._next: Optional[Step] = None
-
-    def _available_next_classes(self) -> list[type["Step"]]:
-        if isinstance(self, DataGenerationStep):
-            return [DataGenerationStep, TestExecutionStep]
-        if isinstance(self, TestExecutionStep):
-            return [TestExecutionStep, ReportGenerationStep]
-        if isinstance(self, ReportGenerationStep):
-            return [ReportGenerationStep]
-        return []
+        self._available_next_classes: list[type[Step]] = []
 
     def set_next(self, next_step: "Step") -> None:
-        available_next_classes = self._available_next_classes()
+        available_next_classes = self._available_next_classes
 
         if type(next_step) not in available_next_classes:
             raise ValueError(

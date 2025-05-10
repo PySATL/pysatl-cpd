@@ -5,6 +5,7 @@ from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import
     DataHandler,
 )
 from new_pysatl_cpd.steps.step import Step
+from new_pysatl_cpd.steps.test_execution_step.test_execution_step import TestExecutionStep
 from new_pysatl_cpd.storages.savers.default_saver import DefaultSaver
 from new_pysatl_cpd.storages.savers.saver import Saver
 
@@ -31,6 +32,7 @@ class DataGenerationStep(Step):
         )
         self.data_handler = data_handler
         self._saver = saver if saver else DefaultSaver()
+        self._available_next_classes = [DataGenerationStep, TestExecutionStep]
 
     def __call__(self, **kwargs: Any) -> dict[str, float]:
         renamed_step_output = dict()
