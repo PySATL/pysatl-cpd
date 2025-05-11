@@ -64,12 +64,12 @@ class Step(ABC):
     def _get_storage_output(self, output_data: dict[str, float]) -> dict[str, float]:
         return self._filter_and_rename(output_data, self.output_storage_names)
 
-    def _validate_storages(self) -> bool:
-        return bool(self._loader and self._saver)
+    @abstractmethod
+    def _validate_storages(self) -> bool: ...
 
     def __call__(self, **kwargs: Any) -> dict[str, float]:
         if not self._validate_storages():
-            raise ValueError("Step ran without seting up DataBase. (Try to use this step in Pipeline)")
+            raise ValueError(f"{self} ran without seting up DataBase. (Try to use this step in Pipeline)")
         result = self.process(**kwargs)
         return result
 

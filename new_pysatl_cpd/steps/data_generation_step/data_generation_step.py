@@ -40,3 +40,6 @@ class DataGenerationStep(Step):
             if self.saver:
                 self.saver(renamed_storage_output)
         return renamed_step_output
+
+    def _validate_storages(self) -> bool:
+        return bool(self._saver)

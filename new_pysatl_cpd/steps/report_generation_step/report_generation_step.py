@@ -37,3 +37,6 @@ class ReportGenerationStep(Step):
         renamed_step_output = self._get_step_output(report_result) if report_result else dict()
 
         return renamed_step_output
+
+    def _validate_storages(self) -> bool:
+        return bool(self._loader)

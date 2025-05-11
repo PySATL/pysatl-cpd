@@ -1,11 +1,13 @@
 from typing import Optional
 
-from new_pysatl_cpd.logger import log_exceptions, logger
+from new_pysatl_cpd.logger import cpd_logger, log_exceptions
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
 from new_pysatl_cpd.steps.test_execution_step.test_execution_step import TestExecutionStep
+from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
 from new_pysatl_cpd.storages.loaders.loader import Loader
+from new_pysatl_cpd.storages.savers.default_saver import DefaultSaver
 from new_pysatl_cpd.storages.savers.saver import Saver
 
 
@@ -20,6 +22,7 @@ class Pipeline:
         self._generated_data_loader: Optional[Loader] = None
         self._result_saver: Optional[Saver] = None
         self._result_loader: Optional[Loader] = None
+        self.config_pipeline()
 
     def _check_two_steps(self, step_1: Step, step_2: Step) -> None:
         if isinstance(step_1, DataGenerationStep):
@@ -65,6 +68,7 @@ class Pipeline:
             )
 
     def _setup_step_storage(self, step: Step) -> None:
+        cpd_logger.debug(f"{step} Storages: START SETUP")
         if isinstance(step, DataGenerationStep):
             step.saver = self._generated_data_saver
         elif isinstance(step, TestExecutionStep):
@@ -77,16 +81,23 @@ class Pipeline:
                 f"Unexpected type of {step}."
                 f" Must be one of DataGenerationStep, TestExecutionStep or ReportGenerationStep"
             )
+        cpd_logger.debug(f"{step} Storages: FINISH SETUP")
 
     @log_exceptions
     def config_pipeline(self) -> None:
         for step_index in range(len(self.steps) - 1):
             step_1, step_2 = self.steps[step_index], self.steps[step_index + 1]
             self._check_two_steps(step_1, step_2)
-        logger.debug("The compatibility of the steps has been verified")
+        cpd_logger.debug("The compatibility of the steps has been verified")
 
         # TODO we have all data to create storages, so we create fields:
         #  _generated_data_saver, _generated_data_loader, _result_saver, _result_loader
+
+        # DUMMY REALISATION REMOVE LATER
+        self._generated_data_saver = DefaultSaver()
+        self._generated_data_loader = DefaultLoader()
+        self._result_saver = DefaultSaver()
+        self._result_loader = DefaultLoader()
 
         if not (self._generated_data_saver or self._generated_data_loader):
             missed_field = "generated_data_saver" if not self._generated_data_saver else "generated_data_loader"
@@ -95,24 +106,24 @@ class Pipeline:
                 f" ({missed_field} was not initialized)"
             )
 
-        if not (self._result_saver or self._result_storage_fields):
+        if not (self._result_saver or self._result_loader):
             missed_field = "result_saver" if not self._result_saver else "result_storage_fields"
             raise ValueError(
                 f"An error occurred during Database initialization for the result ({missed_field} was not initialized)"
             )
 
-        logger.debug("Storages initialized")
+        cpd_logger.debug("Storages initialized")
 
         for step in self.steps:
             self._setup_step_storage(step)
 
-        logger.debug("Saver and loader are set for each of the steps")
-        logger.info("The pipeline has been successfully configured")
+        cpd_logger.debug("Saver and loader are set for each of the steps")
+        cpd_logger.info("The pipeline has been successfully configured")
 
     def run(self) -> None:
         for step in self.steps:
-            logger.info(f"{step}: START")
+            cpd_logger.info(f"{step}: START")
             step_result = step(**self._meta_data)
             self._meta_data = self._meta_data | step_result
-            logger.info(f"{step}: OK")
-        logger.info("Pipeline finished")
+            cpd_logger.info(f"{step}: OK")
+        cpd_logger.info("Pipeline finished")

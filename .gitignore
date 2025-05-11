@@ -163,3 +163,4 @@ cython_debug/
 /poetry.lock
 
 /new_pysatl_cpd/execution_logs
+/new_pysatl_cpd/results

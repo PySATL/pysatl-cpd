@@ -44,3 +44,6 @@ class TestExecutionStep(Step):
                 self._saver(renamed_storage_output)
 
         return renamed_step_output
+
+    def _validate_storages(self) -> bool:
+        return bool(self._saver and self._loader)
