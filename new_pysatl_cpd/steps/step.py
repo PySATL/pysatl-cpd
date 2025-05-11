@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.storages.loaders.loader import Loader
+from new_pysatl_cpd.storages.savers.saver import Saver
+
 
 class Step(ABC):
     def __init__(
@@ -21,6 +24,8 @@ class Step(ABC):
         self._config = config
         self._next: Optional[Step] = None
         self._available_next_classes: list[type[Step]] = []
+        self._saver: Optional[Saver] = None
+        self._loader: Optional[Loader] = None
 
     def set_next(self, next_step: "Step") -> None:
         available_next_classes = self._available_next_classes
@@ -59,5 +64,33 @@ class Step(ABC):
     def _get_storage_output(self, output_data: dict[str, float]) -> dict[str, float]:
         return self._filter_and_rename(output_data, self.output_storage_names)
 
+    def _validate_storages(self) -> bool:
+        return bool(self._loader and self._saver)
+
+    def __call__(self, **kwargs: Any) -> dict[str, float]:
+        if not self._validate_storages():
+            raise ValueError("Step ran without seting up DataBase. (Try to use this step in Pipeline)")
+        result = self.process(**kwargs)
+        return result
+
+    def __str__(self) -> str:
+        return f"{self.name} ({type(self).__name__})"
+
+    @property
+    def saver(self) -> Optional[Saver]:
+        return self._saver
+
+    @saver.setter
+    def saver(self, saver: Saver) -> None:
+        self._saver = saver
+
+    @property
+    def loader(self) -> Optional[Loader]:
+        return self._loader
+
+    @loader.setter
+    def loader(self, loader: Loader) -> None:
+        self._loader = loader
+
     @abstractmethod
-    def __call__(self, **kwargs: Any) -> dict[str, float]: ...
+    def process(self, **kwargs: Any) -> dict[str, float]: ...

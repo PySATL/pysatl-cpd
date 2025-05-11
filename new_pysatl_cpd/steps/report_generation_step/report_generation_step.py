@@ -3,15 +3,12 @@ from typing import Any, Optional
 
 from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Reporter
 from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
-from new_pysatl_cpd.storages.loaders.loader import Loader
 
 
 class ReportGenerationStep(Step):
     def __init__(
         self,
         reporter: Reporter,
-        loader: Optional[Loader] = None,
         name: str = "Step",
         input_storage_names: Optional[set[str]] = None,
         output_storage_names: Optional[set[str] | dict[str, str]] = None,
@@ -28,10 +25,9 @@ class ReportGenerationStep(Step):
             config,
         )
         self._reporter = reporter
-        self._loader = loader if loader else DefaultLoader()
         self._available_next_classes = [ReportGenerationStep]
 
-    def __call__(self, **kwargs: Any) -> dict[str, float]:
+    def process(self, **kwargs: Any) -> dict[str, float]:
         # TODO: load data
         storage_input: dict[str, float] = dict()
         renamed_storage_input = self._get_storage_input(storage_input)
