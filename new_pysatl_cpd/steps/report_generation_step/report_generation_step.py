@@ -6,6 +6,30 @@ from new_pysatl_cpd.steps.step import Step
 
 
 class ReportGenerationStep(Step):
+    """Concrete step implementation for generating and visualizing reports in a pipeline.
+
+    This step specializes in report generation by coordinating with a Reporter instance
+    to process data and create final reports. It handles the integration between the
+    pipeline infrastructure and the reporting components.
+
+    :param reporter: Configured reporter instance that handles actual report generation
+    :param name: Human-readable name for this step (default: "Step")
+    :param input_storage_names: Required input storage fields (set or dict for renaming)
+    :param output_storage_names: Output storage fields (set or dict for renaming)
+    :param input_step_names: Required input fields from previous steps (set or dict for renaming)
+    :param config: Path to configuration file
+
+    :ivar _reporter: The wrapped reporter instance
+    :ivar _available_next_classes: Allowed subsequent step types
+
+    .. rubric:: Execution Workflow
+
+    1. Loads required input data from storage
+    2. Processes inputs through the configured Reporter
+    3. Handles report generation and visualization
+    4. Returns any output metrics
+    """
+
     def __init__(
         self,
         reporter: Reporter,
@@ -28,6 +52,18 @@ class ReportGenerationStep(Step):
         self._available_next_classes = [ReportGenerationStep]
 
     def process(self, **kwargs: Any) -> dict[str, float]:
+        """Execute the report generation process.
+
+        :param kwargs: Input parameters including:
+                      - Storage data (accessed via input_storage_names)
+                      - Step metadata (accessed via input_step_names)
+        :return: Dictionary step Metadata
+
+        .. note::
+            - Combines storage data and step metadata for reporting
+            - All reporting output handled through Reporter's visualizer
+        """
+
         # TODO: load data
         storage_input: dict[str, float] = dict()
         renamed_storage_input = self._get_storage_input(storage_input)
@@ -39,4 +75,8 @@ class ReportGenerationStep(Step):
         return renamed_step_output
 
     def _validate_storages(self) -> bool:
+        """Verify that required storage connections are established.
+
+        :return: True if loader is configured (saver not required)
+        """
         return bool(self._loader)

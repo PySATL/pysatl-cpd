@@ -10,7 +10,13 @@ from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Repor
 
 step_1 = DataGenerationStep(DummyGenerator(), name="DummyGeneration")
 step_2 = ExperimentExecutionStep(DummyWorker(), name="DummyWorker")
-step_3 = ReportGenerationStep(Reporter(DummyReportBuilder(1, 2), DummyReportVisualizer()), name="ReportGeneration")
+step_3 = ReportGenerationStep(
+    Reporter(
+        DummyReportBuilder(1, 2, builder_result_fields={"a", "b", "c"}),
+        DummyReportVisualizer(builder_result_fields={"a", "b", "c"}),
+    ),
+    name="ReportGeneration",
+)
 
 steps = [step_1, step_2, step_3]
 pipeline = Pipeline(steps)

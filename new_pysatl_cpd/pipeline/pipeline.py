@@ -184,5 +184,5 @@ class Pipeline:
             cpd_logger.info(f"{step}: START")
             step_result = step(**self._meta_data)
             self._meta_data = self._meta_data | step_result
-            cpd_logger.info(f"{step}: OK")
+            cpd_logger.info(f"{step}: FINISH")
         cpd_logger.info("Pipeline finished")

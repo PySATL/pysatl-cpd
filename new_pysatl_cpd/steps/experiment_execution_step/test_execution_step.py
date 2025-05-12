@@ -7,6 +7,44 @@ from new_pysatl_cpd.steps.step import Step
 
 
 class ExperimentExecutionStep(Step):
+    """Concrete step implementation for executing experimental workflows in a pipeline.
+
+    This step manages the execution of Worker instances, handling their input/output
+    data and processing results. It serves as an adapter between the pipeline
+    infrastructure and individual Worker implementations.
+
+    :param worker: The worker instance that performs the actual computation
+    :param name: Human-readable name for this step (default: "Step")
+    :param input_storage_names: Required input storage fields (set or dict for renaming)
+    :param output_storage_names: Output storage fields (set or dict for renaming)
+    :param input_step_names: Required input fields from previous steps (set or dict for renaming)
+    :param output_step_names: Output fields for next steps (set or dict for renaming)
+    :param config: Path to configuration file
+
+    :ivar _worker: The wrapped worker instance
+    :ivar _available_next_classes: Allowed subsequent step types
+
+    .. rubric:: Execution Flow
+
+    1. Loads required input data from storage
+    2. Executes the worker's run() method with combined inputs
+    3. Processes and saves each result chunk
+    4. Returns aggregated step outputs
+
+    .. rubric:: Example Usage
+
+    Creating and using an execution step::
+
+        worker = AnalysisWorker()
+        step = ExperimentExecutionStep(
+            worker=worker,
+            name="MaterialAnalysis",
+            input_storage_names={"sample_data"},
+            output_storage_names={"analysis_results"},
+            config=Path("configs/analysis.yaml"),
+        )
+    """
+
     def __init__(
         self,
         worker: Worker,
@@ -29,6 +67,19 @@ class ExperimentExecutionStep(Step):
         self._available_next_classes = [ExperimentExecutionStep, ReportGenerationStep]
 
     def process(self, **kwargs: Any) -> dict[str, float]:
+        """Execute the experimental workflow and process results.
+
+        :param kwargs: Input parameters including:
+                      - Storage data (accessed via input_storage_names)
+                      - Step metadata (accessed via input_step_names)
+        :return: Dictionary of processed results
+
+        .. note::
+            - Processes worker results incrementally
+            - Only saves data if saver is configured
+            - Combines storage data and step metadata for worker execution
+        """
+
         # TODO: load data
         storage_input: dict[str, float] = dict()
         renamed_storage_input = self._get_storage_input(storage_input)
@@ -46,4 +97,8 @@ class ExperimentExecutionStep(Step):
         return renamed_step_output
 
     def _validate_storages(self) -> bool:
+        """Verify that required storage connections are established.
+
+        :return: True if both saver and loader are configured
+        """
         return bool(self._saver and self._loader)

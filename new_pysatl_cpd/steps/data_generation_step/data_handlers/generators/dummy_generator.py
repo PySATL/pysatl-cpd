@@ -7,6 +7,8 @@ from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import
 
 
 class DummyGenerator(DataHandler):
+    """Dummy Generator without realisation"""
+
     def __init__(
         self,
         data_to_return: Optional[dict[str, float]] = None,

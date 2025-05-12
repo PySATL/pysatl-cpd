@@ -7,6 +7,8 @@ from new_pysatl_cpd.steps.experiment_execution_step.workers.worker import Worker
 
 
 class DummyWorker(Worker):
+    """Dummy Worker without realisation"""
+
     def __init__(
         self,
         data_to_return: Optional[dict[str, float]] = None,
