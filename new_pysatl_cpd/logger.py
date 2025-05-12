@@ -6,6 +6,37 @@ from typing import Any, Callable
 
 
 def setup_logger(rewrite_logs: bool = True) -> Logger:
+    """
+    Initialize and configure a logger with console and file handlers.
+
+    Creates a logger with:
+    - Two file handlers (DEBUG and INFO levels)
+    - One console handler (INFO level)
+    - Configurable log rotation/rewrite behavior
+
+    :param rewrite_logs: If True, log files will be rewritten on each run.
+                         If False, enables log rotation (max 3 backups, 5MB each).
+    :return: Configured logger instance with name 'cpd_logger'
+
+    :note: Log files are created in 'new_pysatl_cpd/execution_logs/' directory
+    :note: Debug logs go to 'pysatl_cpd_debug.log'
+    :note: Info logs go to 'pysatl_cpd_info.log'
+    :note: Console output shows INFO level and above
+
+    :example:
+        >>> logger = setup_logger(rewrite_logs=False)
+        >>> logger.info("Test message")
+
+    .. rubric:: Log Format Details
+
+    File and console output uses format::
+
+        %(asctime)s [%(levelname)s] %(name)s (%(filename)s:%(lineno)d): %(message)s
+
+    With date format::
+
+        %Y-%m-%d %H:%M:%S
+    """
     path = "new_pysatl_cpd/execution_logs/"
 
     logger = logging.getLogger("cpd_logger")
@@ -41,6 +72,31 @@ def setup_logger(rewrite_logs: bool = True) -> Logger:
 
 
 def log_exceptions(func: Callable[[Any], Any]) -> Any:
+    """
+    Decorator to log exceptions occurring in wrapped functions.
+
+    This decorator catches any exceptions raised by the decorated function,
+    logs them with traceback information using the global 'cpd_logger',
+    and re-raises the exception.
+
+    :param func: The function to be decorated
+    :return: The wrapped function
+
+    :raises Exception: Re-raises any exception that occurs in the decorated function
+
+    :note: Uses the global logger named 'cpd_logger'
+    :note: Preserves original function metadata using functools.wraps
+
+    :example:
+        >>> @log_exceptions
+        ... def risky_operation():
+        ...     return 1 / 0
+        >>> try:
+        ...     risky_operation()
+        ... except ZeroDivisionError:
+        ...     print("Caught exception")  # Exception will be logged first
+    """
+
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:

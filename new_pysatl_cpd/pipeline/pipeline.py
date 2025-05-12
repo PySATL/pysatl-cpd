@@ -13,7 +13,36 @@ from new_pysatl_cpd.storages.savers.saver import Saver
 
 # TODO Storages
 class Pipeline:
+    """Main pipeline class for executing a sequence of processing steps.
+
+    The pipeline manages the execution flow between different types of steps,
+    handles data storage requirements, and ensures step compatibility.
+
+    :param steps: Ordered list of steps to execute in the pipeline
+
+    :ivar _generated_data_storage_fields: Set of field names for generated data storage
+    :ivar _result_storage_fields: Set of field names for result storage
+    :ivar _meta_data: Dictionary for storing metadata between steps
+    :ivar _generated_data_saver: Saver instance for generated data
+    :ivar _generated_data_loader: Loader instance for generated data
+    :ivar _result_saver: Saver instance for results
+    :ivar _result_loader: Loader instance for results
+
+    .. rubric:: Usage Example
+
+    Typical pipeline construction::
+
+        steps = [DataGenerationStep(...), TestExecutionStep(...), ReportGenerationStep(...)]
+        pipeline = Pipeline(steps)
+        pipeline.run()
+
+    .. note::
+        The pipeline automatically configures itself during initialization
+        by calling `config_pipeline` method.
+    """
+
     def __init__(self, steps: list[Step]):
+        """Initialize the pipeline with processing steps."""
         self.steps = steps
         self._generated_data_storage_fields: set[str] = set()
         self._result_storage_fields: set[str] = set()
@@ -25,6 +54,14 @@ class Pipeline:
         self.config_pipeline()
 
     def _check_two_steps(self, step_1: Step, step_2: Step) -> None:
+        """Verify compatibility between two consecutive steps.
+
+        :param step_1: The preceding step in the pipeline
+        :param step_2: The following step in the pipeline
+        :raises ValueError: If step types are unexpected
+        :raises KeyError: If required storage fields or metadata are missing
+        """
+
         if isinstance(step_1, DataGenerationStep):
             storage_fields = self._generated_data_storage_fields
         elif isinstance(step_1, (TestExecutionStep, ReportGenerationStep)):
@@ -68,6 +105,11 @@ class Pipeline:
             )
 
     def _setup_step_storage(self, step: Step) -> None:
+        """Configure storage handlers for a specific step.
+
+        :param step: The step to configure
+        :raises ValueError: If step type is unexpected
+        """
         cpd_logger.debug(f"{step} Storages: START SETUP")
         if isinstance(step, DataGenerationStep):
             step.saver = self._generated_data_saver
@@ -85,6 +127,14 @@ class Pipeline:
 
     @log_exceptions
     def config_pipeline(self) -> None:
+        """Configure the pipeline by:
+
+        1. Verifying step compatibility
+        2. Initializing storage handlers
+        3. Setting up step storage connections
+
+        :raises ValueError: If storage handlers are not properly initialized
+        """
         for step_index in range(len(self.steps) - 1):
             step_1, step_2 = self.steps[step_index], self.steps[step_index + 1]
             self._check_two_steps(step_1, step_2)
@@ -121,6 +171,14 @@ class Pipeline:
         cpd_logger.info("The pipeline has been successfully configured")
 
     def run(self) -> None:
+        """
+        Execute all steps in the pipeline sequentially.
+
+        Each step's output metadata is accumulated and passed to subsequent steps.
+
+        :note: The pipeline must be properly configured before running with 'config_pipeline' method
+        """
+
         for step in self.steps:
             cpd_logger.info(f"{step}: START")
             step_result = step(**self._meta_data)
