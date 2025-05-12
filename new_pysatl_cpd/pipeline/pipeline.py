@@ -2,9 +2,9 @@ from typing import Optional
 
 from new_pysatl_cpd.logger import cpd_logger, log_exceptions
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
+from new_pysatl_cpd.steps.experiment_execution_step.test_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.steps.test_execution_step.test_execution_step import TestExecutionStep
 from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
 from new_pysatl_cpd.storages.loaders.loader import Loader
 from new_pysatl_cpd.storages.savers.default_saver import DefaultSaver
@@ -32,7 +32,7 @@ class Pipeline:
 
     Typical pipeline construction::
 
-        steps = [DataGenerationStep(...), TestExecutionStep(...), ReportGenerationStep(...)]
+        steps = [DataGenerationStep(...), ExperimentExecutionStep(...), ReportGenerationStep(...)]
         pipeline = Pipeline(steps)
         pipeline.run()
 
@@ -64,11 +64,12 @@ class Pipeline:
 
         if isinstance(step_1, DataGenerationStep):
             storage_fields = self._generated_data_storage_fields
-        elif isinstance(step_1, (TestExecutionStep, ReportGenerationStep)):
+        elif isinstance(step_1, (ExperimentExecutionStep, ReportGenerationStep)):
             storage_fields = self._result_storage_fields
         else:
             raise ValueError(
-                f"{step_1} is unexpected Step (not one of DataGenerationStep, TestExecutionStep, ReportGenerationStep)"
+                f"{step_1} is unexpected Step (not one of DataGenerationStep,"
+                f" ExperimentExecutionStep, ReportGenerationStep)"
             )
 
         if isinstance(step_1.output_storage_names, set):
@@ -113,7 +114,7 @@ class Pipeline:
         cpd_logger.debug(f"{step} Storages: START SETUP")
         if isinstance(step, DataGenerationStep):
             step.saver = self._generated_data_saver
-        elif isinstance(step, TestExecutionStep):
+        elif isinstance(step, ExperimentExecutionStep):
             step.loader = self._generated_data_loader
             step.saver = self._result_saver
         elif isinstance(step, ReportGenerationStep):
@@ -121,7 +122,7 @@ class Pipeline:
         else:
             raise ValueError(
                 f"Unexpected type of {step}."
-                f" Must be one of DataGenerationStep, TestExecutionStep or ReportGenerationStep"
+                f" Must be one of DataGenerationStep, ExperimentExecutionStep or ReportGenerationStep"
             )
         cpd_logger.debug(f"{step} Storages: FINISH SETUP")
 

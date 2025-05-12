@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.steps.experiment_execution_step.workers.worker import Worker
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.steps.test_execution_step.workers.worker import Worker
 
 
-class TestExecutionStep(Step):
+class ExperimentExecutionStep(Step):
     def __init__(
         self,
         worker: Worker,
@@ -26,7 +26,7 @@ class TestExecutionStep(Step):
             config,
         )
         self._worker = worker
-        self._available_next_classes = [TestExecutionStep, ReportGenerationStep]
+        self._available_next_classes = [ExperimentExecutionStep, ReportGenerationStep]
 
     def process(self, **kwargs: Any) -> dict[str, float]:
         # TODO: load data

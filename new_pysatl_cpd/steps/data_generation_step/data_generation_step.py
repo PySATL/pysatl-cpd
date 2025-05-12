@@ -4,8 +4,8 @@ from typing import Any, Optional
 from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import (
     DataHandler,
 )
+from new_pysatl_cpd.steps.experiment_execution_step.test_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.steps.test_execution_step.test_execution_step import TestExecutionStep
 
 
 class DataGenerationStep(Step):
@@ -28,7 +28,7 @@ class DataGenerationStep(Step):
             config,
         )
         self.data_handler = data_handler
-        self._available_next_classes = [DataGenerationStep, TestExecutionStep]
+        self._available_next_classes = [DataGenerationStep, ExperimentExecutionStep]
 
     def process(self, **kwargs: Any) -> dict[str, float]:
         renamed_step_output = dict()

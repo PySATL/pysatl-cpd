@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 class StepProcessor(ABC):
     """Abstract base class defining the interface for step processor (DataHandler for DataGenerationStep,
-    Worker for TestExecutionStep, Reporter for ReportGenerationStep).
+    Worker for ExperimentExecutionStep, Reporter for ReportGenerationStep).
 
        :param name: Human-readable identifier for this step (default: "Step")
        :param input_storage_names: Set of required input data fields from storage
