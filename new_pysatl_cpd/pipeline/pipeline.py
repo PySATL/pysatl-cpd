@@ -2,7 +2,7 @@ from typing import Optional
 
 from new_pysatl_cpd.logger import cpd_logger, log_exceptions
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
-from new_pysatl_cpd.steps.experiment_execution_step.test_execution_step import ExperimentExecutionStep
+from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
 from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
@@ -80,21 +80,26 @@ class Pipeline:
         for key in step_1.output_step_names:
             self._meta_data[key] = 0
 
-        if not step_2.input_storage_names.issubset(storage_fields):
-            missed_fields = step_2.input_storage_names - storage_fields
+        input_storage_names = (
+            step_2.input_storage_names
+            if isinstance(step_2.input_storage_names, set)
+            else set(step_2.input_storage_names.keys())
+        )
+        if not input_storage_names.issubset(storage_fields):
+            missed_fields = set(step_2.input_storage_names.keys()) - storage_fields
             raise KeyError(
                 f" For {step_2} to work, there must be values {missed_fields} in the storage."
                 f" Check if this fields are created accurately in the previous steps."
                 f" (If these fields are not needed for {step_2} to work,"
-                f" then remove them from the input_storage_names field)"
+                f" then remove them from the input_storage_names field)."
+                f" current fields in storage (for this step): {storage_fields}."
+                f" Maybe you need to rename data in step."
             )
 
         input_step_names = (
-            step_2.input_step_names
-            if isinstance(step_2.input_step_names, set)
-            else set(step_2.input_step_names.values())
+            step_2.input_step_names if isinstance(step_2.input_step_names, set) else set(step_2.input_step_names.keys())
         )
-
+        cpd_logger.debug(f"{input_step_names}")
         if not input_step_names.issubset(self._meta_data.keys()):
             missed_fields = input_step_names - self._meta_data.keys()
             raise KeyError(
@@ -103,7 +108,13 @@ class Pipeline:
                 f" Check if this fields are created accurately in the previous steps."
                 f" (If these fields are not needed for {step_2} to work,"
                 f" then remove them from the input_step_names field)"
+                f" current metadata: {set(self._meta_data.keys())})"
+                f" Maybe you need to rename data in step."
             )
+        if isinstance(step_1, DataGenerationStep):
+            self._generated_data_storage_fields = storage_fields
+        elif isinstance(step_1, (ExperimentExecutionStep, ReportGenerationStep)):
+            self._result_storage_fields = storage_fields
 
     def _setup_step_storage(self, step: Step) -> None:
         """Configure storage handlers for a specific step.
@@ -145,10 +156,11 @@ class Pipeline:
         #  _generated_data_saver, _generated_data_loader, _result_saver, _result_loader
 
         # DUMMY REALISATION REMOVE LATER
-        self._generated_data_saver = DefaultSaver()
-        self._generated_data_loader = DefaultLoader()
-        self._result_saver = DefaultSaver()
-        self._result_loader = DefaultLoader()
+        gen_data_db, result_db = dict(), dict()
+        self._generated_data_saver = DefaultSaver(gen_data_db)
+        self._generated_data_loader = DefaultLoader(gen_data_db)
+        self._result_saver = DefaultSaver(result_db)
+        self._result_loader = DefaultLoader(result_db)
 
         if not (self._generated_data_saver or self._generated_data_loader):
             missed_field = "generated_data_saver" if not self._generated_data_saver else "generated_data_loader"
@@ -170,6 +182,8 @@ class Pipeline:
 
         cpd_logger.debug("Saver and loader are set for each of the steps")
         cpd_logger.info("The pipeline has been successfully configured")
+        cpd_logger.debug(f"Gen Data Storage: {self._generated_data_storage_fields}")
+        cpd_logger.debug(f"Result Storage: {self._result_storage_fields}")
 
     def run(self) -> None:
         """

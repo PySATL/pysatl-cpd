@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.steps.step_processor import StepProcessor
 from new_pysatl_cpd.storages.loaders.loader import Loader
 from new_pysatl_cpd.storages.savers.saver import Saver
 
@@ -49,7 +50,7 @@ class Step(ABC):
     def __init__(
         self,
         name: str = "Step",
-        input_storage_names: Optional[set[str]] = None,
+        input_storage_names: Optional[set[str] | dict[str, str]] = None,
         output_storage_names: Optional[set[str] | dict[str, str]] = None,
         input_step_names: Optional[set[str] | dict[str, str]] = None,
         output_step_names: Optional[set[str] | dict[str, str]] = None,
@@ -60,6 +61,12 @@ class Step(ABC):
         self.output_storage_names = output_storage_names if output_storage_names else set()
         self.input_step_names = input_step_names if input_step_names else set()
         self.output_step_names = output_step_names if output_step_names else set()
+        self._fields_info_none_mask: dict[str, bool] = {
+            "input_storage_names": input_storage_names is None,
+            "output_storage_names": output_storage_names is None,
+            "input_step_names": input_step_names is None,
+            "output_step_names": input_step_names is None,
+        }
         self._config = config
         self._next: Optional[Step] = None
         self._available_next_classes: list[type[Step]] = []
@@ -80,21 +87,24 @@ class Step(ABC):
                 f" But {next_step.name} ({type(next_step)}) was given"
             )
 
+    @staticmethod
     def _filter_and_rename(
-        self, source_dict: dict[str, float], reference_dict: dict[str, str] | set[str]
+        source_dict: dict[str, float], reference_dict: dict[str, str] | set[str]
     ) -> dict[str, float]:
         """Filter and optionally rename dictionary fields based on reference.
 
         :param source_dict: Input data dictionary
         :param reference_dict: Field names (set) or mapping (dict)
         :return: Filtered/renamed dictionary
-        :raises ValueError: If required fields are missing
+        :raises ValueError: If required fields are missing. Exception text contain only set of missing fields
         """
 
+        missed_fields = set()
         result = dict()
         for key in reference_dict:
             if key not in source_dict:
-                raise ValueError(f"No {key} in input step data for Step: {self.name}")
+                missed_fields.add(key)
+                continue
 
             # renaming keys
             if isinstance(reference_dict, dict):
@@ -102,6 +112,8 @@ class Step(ABC):
             else:
                 result[key] = source_dict[key]
 
+        if missed_fields:
+            raise ValueError(f"{missed_fields}")
         return result
 
     def _get_storage_input(self, input_data: dict[str, float]) -> dict[str, float]:
@@ -109,28 +121,65 @@ class Step(ABC):
 
         :param input_data: global input from storage
         """
-        return self._filter_and_rename(input_data, self.input_storage_names)
+        try:
+            return self._filter_and_rename(input_data, self.input_storage_names)
+        except ValueError as missed_fields:
+            raise ValueError(
+                f"No {missed_fields} in data from INPUT STORAGE (info for {self}). "
+                f"Check Steps annotations for storages."
+            )
 
     def _get_step_input(self, input_data: dict[str, float]) -> dict[str, float]:
         """Input from previous step for current step after renaming
 
         :param input_data: global input from previous step
         """
-        return self._filter_and_rename(input_data, self.input_step_names)
+        try:
+            return self._filter_and_rename(input_data, self.input_step_names)
+        except ValueError as missed_fields:
+            raise ValueError(
+                f"No {missed_fields} in data from STEP INPUT (info for {self}). "
+                f"Check Steps annotations for step metadata."
+            )
 
     def _get_step_output(self, output_data: dict[str, float]) -> dict[str, float]:
         """Output for storage from Step after renaming
 
         :param output_data: global output from Step
         """
-        return self._filter_and_rename(output_data, self.output_step_names)
+        try:
+            return self._filter_and_rename(output_data, self.output_step_names)
+        except ValueError as missed_fields:
+            raise ValueError(
+                f"No {missed_fields} in STEP OUTPUT (info for {self}). "
+                f"Check {self} annotations for step output metadata."
+            )
 
     def _get_storage_output(self, output_data: dict[str, float]) -> dict[str, float]:
         """Output for next step from current step after renaming
 
         :param output_data: global output from current step
         """
-        return self._filter_and_rename(output_data, self.output_storage_names)
+        try:
+            return self._filter_and_rename(output_data, self.output_storage_names)
+        except ValueError as missed_fields:
+            raise ValueError(
+                f"No {missed_fields} in OUTPUT STORAGE (info for {self}). Check {self} annotations for storage output."
+            )
+
+    def _set_storage_data_from_processor(self, step_processor: StepProcessor) -> None:
+        """Replace None fields info with processor fields info.
+
+        :param step_processor: step processor
+        """
+        if not self.input_storage_names and self._fields_info_none_mask["input_storage_names"]:
+            self.input_storage_names = step_processor.input_storage_names
+        if not self.output_storage_names and self._fields_info_none_mask["output_storage_names"]:
+            self.output_storage_names = step_processor.output_storage_names
+        if not self.input_step_names and self._fields_info_none_mask["input_step_names"]:
+            self.input_step_names = step_processor.input_step_names
+        if not self.output_step_names and self._fields_info_none_mask["output_step_names"]:
+            self.output_step_names = step_processor.output_step_names
 
     @abstractmethod
     def _validate_storages(self) -> bool:

@@ -10,11 +10,12 @@ class Loader(ABC):
     """
 
     @abstractmethod
-    def __call__(self, data: dict[str, float]) -> None:
+    def __call__(self, data_keys: set[str]) -> dict[str, float]:
         """
         Load and return data from the source.
 
-        :param data: Dictionary containing loaded data with string keys and float values
+        :param data_keys: Set containing string keys to load
+        :return: Dict with keys from 'data_keys' and values as float from storage
         :raises NotImplementedError: If not implemented in subclass
 
         .. rubric:: Example Return Format

@@ -5,7 +5,7 @@ from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import (
     DataHandler,
 )
-from new_pysatl_cpd.steps.experiment_execution_step.test_execution_step import ExperimentExecutionStep
+from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.step import Step
 
 
@@ -54,6 +54,7 @@ class DataGenerationStep(Step):
         )
         self.data_handler = data_handler
         self._available_next_classes = [DataGenerationStep, ExperimentExecutionStep]
+        self._set_storage_data_from_processor(self.data_handler)
 
     def process(self, **kwargs: Any) -> dict[str, float]:
         """Generate and store data using the configured DataHandler.

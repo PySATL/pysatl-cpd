@@ -15,4 +15,5 @@ class DummyReportVisualizer(ReportVisualizer):
             file.write(f"a={report_builder_result['a']}\n")
             file.write(f"b={report_builder_result['b']}\n")
             file.write(f"c={report_builder_result['c']}\n")
+            file.write(f"sum={report_builder_result['s']}\n")
         return None

@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.report_generation_step.report_builders.report_builder import (
     ReportBuilder,
 )
@@ -76,4 +77,5 @@ class Reporter(StepProcessor):
         """
         # TODO maybe something else
         report_builder_result = self._report_builder(**kwargs)
+        cpd_logger.debug(f"reort builder: {report_builder_result}")
         return self._report_visualizer(report_builder_result)

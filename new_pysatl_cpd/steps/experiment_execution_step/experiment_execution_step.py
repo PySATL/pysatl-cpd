@@ -49,7 +49,7 @@ class ExperimentExecutionStep(Step):
         self,
         worker: Worker,
         name: str = "Step",
-        input_storage_names: Optional[set[str]] = None,
+        input_storage_names: Optional[set[str] | dict[str, str]] = None,
         output_storage_names: Optional[set[str] | dict[str, str]] = None,
         input_step_names: Optional[set[str] | dict[str, str]] = None,
         output_step_names: Optional[set[str] | dict[str, str]] = None,
@@ -65,6 +65,7 @@ class ExperimentExecutionStep(Step):
         )
         self._worker = worker
         self._available_next_classes = [ExperimentExecutionStep, ReportGenerationStep]
+        self._set_storage_data_from_processor(self._worker)
 
     def process(self, **kwargs: Any) -> dict[str, float]:
         """Execute the experimental workflow and process results.
@@ -81,7 +82,11 @@ class ExperimentExecutionStep(Step):
         """
 
         # TODO: load data
-        storage_input: dict[str, float] = dict()
+
+        # REMOVE LATER: DUMMY REALISATION
+        # storage_input: dict[str, float] = dict()
+        storage_input: dict[str, float] = self.loader(self.input_storage_names)
+
         renamed_storage_input = self._get_storage_input(storage_input)
         renamed_step_input = self._get_step_input(kwargs)
 

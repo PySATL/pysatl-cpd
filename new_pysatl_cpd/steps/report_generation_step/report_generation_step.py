@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Reporter
 from new_pysatl_cpd.steps.step import Step
 
@@ -50,6 +51,7 @@ class ReportGenerationStep(Step):
         )
         self._reporter = reporter
         self._available_next_classes = [ReportGenerationStep]
+        self._set_storage_data_from_processor(self._reporter)
 
     def process(self, **kwargs: Any) -> dict[str, float]:
         """Execute the report generation process.
@@ -65,10 +67,14 @@ class ReportGenerationStep(Step):
         """
 
         # TODO: load data
-        storage_input: dict[str, float] = dict()
+
+        # REMOVE LATER: DUMMY REALISATION
+        # storage_input: dict[str, float] = dict()
+        storage_input: dict[str, float] = self.loader(self.input_storage_names)
+
         renamed_storage_input = self._get_storage_input(storage_input)
         renamed_step_input = self._get_step_input(kwargs)
-
+        cpd_logger.debug(f"Report step storage info: {storage_input}")
         report_result = self._reporter.create_report(**renamed_storage_input, **renamed_step_input)
         renamed_step_output = self._get_step_output(report_result) if report_result else dict()
 

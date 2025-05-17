@@ -51,7 +51,7 @@ class ReportBuilder(ABC):
         return filtered_result
 
     @abstractmethod
-    def _build(self, **kwargs: Any) -> dict[str, float]:
+    def _build(self, *args, **kwargs: Any) -> dict[str, float]:
         """Generate report data (for example some metrics) (implemented by subclasses).
 
         :param kwargs: Input data for report generation
@@ -89,6 +89,6 @@ class ReportBuilder(ABC):
             - Applies field filtering/renaming
             - Returns final processed results
         """
-        result = self._build()
+        result = self._build(*args, **kwargs)
         filtered_result = self._filter_and_rename(result)
         return filtered_result
