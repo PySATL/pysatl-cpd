@@ -1,13 +1,13 @@
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
-from collections.abc import Iterable
 
 from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import DataHandler
 
 
 class MockDataHandler(DataHandler):
     """Mock implementation of DataHandler for testing purposes.
-    
+
     This class provides a simple implementation that generates predictable mock data
     for testing the DataGenerationStep and related components.
     """
@@ -22,7 +22,7 @@ class MockDataHandler(DataHandler):
                  num_chunks: int = 5,
                  values_per_chunk: int = 3):
         """Initialize the mock data handler.
-        
+
         Args:
             num_chunks: Number of data chunks to generate
             values_per_chunk: Number of values in each chunk
@@ -34,11 +34,11 @@ class MockDataHandler(DataHandler):
 
     def get_data(self, *args, **kwargs: Any) -> Iterable[dict[str, float]]:
         """Generate mock data chunks for testing.
-        
+
         Args:
             *args: Variable length argument list
             **kwargs: Arbitrary keyword arguments
-            
+
         Yields:
             Dictionary containing mock data values for each chunk
         """

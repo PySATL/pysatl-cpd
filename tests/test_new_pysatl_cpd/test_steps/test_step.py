@@ -1,20 +1,25 @@
 import random
 
 import pytest
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
 from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
-from tests.test_new_pysatl_cpd.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import \
-    MockDataHandler
+from tests.test_new_pysatl_cpd.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import (
+    MockDataHandler,
+)
 from tests.test_new_pysatl_cpd.test_steps.test_experiment_execution_step.test_workers.mock_worker import MockWorker
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import \
-    MockReportBuilder
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_visualizers.mock_report_visualizer import \
-    MockReportVisualizer
+from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step. \
+    test_report_visualizers.mock_report_visualizer import (
+    MockReportVisualizer,
+)
+from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
+    MockReportBuilder,
+)
 from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_reporters.mock_reporter import MockReporter
 
 
@@ -45,9 +50,9 @@ class TestStep:
         try:
             step_1.set_next(step_2)
             assert expected
-        except ValueError as err:
-            assert expected == False
-    
+        except ValueError:
+            assert not expected
+
     @settings(max_examples=MAX_ITERATIONS)
     @given(
         source_dict=st.dictionaries(st.text(), st.floats(allow_nan=False)),
@@ -66,7 +71,7 @@ class TestStep:
             result = step._filter_and_rename(source_dict, reference_set)
             assert set(result.keys()) == reference_set
             for key in reference_set:
-                if not result[key] == source_dict[key]:
+                if result[key] != source_dict[key]:
                     cpd_logger.debug(f"{result[key]} {source_dict[key]}")
                 assert result[key] == source_dict[key]
             return
@@ -143,15 +148,14 @@ class TestStep:
                 else:
                     # TODO add test for exception value (err)
                     assert True
-            else:  # dict case
-                if set(input_step_names.keys()).issubset(input_data.keys()):
-                    result = step._get_step_input(input_data)
-                    assert set(result.keys()) == set(input_step_names.values())
-                    for old_key, new_key in input_step_names.items():
-                        assert result[new_key] == input_data[old_key]
-                else:
-                    # TODO add test for exception value (err)
-                    assert True
+            elif set(input_step_names.keys()).issubset(input_data.keys()):
+                result = step._get_step_input(input_data)
+                assert set(result.keys()) == set(input_step_names.values())
+                for old_key, new_key in input_step_names.items():
+                    assert result[new_key] == input_data[old_key]
+            else:
+                # TODO add test for exception value (err)
+                assert True
         finally:
             # Restore original values
             step.input_step_names = original_input_step_names
@@ -174,7 +178,8 @@ class TestStep:
             self.mock_experiment_execution_step,
             self.mock_report_generation_step
         ])
-        if isinstance(input_storage_names, dict) and len(set(input_storage_names.values())) != len(input_storage_names.values()):
+        if (isinstance(input_storage_names, dict) and
+                len(set(input_storage_names.values())) != len(input_storage_names.values())):
             # TODO add test for exception value (err)
             assert True
             return
@@ -206,15 +211,14 @@ class TestStep:
                 else:
                     # TODO add test for exception value (err)
                     assert True
-            else:  # dict case
-                if set(input_storage_names.keys()).issubset(input_data.keys()):
-                    result = step._get_storage_input(input_data)
-                    assert set(result.keys()) == set(input_storage_names.values())
-                    for old_key, new_key in input_storage_names.items():
-                        assert result[new_key] == input_data[old_key]
-                else:
-                    # TODO add test for exception value (err)
-                    assert True
+            elif set(input_storage_names.keys()).issubset(input_data.keys()):
+                result = step._get_storage_input(input_data)
+                assert set(result.keys()) == set(input_storage_names.values())
+                for old_key, new_key in input_storage_names.items():
+                    assert result[new_key] == input_data[old_key]
+            else:
+                # TODO add test for exception value (err)
+                assert True
         finally:
             # Restore original values
             step.input_step_names = original_input_step_names
@@ -238,7 +242,8 @@ class TestStep:
             self.mock_report_generation_step
         ])
 
-        if isinstance(output_step_names, dict) and len(set(output_step_names.values())) != len(output_step_names.values()):
+        if isinstance(output_step_names, dict) and len(set(output_step_names.values())) != len(
+                output_step_names.values()):
             # TODO add test for exception value (err)
             assert True
             return
@@ -270,15 +275,14 @@ class TestStep:
                 else:
                     # TODO add test for exception value (err)
                     assert True
-            else:  # dict case
-                if set(output_step_names.keys()).issubset(output_data.keys()):
-                    result = step._get_step_output(output_data)
-                    assert set(result.keys()) == set(output_step_names.values())
-                    for old_key, new_key in output_step_names.items():
-                        assert result[new_key] == output_data[old_key]
-                else:
-                    # TODO add test for exception value (err)
-                    assert True
+            elif set(output_step_names.keys()).issubset(output_data.keys()):
+                result = step._get_step_output(output_data)
+                assert set(result.keys()) == set(output_step_names.values())
+                for old_key, new_key in output_step_names.items():
+                    assert result[new_key] == output_data[old_key]
+            else:
+                # TODO add test for exception value (err)
+                assert True
         finally:
             # Restore original values
             step.input_step_names = original_input_step_names
@@ -302,7 +306,8 @@ class TestStep:
             self.mock_report_generation_step
         ])
 
-        if isinstance(output_storage_names, dict) and len(set(output_storage_names.values())) != len(output_storage_names.values()):
+        if isinstance(output_storage_names, dict) and len(set(output_storage_names.values())) != len(
+                output_storage_names.values()):
             # TODO add test for exception value (err)
             assert True
             return
@@ -334,15 +339,14 @@ class TestStep:
                 else:
                     # TODO add test for exception value (err)
                     assert True
-            else:  # dict case
-                if set(output_storage_names.keys()).issubset(output_data.keys()):
-                    result = step._get_storage_output(output_data)
-                    assert set(result.keys()) == set(output_storage_names.values())
-                    for old_key, new_key in output_storage_names.items():
-                        assert result[new_key] == output_data[old_key]
-                else:
-                    # TODO add test for exception value (err)
-                    assert True
+            elif set(output_storage_names.keys()).issubset(output_data.keys()):
+                result = step._get_storage_output(output_data)
+                assert set(result.keys()) == set(output_storage_names.values())
+                for old_key, new_key in output_storage_names.items():
+                    assert result[new_key] == output_data[old_key]
+            else:
+                # TODO add test for exception value (err)
+                assert True
         finally:
             # Restore original values
             step.input_step_names = original_input_step_names

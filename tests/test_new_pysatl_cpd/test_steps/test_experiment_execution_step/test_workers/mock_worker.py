@@ -1,13 +1,13 @@
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
-from collections.abc import Iterable
 
 from new_pysatl_cpd.steps.experiment_execution_step.workers.worker import Worker
 
 
 class MockWorker(Worker):
     """Mock implementation of Worker for testing purposes.
-    
+
     This class provides a simple implementation that simulates work execution
     and yields predictable results for testing the ExperimentExecutionStep
     and related components.
@@ -23,7 +23,7 @@ class MockWorker(Worker):
                  num_iterations: int = 5,
                  work_per_iteration: int = 3):
         """Initialize the mock worker.
-        
+
         Args:
             name: Name of the worker
             input_storage_names: Set of input storage names
@@ -35,7 +35,7 @@ class MockWorker(Worker):
             num_iterations: Number of work iterations to simulate
             work_per_iteration: Number of metrics to generate per iteration
         """
-        super().__init__(name, input_storage_names, output_storage_names, 
+        super().__init__(name, input_storage_names, output_storage_names,
                         input_step_names, output_step_names,
                         previous_step_data, config)
         self.num_iterations = num_iterations
@@ -43,11 +43,11 @@ class MockWorker(Worker):
 
     def run(self, *args, **kwargs: Any) -> Iterable[dict[str, float]]:
         """Simulate work execution and yield mock results.
-        
+
         Args:
             *args: Variable length argument list
             **kwargs: Arbitrary keyword arguments
-            
+
         Yields:
             Dictionary containing mock execution results for each iteration
         """

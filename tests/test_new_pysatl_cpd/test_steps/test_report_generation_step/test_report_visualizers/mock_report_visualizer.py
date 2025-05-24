@@ -1,12 +1,12 @@
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from new_pysatl_cpd.steps.report_generation_step.report_visualizers.report_visualizer import ReportVisualizer
 
 
 class MockReportVisualizer(ReportVisualizer):
     """Mock implementation of ReportVisualizer for testing purposes.
-    
+
     This class provides a simple implementation that simulates visualization
     generation for testing the report generation pipeline.
     """
@@ -18,7 +18,7 @@ class MockReportVisualizer(ReportVisualizer):
         builder_result_fields: Optional[set[str] | dict[str, str]] = None,
     ):
         """Initialize the mock report visualizer.
-        
+
         Args:
             path_to_save: Directory path for saving visualizations
             file_name: Base filename for output files
@@ -29,17 +29,17 @@ class MockReportVisualizer(ReportVisualizer):
 
     def _draw(self, report_builder_result: dict[str, float]) -> Optional[dict[str, float]]:
         """Simulate visualization generation.
-        
+
         Args:
             report_builder_result: Filtered report data for visualization
-            
+
         Returns:
             Optional dictionary containing visualization metadata
         """
         self._visualization_count += 1
-        
+
         return {
             "visualization_count": float(self._visualization_count),
             "metrics_visualized": float(len(report_builder_result)),
             "visualization_timestamp": float(self._visualization_count * 1000)
-        } 
+        }
