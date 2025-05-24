@@ -1,4 +1,5 @@
 import logging
+import os
 from functools import wraps
 from logging import Logger
 from logging.handlers import RotatingFileHandler
@@ -49,6 +50,9 @@ def setup_logger(rewrite_logs: bool = True) -> Logger:
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
+
+    if not os.path.exists(path):
+        return logger
 
     settings: dict[str, Any] = (
         {"encoding": "utf-8", "mode": "w"}
