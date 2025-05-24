@@ -18,7 +18,7 @@ class Worker(StepProcessor):
     """
 
     @abstractmethod
-    def run(self, **kwargs: Any) -> Iterable[dict[str, float]]:
+    def run(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, float]]:
         """Execute the worker's processing logic (must be implemented by subclasses).
 
         This is the main execution method that should:

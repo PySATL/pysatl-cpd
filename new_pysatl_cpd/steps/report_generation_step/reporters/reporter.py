@@ -63,7 +63,7 @@ class Reporter(StepProcessor):
         self._report_builder = report_builder
         self._report_visualizer = report_visualizer
 
-    def create_report(self, **kwargs: Any) -> Optional[dict[str, float]]:
+    def create_report(self, *args: Any, **kwargs: Any) -> Optional[dict[str, float]]:
         """Execute the complete report generation and visualization pipeline.
 
         :param kwargs: Input data for report generation, typically including:
@@ -76,6 +76,6 @@ class Reporter(StepProcessor):
             - Coordinates between builder and visualizer components
         """
         # TODO maybe something else
-        report_builder_result = self._report_builder(**kwargs)
+        report_builder_result = self._report_builder(*args, **kwargs)
         cpd_logger.debug(f"reort builder: {report_builder_result}")
         return self._report_visualizer(report_builder_result)

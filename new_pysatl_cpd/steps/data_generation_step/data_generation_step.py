@@ -56,7 +56,7 @@ class DataGenerationStep(Step):
         self._available_next_classes = [DataGenerationStep, ExperimentExecutionStep]
         self._set_storage_data_from_processor(self.data_handler)
 
-    def process(self, **kwargs: Any) -> dict[str, float]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, float]:
         """Generate and store data using the configured DataHandler.
 
         :param kwargs: Input parameters for data generation, including:

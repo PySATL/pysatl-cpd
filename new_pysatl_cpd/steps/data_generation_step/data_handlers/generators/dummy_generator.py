@@ -20,11 +20,12 @@ class DummyGenerator(DataHandler):
             set("B"),
             set(),
             set("A"),
+            dict(),
             config,
         )
         self._data_to_return: dict[str, float] = {"A": 1, "B": 2}
 
-    def get_data(self, **kwargs: Any) -> Iterable[dict[str, float]]:
+    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, float]]:
         cpd_logger.debug("Dummy generator get_data method")
         cpd_logger.info(f"Dummy generator generated: {self._data_to_return}")
         return [self._data_to_return]

@@ -51,7 +51,7 @@ class ReportBuilder(ABC):
         return filtered_result
 
     @abstractmethod
-    def _build(self, *args, **kwargs: Any) -> dict[str, float]:
+    def _build(self, *args: Any, **kwargs: Any) -> dict[str, float]:
         """Generate report data (for example some metrics) (implemented by subclasses).
 
         :param kwargs: Input data for report generation
@@ -66,7 +66,7 @@ class ReportBuilder(ABC):
 
         Example::
 
-            def _build(self, **kwargs) -> dict[str, float]:
+            def _build(self, *args, **kwargs) -> dict[str, float]:
                 values = kwargs["measurements"]
                 return {
                     "mean": statistics.mean(values),

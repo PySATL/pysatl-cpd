@@ -19,7 +19,7 @@ class DataHandler(StepProcessor):
     """
 
     @abstractmethod
-    def get_data(self, **kwargs: Any) -> Iterable[dict[str, float]]:
+    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, float]]:
         """Generate and yield chunks of processed data (must be implemented by subclasses).
 
         This is the core data production method that should be implemented to:

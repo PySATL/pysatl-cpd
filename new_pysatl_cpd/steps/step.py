@@ -86,6 +86,7 @@ class Step(ABC):
                 f"Only {available_next_classes} available for {self.name} ({type(self)})."
                 f" But {next_step.name} ({type(next_step)}) was given"
             )
+        self._next = next_step
 
     @staticmethod
     def _filter_and_rename(
@@ -98,6 +99,9 @@ class Step(ABC):
         :return: Filtered/renamed dictionary
         :raises ValueError: If required fields are missing. Exception text contain only set of missing fields
         """
+
+        if isinstance(reference_dict, dict) and len(set(reference_dict.values())) != len(reference_dict.values()):
+            raise ValueError("All fields renamed with reference_dict must be unique")
 
         missed_fields = set()
         result = dict()
@@ -190,7 +194,7 @@ class Step(ABC):
         ...
 
     @abstractmethod
-    def process(self, **kwargs: Any) -> dict[str, float]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, float]:
         """Execute the core processing logic of the step (must be implemented by subclasses).
 
         This is the main method where the step's functionality should be implemented.
@@ -210,7 +214,7 @@ class Step(ABC):
 
         Example::
 
-            def process(self, **kwargs) -> dict[str, float]:
+            def process(self, *args, **kwargs) -> dict[str, float]:
                 input_data = self._get_storage_input(kwargs)
                 metadata = self._get_step_input(kwargs)
 
@@ -224,7 +228,7 @@ class Step(ABC):
         """
         ...
 
-    def __call__(self, **kwargs: Any) -> dict[str, float]:
+    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, float]:
         """Execute the step with given inputs.
 
         :param kwargs: Input data for processing
@@ -233,7 +237,7 @@ class Step(ABC):
         """
         if not self._validate_storages():
             raise ValueError(f"{self} ran without seting up DataBase. (Try to use this step in Pipeline)")
-        result = self.process(**kwargs)
+        result = self.process(*args, **kwargs)
         return result
 
     def __str__(self) -> str:

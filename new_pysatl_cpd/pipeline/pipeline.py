@@ -86,7 +86,13 @@ class Pipeline:
             else set(step_2.input_storage_names.keys())
         )
         if not input_storage_names.issubset(storage_fields):
-            missed_fields = set(step_2.input_storage_names.keys()) - storage_fields
+            cur_input_storage_names = set()
+            if isinstance(step_2.input_storage_names, set):
+                cur_input_storage_names = step_2.input_storage_names
+            else:
+                cur_input_storage_names = set(step_2.input_storage_names.keys())
+
+            missed_fields = cur_input_storage_names - storage_fields
             raise KeyError(
                 f" For {step_2} to work, there must be values {missed_fields} in the storage."
                 f" Check if this fields are created accurately in the previous steps."
@@ -156,7 +162,8 @@ class Pipeline:
         #  _generated_data_saver, _generated_data_loader, _result_saver, _result_loader
 
         # DUMMY REALISATION REMOVE LATER
-        gen_data_db, result_db = dict(), dict()
+        gen_data_db: dict[str, float] = dict()
+        result_db: dict[str, float] = dict()
         self._generated_data_saver = DefaultSaver(gen_data_db)
         self._generated_data_loader = DefaultLoader(gen_data_db)
         self._result_saver = DefaultSaver(result_db)

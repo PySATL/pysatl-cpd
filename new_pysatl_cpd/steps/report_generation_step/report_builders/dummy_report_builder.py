@@ -8,13 +8,18 @@ class DummyReportBuilder(ReportBuilder):
     """Dummy Report Builder without realisation"""
 
     def __init__(
-        self, a: float, b: float, builder_result_fields: Optional[set[str] | dict[str, str]] = None, **kwargs: Any
+        self,
+        a: float,
+        b: float,
+        builder_result_fields: Optional[set[str] | dict[str, str]] = None,
+        *args: Any,
+        **kwargs: Any,
     ):
         super().__init__(builder_result_fields)
         self.a = a
         self.b = b
 
-    def _build(self, **kwargs: Any) -> dict[str, float]:
+    def _build(self, *args: Any, **kwargs: Any) -> dict[str, float]:
         cpd_logger.debug(f"DummyReportBuilder build method ({kwargs})")
 
         return {"a": self.a, "b": self.b, "c": self.a + self.b, "s": kwargs["s"]}

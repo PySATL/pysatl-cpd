@@ -53,7 +53,7 @@ class ReportGenerationStep(Step):
         self._available_next_classes = [ReportGenerationStep]
         self._set_storage_data_from_processor(self._reporter)
 
-    def process(self, **kwargs: Any) -> dict[str, float]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, float]:
         """Execute the report generation process.
 
         :param kwargs: Input parameters including:
@@ -70,7 +70,16 @@ class ReportGenerationStep(Step):
 
         # REMOVE LATER: DUMMY REALISATION
         # storage_input: dict[str, float] = dict()
-        storage_input: dict[str, float] = self.loader(self.input_storage_names)
+        if self.loader is None:
+            raise ValueError("Storage loader is not initialized")
+
+        load_from_storage_names = (
+            self.input_storage_names
+            if isinstance(self.input_storage_names, set)
+            else set(self.input_storage_names.keys())
+        )
+
+        storage_input: dict[str, float] = self.loader(load_from_storage_names)
 
         renamed_storage_input = self._get_storage_input(storage_input)
         renamed_step_input = self._get_step_input(kwargs)
