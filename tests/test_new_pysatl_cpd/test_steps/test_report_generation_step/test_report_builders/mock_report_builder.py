@@ -10,8 +10,7 @@ class MockReportBuilder(ReportBuilder):
     for testing the report generation pipeline.
     """
 
-    def __init__(self,
-                 builder_result_fields: Optional[set[str] | dict[str, str]] = None):
+    def __init__(self, builder_result_fields: Optional[set[str] | dict[str, str]] = None):
         """Initialize the mock report builder.
 
         Args:
@@ -38,5 +37,5 @@ class MockReportBuilder(ReportBuilder):
             "f1_score": 0.90,
             "loss": 0.15,
             "training_time": 120.5,
-            "inference_time": 0.05
+            "inference_time": 0.05,
         }

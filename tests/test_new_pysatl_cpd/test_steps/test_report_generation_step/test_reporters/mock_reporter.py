@@ -47,7 +47,7 @@ class MockReporter(Reporter):
             input_step_names=input_step_names,
             output_step_names=output_step_names,
             previous_step_data=previous_step_data,
-            config=config
+            config=config,
         )
         self._report_count = 0
 
@@ -70,5 +70,5 @@ class MockReporter(Reporter):
         return {
             "report_count": float(self._report_count),
             "metrics_count": float(len(report_builder_result)),
-            "visualization_success": float(1.0 if visualization_result else 0.0)
+            "visualization_success": float(1.0 if visualization_result else 0.0),
         }

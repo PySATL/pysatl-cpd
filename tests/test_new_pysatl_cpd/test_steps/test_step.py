@@ -13,12 +13,14 @@ from tests.test_new_pysatl_cpd.test_steps.test_data_generation_step.test_data_ha
     MockDataHandler,
 )
 from tests.test_new_pysatl_cpd.test_steps.test_experiment_execution_step.test_workers.mock_worker import MockWorker
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step. \
-    test_report_visualizers.mock_report_visualizer import (
-    MockReportVisualizer,
-)
 from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
     MockReportBuilder,
+)
+
+# TODO remove ruff exception
+# ruff: noqa: E501
+from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_visualizers.mock_report_visualizer import (
+    MockReportVisualizer,
 )
 from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_reporters.mock_reporter import MockReporter
 
@@ -34,17 +36,20 @@ class TestStep:
     mock_report_generation_step = ReportGenerationStep(mock_reporter)
     MAX_ITERATIONS = 200
 
-    @pytest.mark.parametrize("step_1,step_2,expected", [
-        (mock_data_generation_step, mock_data_generation_step, True),
-        (mock_data_generation_step, mock_experiment_execution_step, True),
-        (mock_data_generation_step, mock_report_generation_step, False),
-        (mock_experiment_execution_step, mock_data_generation_step, False),
-        (mock_experiment_execution_step, mock_experiment_execution_step, True),
-        (mock_experiment_execution_step, mock_report_generation_step, True),
-        (mock_report_generation_step, mock_data_generation_step, False),
-        (mock_report_generation_step, mock_experiment_execution_step, False),
-        (mock_report_generation_step, mock_report_generation_step, True),
-    ])
+    @pytest.mark.parametrize(
+        "step_1,step_2,expected",
+        [
+            (mock_data_generation_step, mock_data_generation_step, True),
+            (mock_data_generation_step, mock_experiment_execution_step, True),
+            (mock_data_generation_step, mock_report_generation_step, False),
+            (mock_experiment_execution_step, mock_data_generation_step, False),
+            (mock_experiment_execution_step, mock_experiment_execution_step, True),
+            (mock_experiment_execution_step, mock_report_generation_step, True),
+            (mock_report_generation_step, mock_data_generation_step, False),
+            (mock_report_generation_step, mock_experiment_execution_step, False),
+            (mock_report_generation_step, mock_report_generation_step, True),
+        ],
+    )
     def test_set_next(self, step_1, step_2, expected):
         # TODO add test for exception value (err)
         try:
@@ -54,10 +59,7 @@ class TestStep:
             assert not expected
 
     @settings(max_examples=MAX_ITERATIONS)
-    @given(
-        source_dict=st.dictionaries(st.text(), st.floats(allow_nan=False)),
-        reference_set=st.sets(st.text())
-    )
+    @given(source_dict=st.dictionaries(st.text(), st.floats(allow_nan=False)), reference_set=st.sets(st.text()))
     def test_filter_and_rename_set(self, source_dict, reference_set):
         # TODO add test for exception value (err)
         step = Step
@@ -79,7 +81,7 @@ class TestStep:
     @settings(max_examples=MAX_ITERATIONS)
     @given(
         source_dict=st.dictionaries(st.text(), st.floats(allow_nan=False)),
-        reference_dict=st.dictionaries(st.text(), st.text())
+        reference_dict=st.dictionaries(st.text(), st.text()),
     )
     def test_filter_and_rename_dict(self, source_dict, reference_dict):
         step = Step
@@ -107,15 +109,14 @@ class TestStep:
         input_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         input_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         output_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
-        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text()))
+        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
     )
-    def test_get_step_input(self, input_data, input_step_names, input_storage_names, output_step_names,
-                            output_storage_names):
-        step = random.choice([
-            self.mock_data_generation_step,
-            self.mock_experiment_execution_step,
-            self.mock_report_generation_step
-        ])
+    def test_get_step_input(
+        self, input_data, input_step_names, input_storage_names, output_step_names, output_storage_names
+    ):
+        step = random.choice(
+            [self.mock_data_generation_step, self.mock_experiment_execution_step, self.mock_report_generation_step]
+        )
         if isinstance(input_step_names, dict) and len(set(input_step_names.values())) != len(input_step_names.values()):
             # TODO add test for exception value (err)
             assert True
@@ -169,17 +170,17 @@ class TestStep:
         input_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         input_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         output_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
-        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text()))
+        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
     )
-    def test_get_storage_input(self, input_data, input_step_names, input_storage_names, output_step_names,
-                               output_storage_names):
-        step = random.choice([
-            self.mock_data_generation_step,
-            self.mock_experiment_execution_step,
-            self.mock_report_generation_step
-        ])
-        if (isinstance(input_storage_names, dict) and
-                len(set(input_storage_names.values())) != len(input_storage_names.values())):
+    def test_get_storage_input(
+        self, input_data, input_step_names, input_storage_names, output_step_names, output_storage_names
+    ):
+        step = random.choice(
+            [self.mock_data_generation_step, self.mock_experiment_execution_step, self.mock_report_generation_step]
+        )
+        if isinstance(input_storage_names, dict) and len(set(input_storage_names.values())) != len(
+            input_storage_names.values()
+        ):
             # TODO add test for exception value (err)
             assert True
             return
@@ -232,18 +233,18 @@ class TestStep:
         input_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         input_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         output_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
-        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text()))
+        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
     )
-    def test_get_step_output(self, output_data, input_step_names, input_storage_names, output_step_names,
-                             output_storage_names):
-        step = random.choice([
-            self.mock_data_generation_step,
-            self.mock_experiment_execution_step,
-            self.mock_report_generation_step
-        ])
+    def test_get_step_output(
+        self, output_data, input_step_names, input_storage_names, output_step_names, output_storage_names
+    ):
+        step = random.choice(
+            [self.mock_data_generation_step, self.mock_experiment_execution_step, self.mock_report_generation_step]
+        )
 
         if isinstance(output_step_names, dict) and len(set(output_step_names.values())) != len(
-                output_step_names.values()):
+            output_step_names.values()
+        ):
             # TODO add test for exception value (err)
             assert True
             return
@@ -296,18 +297,18 @@ class TestStep:
         input_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         input_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         output_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
-        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text()))
+        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
     )
-    def test_get_storage_output(self, output_data, input_step_names, input_storage_names, output_step_names,
-                                output_storage_names):
-        step = random.choice([
-            self.mock_data_generation_step,
-            self.mock_experiment_execution_step,
-            self.mock_report_generation_step
-        ])
+    def test_get_storage_output(
+        self, output_data, input_step_names, input_storage_names, output_step_names, output_storage_names
+    ):
+        step = random.choice(
+            [self.mock_data_generation_step, self.mock_experiment_execution_step, self.mock_report_generation_step]
+        )
 
         if isinstance(output_storage_names, dict) and len(set(output_storage_names.values())) != len(
-                output_storage_names.values()):
+            output_storage_names.values()
+        ):
             # TODO add test for exception value (err)
             assert True
             return
@@ -359,15 +360,14 @@ class TestStep:
         input_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         input_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
         output_step_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
-        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text()))
+        output_storage_names=st.one_of(st.sets(st.text()), st.dictionaries(st.text(), st.text())),
     )
-    def test_set_storage_data_from_processor(self, input_step_names, input_storage_names, output_step_names,
-                                             output_storage_names):
-        step = random.choice([
-            self.mock_data_generation_step,
-            self.mock_experiment_execution_step,
-            self.mock_report_generation_step
-        ])
+    def test_set_storage_data_from_processor(
+        self, input_step_names, input_storage_names, output_step_names, output_storage_names
+    ):
+        step = random.choice(
+            [self.mock_data_generation_step, self.mock_experiment_execution_step, self.mock_report_generation_step]
+        )
 
         # Save original values
         original_input_step_names = step.input_step_names

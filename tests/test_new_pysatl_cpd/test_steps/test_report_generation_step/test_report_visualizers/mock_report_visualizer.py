@@ -41,5 +41,5 @@ class MockReportVisualizer(ReportVisualizer):
         return {
             "visualization_count": float(self._visualization_count),
             "metrics_visualized": float(len(report_builder_result)),
-            "visualization_timestamp": float(self._visualization_count * 1000)
+            "visualization_timestamp": float(self._visualization_count * 1000),
         }

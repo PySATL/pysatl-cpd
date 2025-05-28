@@ -13,15 +13,18 @@ class MockWorker(Worker):
     and related components.
     """
 
-    def __init__(self, name: str = "Worker",
-                 input_storage_names: Optional[set[str]] = None,
-                 output_storage_names: Optional[set[str]] = None,
-                 input_step_names: Optional[set[str]] = None,
-                 output_step_names: Optional[set[str]] = None,
-                 previous_step_data: Optional[dict[str, Any]] = None,
-                 config: Optional[Path] = None,
-                 num_iterations: int = 5,
-                 work_per_iteration: int = 3):
+    def __init__(
+        self,
+        name: str = "Worker",
+        input_storage_names: Optional[set[str]] = None,
+        output_storage_names: Optional[set[str]] = None,
+        input_step_names: Optional[set[str]] = None,
+        output_step_names: Optional[set[str]] = None,
+        previous_step_data: Optional[dict[str, Any]] = None,
+        config: Optional[Path] = None,
+        num_iterations: int = 5,
+        work_per_iteration: int = 3,
+    ):
         """Initialize the mock worker.
 
         Args:
@@ -35,9 +38,15 @@ class MockWorker(Worker):
             num_iterations: Number of work iterations to simulate
             work_per_iteration: Number of metrics to generate per iteration
         """
-        super().__init__(name, input_storage_names, output_storage_names,
-                        input_step_names, output_step_names,
-                        previous_step_data, config)
+        super().__init__(
+            name,
+            input_storage_names,
+            output_storage_names,
+            input_step_names,
+            output_step_names,
+            previous_step_data,
+            config,
+        )
         self.num_iterations = num_iterations
         self.work_per_iteration = work_per_iteration
 
@@ -53,10 +62,7 @@ class MockWorker(Worker):
         """
         for iteration in range(self.num_iterations):
             # Simulate some work by generating mock metrics
-            results = {
-                f"metric_{i}": float(iteration * 100 + i)
-                for i in range(self.work_per_iteration)
-            }
+            results = {f"metric_{i}": float(iteration * 100 + i) for i in range(self.work_per_iteration)}
             # Add a progress metric
             results["progress"] = float(iteration + 1) / self.num_iterations
             yield results
