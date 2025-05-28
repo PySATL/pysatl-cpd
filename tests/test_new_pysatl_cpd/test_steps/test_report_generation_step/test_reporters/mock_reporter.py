@@ -24,6 +24,7 @@ class MockReporter(Reporter):
         output_step_names: Optional[set[str]] = None,
         previous_step_data: Optional[dict[str, Any]] = None,
         config: Optional[Path] = None,
+        result: Optional[dict[str, float]] = None,
     ) -> None:
         """Initialize the mock reporter.
 
@@ -50,6 +51,7 @@ class MockReporter(Reporter):
             config=config,
         )
         self._report_count = 0
+        self.result = result
 
     def create_report(self, *args, **kwargs: Any) -> Optional[dict[str, float]]:
         """Execute the mock report generation and visualization pipeline.
@@ -67,8 +69,12 @@ class MockReporter(Reporter):
 
         visualization_result = self._report_visualizer(report_builder_result)
 
-        return {
-            "report_count": float(self._report_count),
-            "metrics_count": float(len(report_builder_result)),
-            "visualization_success": float(1.0 if visualization_result else 0.0),
-        }
+        return (
+            {
+                "report_count": float(self._report_count),
+                "metrics_count": float(len(report_builder_result)),
+                "visualization_success": float(1.0 if visualization_result else 0.0),
+            }
+            if not self.result
+            else self.result
+        )

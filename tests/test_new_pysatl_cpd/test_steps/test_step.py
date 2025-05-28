@@ -1,7 +1,7 @@
 import random
 
 import pytest
-from hypothesis import given, settings
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 from new_pysatl_cpd.logger import cpd_logger
@@ -35,6 +35,81 @@ class TestStep:
     mock_reporter = MockReporter(mock_report_builder, mock_report_visualizer)
     mock_report_generation_step = ReportGenerationStep(mock_reporter)
     MAX_ITERATIONS = 200
+
+    @given(
+        input_step_names=st.one_of(
+            st.sets(st.text(min_size=1), min_size=1),
+            st.dictionaries(st.text(min_size=1), st.text(min_size=1), min_size=1),
+        ),
+        input_storage_names=st.one_of(
+            st.sets(st.text(min_size=1), min_size=1),
+            st.dictionaries(st.text(min_size=1), st.text(min_size=1), min_size=1),
+        ),
+        output_step_names=st.one_of(
+            st.sets(st.text(min_size=1), min_size=1),
+            st.dictionaries(st.text(min_size=1), st.text(min_size=1), min_size=1),
+        ),
+        output_storage_names=st.one_of(
+            st.sets(st.text(min_size=1), min_size=1),
+            st.dictionaries(st.text(min_size=1), st.text(min_size=1), min_size=1),
+        ),
+        step_type=st.sampled_from([DataGenerationStep, ExperimentExecutionStep, ReportGenerationStep]),
+    )
+    def test_check_fields_no_intersection(
+        self, input_step_names, input_storage_names, output_step_names, output_storage_names, step_type
+    ):
+        input_step_set = input_step_names if isinstance(input_step_names, set) else set(input_step_names.values())
+        input_storage_set = (
+            input_storage_names if isinstance(input_storage_names, set) else set(input_storage_names.values())
+        )
+        output_step_set = output_step_names if isinstance(output_step_names, set) else set(output_step_names.values())
+        output_storage_set = (
+            output_storage_names if isinstance(output_storage_names, set) else set(output_storage_names.values())
+        )
+
+        assume(not input_step_set.intersection(input_storage_set))
+        assume(not output_step_set.intersection(output_storage_set))
+
+        mock_obj = step_type(
+            "processor",
+            input_step_names=input_step_names,
+            input_storage_names=input_storage_names,
+            output_step_names=output_step_names,
+            output_storage_names=output_storage_names,
+        )
+
+        mock_obj._check_step_and_storage_fields()
+
+    @given(
+        common_names=st.sets(st.text(min_size=1), min_size=1),
+        other_names=st.sets(st.text(min_size=1), min_size=1),
+        step_type=st.sampled_from([DataGenerationStep, ExperimentExecutionStep, ReportGenerationStep]),
+    )
+    def test_check_fields_with_intersection(self, common_names, other_names, step_type):
+        input_step_names = common_names.union(other_names)
+        input_storage_names = common_names
+
+        with pytest.raises(ValueError, match="input_step_names and input_storage_names intersect"):
+            step_type(
+                "processor",
+                input_step_names=input_step_names,
+                input_storage_names=input_storage_names,
+                output_step_names=set(),
+                output_storage_names=set(),
+            )
+
+        # Тест для output пересечения
+        output_step_names = common_names.union(other_names)
+        output_storage_names = common_names
+
+        with pytest.raises(ValueError, match="output_step_names and output_storage_names intersect"):
+            step_type(
+                "processor",
+                input_step_names=set(),
+                input_storage_names=set(),
+                output_step_names=output_step_names,
+                output_storage_names=output_storage_names,
+            )
 
     @pytest.mark.parametrize(
         "step_1,step_2,expected",

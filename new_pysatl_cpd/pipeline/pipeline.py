@@ -78,9 +78,7 @@ class Pipeline:
             storage_fields = storage_fields.union(step_1.output_storage_names.values())
 
         output_step_names = (
-            step_1.output_step_names
-            if isinstance(step_1.output_step_names, set)
-            else step_1.output_step_names.values()
+            step_1.output_step_names if isinstance(step_1.output_step_names, set) else step_1.output_step_names.values()
         )
         for key in output_step_names:
             self._meta_data[key] = 0

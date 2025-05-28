@@ -76,7 +76,7 @@ class DataGenerationStep(Step):
             renamed_step_output = self._get_step_output(data)
             renamed_storage_output = self._get_storage_output(data)
             if self.saver:
-                cpd_logger.info(f"{self} saver data to Storage")
+                cpd_logger.info(f"{self} saved data to Storage ({renamed_storage_output})")
                 self.saver(renamed_storage_output)
         return renamed_step_output
 

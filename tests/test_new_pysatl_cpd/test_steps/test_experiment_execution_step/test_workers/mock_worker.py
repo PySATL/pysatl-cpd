@@ -24,6 +24,7 @@ class MockWorker(Worker):
         config: Optional[Path] = None,
         num_iterations: int = 5,
         work_per_iteration: int = 3,
+        result: Optional[dict[str, float]] = None,
     ):
         """Initialize the mock worker.
 
@@ -49,6 +50,7 @@ class MockWorker(Worker):
         )
         self.num_iterations = num_iterations
         self.work_per_iteration = work_per_iteration
+        self.result = result
 
     def run(self, *args, **kwargs: Any) -> Iterable[dict[str, float]]:
         """Simulate work execution and yield mock results.
@@ -65,4 +67,4 @@ class MockWorker(Worker):
             results = {f"metric_{i}": float(iteration * 100 + i) for i in range(self.work_per_iteration)}
             # Add a progress metric
             results["progress"] = float(iteration + 1) / self.num_iterations
-            yield results
+            yield self.result if self.result else results

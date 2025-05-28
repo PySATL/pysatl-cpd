@@ -72,6 +72,7 @@ class Step(ABC):
         self._available_next_classes: list[type[Step]] = []
         self._saver: Optional[Saver] = None
         self._loader: Optional[Loader] = None
+        self._check_step_and_storage_fields()
 
     def set_next(self, next_step: "Step") -> None:
         """Set the next step in the pipeline with type validation.
@@ -87,6 +88,38 @@ class Step(ABC):
                 f" But {next_step.name} ({type(next_step)}) was given"
             )
         self._next = next_step
+
+    def _check_step_and_storage_fields(self) -> None:
+        input_step_names = (
+            self.input_step_names if isinstance(self.input_step_names, set) else set(self.input_step_names.values())
+        )
+        input_storage_names = (
+            self.input_storage_names
+            if isinstance(self.input_storage_names, set)
+            else set(self.input_storage_names.values())
+        )
+        input_intersection = input_step_names.intersection(input_storage_names)
+        if input_intersection:
+            raise ValueError(
+                f"input_step_names and input_storage_names intersect in {input_intersection}."
+                f" Intersection must be empty"
+            )
+
+        output_step_names = (
+            self.output_step_names if isinstance(self.output_step_names, set) else set(self.output_step_names.values())
+        )
+        output_storage_names = (
+            self.output_storage_names
+            if isinstance(self.output_storage_names, set)
+            else set(self.output_storage_names.values())
+        )
+
+        output_intersection = output_step_names.intersection(output_storage_names)
+        if output_intersection:
+            raise ValueError(
+                f"output_step_names and output_storage_names intersect in {output_intersection}."
+                f" Intersection must be empty"
+            )
 
     @staticmethod
     def _filter_and_rename(
@@ -130,7 +163,8 @@ class Step(ABC):
         except ValueError as missed_fields:
             raise ValueError(
                 f"No {missed_fields} in data from INPUT STORAGE (info for {self}). "
-                f"Check Steps annotations for storages."
+                f"Check Steps annotations for storages. "
+                f"Maybe step processor does not return the above mentioned fields"
             )
 
     def _get_step_input(self, input_data: dict[str, float]) -> dict[str, float]:
@@ -143,7 +177,8 @@ class Step(ABC):
         except ValueError as missed_fields:
             raise ValueError(
                 f"No {missed_fields} in data from STEP INPUT (info for {self}). "
-                f"Check Steps annotations for step metadata."
+                f"Check Steps annotations for step metadata. "
+                f"Maybe step processor does not return the above mentioned fields"
             )
 
     def _get_step_output(self, output_data: dict[str, float]) -> dict[str, float]:
@@ -156,7 +191,8 @@ class Step(ABC):
         except ValueError as missed_fields:
             raise ValueError(
                 f"No {missed_fields} in STEP OUTPUT (info for {self}). "
-                f"Check {self} annotations for step output metadata."
+                f"Check {self} annotations for step output metadata. "
+                f"Maybe step processor does not return the above mentioned fields"
             )
 
     def _get_storage_output(self, output_data: dict[str, float]) -> dict[str, float]:
@@ -169,6 +205,7 @@ class Step(ABC):
         except ValueError as missed_fields:
             raise ValueError(
                 f"No {missed_fields} in OUTPUT STORAGE (info for {self}). Check {self} annotations for storage output."
+                f" Maybe step processor does not return the above mentioned fields"
             )
 
     def _set_storage_data_from_processor(self, step_processor: StepProcessor) -> None:
