@@ -77,9 +77,15 @@ class Pipeline:
         else:
             storage_fields = storage_fields.union(step_1.output_storage_names.values())
 
-        for key in step_1.output_step_names:
+        output_step_names = (
+            step_1.output_step_names
+            if isinstance(step_1.output_step_names, set)
+            else step_1.output_step_names.values()
+        )
+        for key in output_step_names:
             self._meta_data[key] = 0
 
+        # Check input from storage
         input_storage_names = (
             step_2.input_storage_names
             if isinstance(step_2.input_storage_names, set)
@@ -102,10 +108,11 @@ class Pipeline:
                 f" Maybe you need to rename data in step."
             )
 
+        # Check input from step
         input_step_names = (
             step_2.input_step_names if isinstance(step_2.input_step_names, set) else set(step_2.input_step_names.keys())
         )
-        cpd_logger.debug(f"{input_step_names}")
+        cpd_logger.debug(f"input_step_names: {input_step_names}, current meta data {self._meta_data.keys()}")
         if not input_step_names.issubset(self._meta_data.keys()):
             missed_fields = input_step_names - self._meta_data.keys()
             raise KeyError(
@@ -129,6 +136,7 @@ class Pipeline:
         :raises ValueError: If step type is unexpected
         """
         cpd_logger.debug(f"{step} Storages: START SETUP")
+        # TODO Rework (Open-Close problem) NEW: Step method _get_storages -> Optional[Saver], Optional[Loader]
         if isinstance(step, DataGenerationStep):
             step.saver = self._generated_data_saver
         elif isinstance(step, ExperimentExecutionStep):
