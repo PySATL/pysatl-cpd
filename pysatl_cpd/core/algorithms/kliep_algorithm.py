@@ -6,144 +6,112 @@ __author__ = "Aleksandra Listkova"
 __copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from typing import Any, Optional, cast
-
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize  # type: ignore[import-untyped]
+from scipy.optimize import minimize  # type: ignore
 
-from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
 
 
-class KliepAlgorithm(Algorithm):
+class KliepAlgorithm(DensityBasedAlgorithm):
     def __init__(
         self,
         bandwidth: float = 1.0,
         regularization: float = 0.1,
         threshold: float = 1.1,
         max_iter: int = 100,
-        min_window_size: int = 10
+        min_window_size: int = 10,
     ) -> None:
         """
-        Initializes a new instance of KLIEP based change point detection algorithm.
+        Initializes a new instance of KLIEP-based change point detection algorithm.
 
-        :param bandwidth: the bandwidth parameter for the kernel density estimation.
-        :param regularization: L2 regularization coefficient for the KLIEP optimization.
-        :param threshold: detection threshold for significant change points.
-        :param max_iter: maximum number of iterations for the L-BFGS-B optimizer.
-        :param min_window_size: minimum size of data segments to consider.
+        :param bandwidth: kernel bandwidth for density estimation.
+        :param regularization: regularization coefficient for alpha optimization.
+        :param threshold: threshold for change point detection.
+        :param max_iter: maximum iterations for optimization solver.
+        :param min_window_size: minimum segment size for reliable estimation.
         """
-        self.bandwidth = bandwidth
-        self.regularisation = regularization
-        self.threshold = threshold
+        super().__init__(min_window_size, threshold, bandwidth)
+        self.regularization = regularization
         self.max_iter = max_iter
-        self.min_window_size = min_window_size
 
-    def detect(self, window: npt.NDArray[np.float64]) -> int:
+    def _compute_scores(self, window: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """
-        Finds change points in the given window.
+        Computes KLIEP-based change point scores for each position in the window.
 
-        :param window: input data window for change point detection.
-        :return: number of detected change points in the window.
-        """
-        return len(self.localize(window))
-
-    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
-        """
-        Identifies and returns the locations of change points in the window.
-
-        :param window: input data window for change point localization.
-        :return: list of indices where change points were detected.
-        """
-        window = self._validate_window(window)
-        if len(window) < self.min_window_size:
-            return []
-
-        scores = self._compute_kliep_scores(window)
-        return self._find_change_points(scores)
-
-    def _validate_window(self, window: npt.NDArray[Any]) -> npt.NDArray[np.float64]:
-        """
-        Validates and prepares the input window for processing.
-
-        :param window: input data window.
-        :return: validated window in 2D format.
-        """
-        window = np.asarray(window, dtype=np.float64)
-        if window.ndim == 1:
-            window = window.reshape(-1, 1)
-        return window
-
-    def _compute_kliep_scores(self, window: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """
-        Computes KLIEP anomaly scores for each point in the window.
-
-        :param window: validated input data window.
-        :return: array of KLIEP scores for each point.
+        :param window: input data window (1D array).
+        :return: array of change point scores at each index.
         """
         n_points = window.shape[0]
-        scores = np.zeros(n_points, dtype=np.float64)
+        scores: npt.NDArray[np.float64] = np.zeros(n_points, dtype=np.float64)
+        common_grid = self._build_common_grid(window)
 
         for i in range(self.min_window_size, n_points - self.min_window_size):
             before = window[:i]
             after = window[i:]
 
-            before_density = DensityBasedAlgorithm._kernel_density_estimation(
-                before, self.bandwidth
-            )
-            after_density = DensityBasedAlgorithm._kernel_density_estimation(
-                after, self.bandwidth
-            )
+            before_density = self._kde_on_grid(before, self.bandwidth, common_grid)
+            after_density = self._kde_on_grid(after, self.bandwidth, common_grid)
 
             alpha = self._optimize_alpha(after_density, before_density)
-            scores[i] = np.mean(np.exp(after_density - before_density - alpha))
-
+            scores[i] = np.mean(np.log(after_density + 1e-10)) - np.mean(np.log(before_density + 1e-10)) - alpha
         return scores
 
     def _optimize_alpha(
-            self,
-            test_density: npt.NDArray[np.float64],
-            ref_density: npt.NDArray[np.float64]
-    ) -> npt.NDArray[np.float64]:
+        self,
+        test_density: npt.NDArray[np.float64],
+        ref_density: npt.NDArray[np.float64]
+    ) -> float:
         """
-        Optimizes the alpha parameters for KLIEP density ratio estimation.
+        Optimizes alpha parameter for density ratio estimation.
+
+        :param test_density: KDE values for test segment (after potential CP).
+        :param ref_density: KDE values for reference segment (before potential CP).
+        :return: optimal alpha value for density ratio adjustment.
         """
-        def loss(alpha: npt.NDArray[np.float64]) -> np.float64:
-            ratio = np.exp(test_density - ref_density - alpha)
-            return np.float64(-np.mean(np.log(ratio)) + self.regularisation * np.sum(alpha**2))
-
-        initial_alpha: npt.NDArray[np.float64] = np.zeros_like(test_density).flatten()
-        bounds: list[tuple[float, Optional[float]]] = [(0.0, None) for _ in test_density.flatten()]
-
-        def wrapped_loss(alpha_flat: npt.NDArray[np.float64]) -> float:
-            alpha = alpha_flat.reshape(test_density.shape)
-            return float(loss(alpha))
+        def loss(alpha: float) -> float:
+            ratio = np.exp(np.log(test_density) - np.log(ref_density + 1e-10) - alpha)
+            return float(-np.mean(np.log(ratio + 1e-10)) + self.regularization * alpha**2)
 
         res = minimize(
-            wrapped_loss,
-            initial_alpha,
+            loss,
+            x0=0.0,
             method='L-BFGS-B',
-            options={'maxiter': self.max_iter},
-            bounds=bounds
+            bounds=[(0.0, None)],
+            options={'maxiter': self.max_iter}
+        )
+        return float(res.x[0])
+
+    def _build_common_grid(self, window: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """
+        Creates evaluation grid for density estimation.
+
+        :param window: input data window.
+        :return: grid spanning data range with bandwidth-adjusted margins.
+        """
+        return np.linspace(
+            np.min(window) - 3 * self.bandwidth,
+            np.max(window) + 3 * self.bandwidth,
+            1000,
+            dtype=np.float64
         )
 
-        return cast(npt.NDArray[np.float64], res.x.reshape(test_density.shape))
-
-    def _find_change_points(self, scores: npt.NDArray[np.float64]) -> list[int]:
+    def _kde_on_grid(
+        self,
+        observation: npt.NDArray[np.float64],
+        bandwidth: float,
+        grid: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
         """
-        Identifies change points from computed KLIEP scores.
+        Computes kernel density estimate on specified grid.
 
-        :param scores: array of KLIEP scores for each point.
-        :return: list of detected change point indices.
+        :param observation: data points for KDE.
+        :param bandwidth: kernel bandwidth parameter.
+        :param grid: evaluation grid points.
+        :return: density values at grid points.
         """
-        candidates = np.where(scores > self.threshold)[0]
-        if len(candidates) == 0:
-            return []
-
-        change_points = [int(candidates[0])]
-        for point in candidates[1:]:
-            if point - change_points[-1] > self.min_window_size:
-                change_points.append(int(point))
-
-        return change_points
+        n = observation.shape[0]
+        diff = grid[:, np.newaxis] - observation
+        kernel_vals = np.exp(-0.5 * (diff / bandwidth) ** 2)
+        kde_vals = kernel_vals.sum(axis=1)
+        return np.asarray(kde_vals / (n * bandwidth * np.sqrt(2 * np.pi)), dtype=np.float64)
