@@ -8,7 +8,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize  # type: ignore
+from scipy.optimize import minimize
 
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
 
