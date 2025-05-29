@@ -69,15 +69,19 @@ class KliepAlgorithm(DensityBasedAlgorithm):
         :param ref_density: KDE values for reference segment (before potential CP).
         :return: optimal alpha value for density ratio adjustment.
         """
-        def loss(alpha: float) -> float:
+        def loss(alpha_array: npt.NDArray[np.float64]) -> float:
+            alpha = alpha_array[0]
             ratio = np.exp(np.log(test_density) - np.log(ref_density + 1e-10) - alpha)
             return float(-np.mean(np.log(ratio + 1e-10)) + self.regularization * alpha**2)
 
+        initial_alpha = np.array([0.0], dtype=np.float64)
+        bounds = [(0.0, None)]
+
         res = minimize(
             loss,
-            x0=0.0,
+            x0=initial_alpha,
             method='L-BFGS-B',
-            bounds=[(0.0, None)],
+            bounds=bounds,
             options={'maxiter': self.max_iter}
         )
         return float(res.x[0])
