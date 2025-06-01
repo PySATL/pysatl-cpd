@@ -67,7 +67,7 @@ class ExperimentExecutionStep(Step):
         self._available_next_classes = [ExperimentExecutionStep, ReportGenerationStep]
         self._set_storage_data_from_processor(self._worker)
 
-    def process(self, *args: Any, **kwargs: Any) -> dict[str, float]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
         """Execute the experimental workflow and process results.
 
         :param kwargs: Input parameters including:
@@ -94,7 +94,7 @@ class ExperimentExecutionStep(Step):
             else set(self.input_storage_names.keys())
         )
 
-        storage_input: dict[str, float] = self.loader(load_from_storage_names)
+        storage_input: dict[str, dict[Any, Any]] = self.loader(load_from_storage_names)
 
         renamed_storage_input = self._get_storage_input(storage_input)
         renamed_step_input = self._get_step_input(kwargs)
@@ -106,7 +106,8 @@ class ExperimentExecutionStep(Step):
             renamed_step_output = self._get_step_output(worker_result)
             renamed_storage_output = self._get_storage_output(worker_result)
             if self._saver:
-                self._saver(renamed_storage_output)
+                for key in renamed_storage_output:
+                    self._saver(key, renamed_storage_output[key])
 
         return renamed_step_output
 

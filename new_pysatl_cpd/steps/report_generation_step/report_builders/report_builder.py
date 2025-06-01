@@ -26,7 +26,7 @@ class ReportBuilder(ABC):
     def __init__(self, builder_result_fields: Optional[set[str] | dict[str, str]] = None):
         self._builder_result_fields = builder_result_fields if builder_result_fields else set()
 
-    def _filter_and_rename(self, report_builder_result: dict[str, float]) -> dict[str, float]:
+    def _filter_and_rename(self, report_builder_result: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:
         """Apply field selection and optional renaming to report data.
 
         :param report_builder_result: Complete generated report data
@@ -51,7 +51,7 @@ class ReportBuilder(ABC):
         return filtered_result
 
     @abstractmethod
-    def _build(self, *args: Any, **kwargs: Any) -> dict[str, float]:
+    def _build(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
         """Generate report data (for example some metrics) (implemented by subclasses).
 
         :param kwargs: Input data for report generation
@@ -76,7 +76,7 @@ class ReportBuilder(ABC):
         """
         ...
 
-    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, float]:
+    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
         """Execute the full report building.
 
         :param args: Positional arguments forwarded to _build

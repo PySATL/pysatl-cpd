@@ -53,7 +53,7 @@ class ReportGenerationStep(Step):
         self._available_next_classes = [ReportGenerationStep]
         self._set_storage_data_from_processor(self._reporter)
 
-    def process(self, *args: Any, **kwargs: Any) -> dict[str, float]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
         """Execute the report generation process.
 
         :param kwargs: Input parameters including:
@@ -79,7 +79,7 @@ class ReportGenerationStep(Step):
             else set(self.input_storage_names.keys())
         )
 
-        storage_input: dict[str, float] = self.loader(load_from_storage_names)
+        storage_input: dict[str, dict[Any, Any]] = self.loader(load_from_storage_names)
 
         renamed_storage_input = self._get_storage_input(storage_input)
         renamed_step_input = self._get_step_input(kwargs)

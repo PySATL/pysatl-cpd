@@ -1,13 +1,13 @@
-from typing import Optional
+from typing import Any, Optional
 
 from new_pysatl_cpd.logger import cpd_logger, log_exceptions
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
 from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
+from new_pysatl_cpd.storages.loaders.csv_loader.csv_loader import LoaderCSV
 from new_pysatl_cpd.storages.loaders.loader import Loader
-from new_pysatl_cpd.storages.savers.default_saver import DefaultSaver
+from new_pysatl_cpd.storages.savers.csv_saver.csv_saver import SaverCSV
 from new_pysatl_cpd.storages.savers.saver import Saver
 
 
@@ -41,16 +41,28 @@ class Pipeline:
         by calling `config_pipeline` method.
     """
 
-    def __init__(self, steps: list[Step]):
+    def __init__(
+        self,
+        steps: list[Step],
+        *,
+        generation_saver: Optional[Saver] = None,
+        generation_loader: Optional[Loader] = None,
+        result_saver: Optional[Saver] = None,
+        result_loader: Optional[Loader] = None,
+    ):
         """Initialize the pipeline with processing steps."""
         self.steps = steps
         self._generated_data_storage_fields: set[str] = set()
         self._result_storage_fields: set[str] = set()
-        self._meta_data: dict[str, float] = dict()
-        self._generated_data_saver: Optional[Saver] = None
-        self._generated_data_loader: Optional[Loader] = None
-        self._result_saver: Optional[Saver] = None
-        self._result_loader: Optional[Loader] = None
+        self._meta_data: dict[str, dict[Any, Any]] = dict()
+        self._generated_data_saver: Optional[Saver] = (
+            generation_saver if generation_saver is not None else SaverCSV("generation")
+        )
+        self._generated_data_loader: Optional[Loader] = (
+            generation_loader if generation_loader is not None else LoaderCSV("generation")
+        )
+        self._result_saver: Optional[Saver] = result_saver if result_saver is not None else SaverCSV("results")
+        self._result_loader: Optional[Loader] = result_loader if result_loader is not None else LoaderCSV("results")
         self.config_pipeline()
 
     def _check_two_steps(self, step_1: Step, step_2: Step) -> None:
@@ -81,7 +93,7 @@ class Pipeline:
             step_1.output_step_names if isinstance(step_1.output_step_names, set) else step_1.output_step_names.values()
         )
         for key in output_step_names:
-            self._meta_data[key] = 0
+            self._meta_data[key] = {}
 
         # Check input from storage
         input_storage_names = (
@@ -166,14 +178,6 @@ class Pipeline:
 
         # TODO we have all data to create storages, so we create fields:
         #  _generated_data_saver, _generated_data_loader, _result_saver, _result_loader
-
-        # DUMMY REALISATION REMOVE LATER
-        gen_data_db: dict[str, float] = dict()
-        result_db: dict[str, float] = dict()
-        self._generated_data_saver = DefaultSaver(gen_data_db)
-        self._generated_data_loader = DefaultLoader(gen_data_db)
-        self._result_saver = DefaultSaver(result_db)
-        self._result_loader = DefaultLoader(result_db)
 
         if not (self._generated_data_saver or self._generated_data_loader):
             missed_field = "generated_data_saver" if not self._generated_data_saver else "generated_data_loader"

@@ -164,3 +164,4 @@ cython_debug/
 
 /new_pysatl_cpd/execution_logs
 /new_pysatl_cpd/results
+/experiment_storages

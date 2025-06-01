@@ -19,7 +19,7 @@ class DummyReportBuilder(ReportBuilder):
         self.a = a
         self.b = b
 
-    def _build(self, *args: Any, **kwargs: Any) -> dict[str, float]:
+    def _build(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
         cpd_logger.debug(f"DummyReportBuilder build method ({kwargs})")
 
-        return {"a": self.a, "b": self.b, "c": self.a + self.b, "s": kwargs["s"]}
+        return {"a": {1: self.a}, "b": {1: self.b}, "c": {1: self.a + self.b}, "s": {1: kwargs["s"][1]}}
