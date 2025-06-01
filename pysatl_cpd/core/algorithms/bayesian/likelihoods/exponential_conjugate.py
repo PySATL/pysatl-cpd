@@ -13,7 +13,10 @@ import numpy as np
 import scipy.stats
 from numpy import typing as npt
 
-from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood, ILikelihoodWithPriorProbability
+from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import (
+    ILikelihood,
+    ILikelihoodWithPriorProbability,
+)
 
 
 class ExponentialConjugate(ILikelihood):

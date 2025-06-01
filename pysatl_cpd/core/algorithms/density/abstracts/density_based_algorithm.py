@@ -23,7 +23,11 @@ class DensityBasedAlgorithm(Algorithm):
         :return: estimated density values for the observations.
         """
         n = len(observation)
-        x_grid = np.linspace(np.min(observation) - 3 * bandwidth, np.max(observation) + 3 * bandwidth, 1000)
+        x_grid = np.linspace(
+            np.min(observation) - 3 * bandwidth,
+            np.max(observation) + 3 * bandwidth,
+            1000,
+        )
         kde_values = np.zeros_like(x_grid)
         for x in observation:
             kde_values += np.exp(-0.5 * ((x_grid - x) / bandwidth) ** 2)

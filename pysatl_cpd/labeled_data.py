@@ -77,7 +77,9 @@ class LabeledCpdData:
         return labeled_data_dict
 
     @staticmethod
-    def read_generated_datasets(datasets_directory: Path) -> dict[str, "LabeledCpdData"]:
+    def read_generated_datasets(
+        datasets_directory: Path,
+    ) -> dict[str, "LabeledCpdData"]:
         """Read already generated datasets from directory
 
         :param datasets_directory: directory with datasets
