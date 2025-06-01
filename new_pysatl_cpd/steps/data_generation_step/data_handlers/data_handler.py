@@ -19,7 +19,7 @@ class DataHandler(StepProcessor):
     """
 
     @abstractmethod
-    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, float]]:
+    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, dict[Any, Any]]]:
         """Generate and yield chunks of processed data (must be implemented by subclasses).
 
         This is the core data production method that should be implemented to:
@@ -30,8 +30,8 @@ class DataHandler(StepProcessor):
         :param kwargs: Input parameters for data generation, typically including:
                        - Runtime settings
         :return: Generator yielding dictionaries of processed data where:
-                 - Keys are output field names (strings)
-                 - Values are numeric results (floats)
+                 - Keys are output field names (strings) (e.g. normal_dist)
+                 - dicts are containers for generated data (e.g. {1: 1, 2: 20, 3: 40})
 
         .. note::
             - Implementations should yield rather than return all data at once

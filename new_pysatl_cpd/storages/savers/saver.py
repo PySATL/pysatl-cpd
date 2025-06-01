@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class Saver(ABC):
@@ -10,9 +11,11 @@ class Saver(ABC):
     """
 
     @abstractmethod
-    def __call__(self, data: dict[str, float]) -> None:
+    def __call__(self, storage_name: str, data: dict[Any, Any]) -> None:
         """Save the provided data to the storage system.
 
+        :param storage_name: The name under which the data will be saved.
+                    In later steps data can be achieved by this name.
         :param data: Dictionary containing key-value pairs to be saved.
                     Keys are strings, values are floating-point numbers.
         :raises NotImplementedError: If not implemented in subclass
@@ -22,6 +25,6 @@ class Saver(ABC):
 
         Typical input data might look like::
 
-           {"temperature": 23.5, "pressure": 1013.2, "humidity": 45.0}
+           "temperature", {1: 32.3, 2: 33.4}
         """
         ...

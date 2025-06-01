@@ -18,7 +18,7 @@ class Worker(StepProcessor):
     """
 
     @abstractmethod
-    def run(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, float]]:
+    def run(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, dict[Any, Any]]]:
         """Execute the worker's processing logic (must be implemented by subclasses).
 
         This is the main execution method that should:
@@ -29,9 +29,9 @@ class Worker(StepProcessor):
         :param kwargs: Input parameters for execution, typically including:
                       - Input data references
                       - Runtime control parameters
-        :return: Generator yielding dictionaries of processed results where:
-                 - Keys are output field names (strings)
-                 - Values are numeric results (floats)
+        :return: Generator yielding dicts, containing key and dictionary of processed results where:
+                 - key is an output field name (string) (e.g. normal_dist_changepoints)
+                 - dict contains processed results (e.g. {1: 123, 42344: 9354})
 
         .. note::
             - Implementations should yield results incrementally where possible

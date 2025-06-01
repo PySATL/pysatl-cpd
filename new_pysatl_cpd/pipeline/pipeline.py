@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from new_pysatl_cpd.logger import cpd_logger, log_exceptions
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
@@ -54,15 +54,15 @@ class Pipeline:
         self.steps = steps
         self._generated_data_storage_fields: set[str] = set()
         self._result_storage_fields: set[str] = set()
-        self._meta_data: dict[str, float] = dict()
+        self._meta_data: dict[str, dict[Any, Any]] = dict()
         self._generated_data_saver: Optional[Saver] = (
-            generation_saver if generation_saver is not None else SaverCSV("generated.csv")
+            generation_saver if generation_saver is not None else SaverCSV("generation")
         )
         self._generated_data_loader: Optional[Loader] = (
-            generation_loader if generation_loader is not None else LoaderCSV("generated.csv")
+            generation_loader if generation_loader is not None else LoaderCSV("generation")
         )
-        self._result_saver: Optional[Saver] = result_saver if result_saver is not None else SaverCSV("results.csv")
-        self._result_loader: Optional[Loader] = result_loader if result_loader is not None else LoaderCSV("results.csv")
+        self._result_saver: Optional[Saver] = result_saver if result_saver is not None else SaverCSV("results")
+        self._result_loader: Optional[Loader] = result_loader if result_loader is not None else LoaderCSV("results")
         self.config_pipeline()
 
     def _check_two_steps(self, step_1: Step, step_2: Step) -> None:
@@ -89,9 +89,13 @@ class Pipeline:
         else:
             storage_fields = storage_fields.union(step_1.output_storage_names.values())
 
-        for key in step_1.output_step_names:
-            self._meta_data[key] = 0
+        output_step_names = (
+            step_1.output_step_names if isinstance(step_1.output_step_names, set) else step_1.output_step_names.values()
+        )
+        for key in output_step_names:
+            self._meta_data[key] = {}
 
+        # Check input from storage
         input_storage_names = (
             step_2.input_storage_names
             if isinstance(step_2.input_storage_names, set)
@@ -114,10 +118,11 @@ class Pipeline:
                 f" Maybe you need to rename data in step."
             )
 
+        # Check input from step
         input_step_names = (
             step_2.input_step_names if isinstance(step_2.input_step_names, set) else set(step_2.input_step_names.keys())
         )
-        cpd_logger.debug(f"{input_step_names}")
+        cpd_logger.debug(f"input_step_names: {input_step_names}, current meta data {self._meta_data.keys()}")
         if not input_step_names.issubset(self._meta_data.keys()):
             missed_fields = input_step_names - self._meta_data.keys()
             raise KeyError(
@@ -141,6 +146,7 @@ class Pipeline:
         :raises ValueError: If step type is unexpected
         """
         cpd_logger.debug(f"{step} Storages: START SETUP")
+        # TODO Rework (Open-Close problem) NEW: Step method _get_storages -> Optional[Saver], Optional[Loader]
         if isinstance(step, DataGenerationStep):
             step.saver = self._generated_data_saver
         elif isinstance(step, ExperimentExecutionStep):

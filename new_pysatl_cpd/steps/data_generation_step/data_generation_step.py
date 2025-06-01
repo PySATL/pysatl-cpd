@@ -56,7 +56,7 @@ class DataGenerationStep(Step):
         self._available_next_classes = [DataGenerationStep, ExperimentExecutionStep]
         self._set_storage_data_from_processor(self.data_handler)
 
-    def process(self, *args: Any, **kwargs: Any) -> dict[str, float]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
         """Generate and store data using the configured DataHandler.
 
         :param kwargs: Input parameters for data generation, including:
@@ -75,9 +75,10 @@ class DataGenerationStep(Step):
         for data in self.data_handler.get_data(**renamed_step_input):
             renamed_step_output = self._get_step_output(data)
             renamed_storage_output = self._get_storage_output(data)
-            if self.saver:
+            if self._saver:
+                for key in renamed_storage_output:
+                    self._saver(key, renamed_storage_output[key])
                 cpd_logger.info(f"{self} saved data to Storage ({renamed_storage_output})")
-                self.saver(renamed_storage_output)
         return renamed_step_output
 
     def _validate_storages(self) -> bool:
