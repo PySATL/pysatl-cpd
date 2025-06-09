@@ -1,8 +1,8 @@
 import logging
-import os
 from functools import wraps
 from logging import Logger
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from typing import Any, Callable
 
 
@@ -51,8 +51,7 @@ def setup_logger(rewrite_logs: bool = True) -> Logger:
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
 
-    if not os.path.exists(path):
-        return logger
+    Path(path).mkdir(parents=True, exist_ok=True)
 
     settings: dict[str, Any] = (
         {"encoding": "utf-8", "mode": "w"}

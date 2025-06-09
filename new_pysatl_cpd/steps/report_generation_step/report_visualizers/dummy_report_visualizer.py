@@ -11,6 +11,9 @@ class DummyReportVisualizer(ReportVisualizer):
         cpd_logger.debug("DummyReportVisualizer draw method")
         path = self._path_to_save
         file_name = self._file_name
+
+        path.mkdir(parents=True, exist_ok=True)
+
         with open(f"{path}/{file_name}.txt", "w", encoding="utf-8") as file:
             file.write(f"a={report_builder_result['a'][1]}\n")
             file.write(f"b={report_builder_result['b'][1]}\n")
