@@ -1,0 +1,95 @@
+= Sample 0-21-12675
+
+[horizontal]
+Sample length:: 12675
+Subsamples lengths:: [1500, 200, 600, 1000, 50, 1000, 75, 200, 1000, 50, 200, 1500, 200, 1000, 200, 1500, 300, 200, 1000, 300, 600]
+Change points:: [1500, 1700, 2300, 3300, 3350, 4350, 4425, 4625, 5625, 5675, 5875, 7375, 7575, 8575, 8775, 10275, 10575, 10775, 11775, 12075]
+
+== Distributions
+
+. weibull
+[horizontal]
+shape:: 0.5
+scale:: 1.0
+. normal
+[horizontal]
+mean:: 2.0
+variance:: 3.0
+. uniform
+[horizontal]
+min:: 0.0
+max:: 1.0
+. uniform
+[horizontal]
+min:: 0.0
+max:: 2.0
+. uniform
+[horizontal]
+min:: 1.0
+max:: 1.25
+. weibull
+[horizontal]
+shape:: 2.0
+scale:: 1.0
+. weibull
+[horizontal]
+shape:: 1.0
+scale:: 1.0
+. uniform
+[horizontal]
+min:: 0.25
+max:: 1.0
+. uniform
+[horizontal]
+min:: -1.0
+max:: 2.0
+. normal
+[horizontal]
+mean:: 0.0
+variance:: 3.0
+. uniform
+[horizontal]
+min:: 0.25
+max:: 1.0
+. weibull
+[horizontal]
+shape:: 0.5
+scale:: 1.0
+. normal
+[horizontal]
+mean:: 2.0
+variance:: 3.0
+. uniform
+[horizontal]
+min:: 0.0
+max:: 2.0
+. normal
+[horizontal]
+mean:: 2.0
+variance:: 3.0
+. weibull
+[horizontal]
+shape:: 0.5
+scale:: 1.0
+. normal
+[horizontal]
+mean:: 2.0
+variance:: 1.0
+. normal
+[horizontal]
+mean:: 2.0
+variance:: 3.0
+. weibull
+[horizontal]
+shape:: 2.0
+scale:: 1.0
+. normal
+[horizontal]
+mean:: 2.0
+variance:: 1.0
+. uniform
+[horizontal]
+min:: 0.0
+max:: 1.0
+
+image::sample.png[Sample]

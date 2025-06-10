@@ -1,0 +1,107 @@
+- name: 0-21-12675
+  distributions:
+  - type: weibull
+    length: 1500
+    parameters:
+      shape: 0.5
+      scale: 1.0
+  - type: normal
+    length: 200
+    parameters:
+      mean: 2.0
+      variance: 3.0
+  - type: uniform
+    length: 600
+    parameters:
+      min: 0.0
+      max: 1.0
+  - type: uniform
+    length: 1000
+    parameters:
+      min: 0.0
+      max: 2.0
+  - type: uniform
+    length: 50
+    parameters:
+      min: 1.0
+      max: 1.25
+  - type: weibull
+    length: 1000
+    parameters:
+      shape: 2.0
+      scale: 1.0
+  - type: weibull
+    length: 75
+    parameters:
+      shape: 1.0
+      scale: 1.0
+  - type: uniform
+    length: 200
+    parameters:
+      min: 0.25
+      max: 1.0
+  - type: uniform
+    length: 1000
+    parameters:
+      min: -1.0
+      max: 2.0
+  - type: normal
+    length: 50
+    parameters:
+      mean: 0.0
+      variance: 3.0
+  - type: uniform
+    length: 200
+    parameters:
+      min: 0.25
+      max: 1.0
+  - type: weibull
+    length: 1500
+    parameters:
+      shape: 0.5
+      scale: 1.0
+  - type: normal
+    length: 200
+    parameters:
+      mean: 2.0
+      variance: 3.0
+  - type: uniform
+    length: 1000
+    parameters:
+      min: 0.0
+      max: 2.0
+  - type: normal
+    length: 200
+    parameters:
+      mean: 2.0
+      variance: 3.0
+  - type: weibull
+    length: 1500
+    parameters:
+      shape: 0.5
+      scale: 1.0
+  - type: normal
+    length: 300
+    parameters:
+      mean: 2.0
+      variance: 1.0
+  - type: normal
+    length: 200
+    parameters:
+      mean: 2.0
+      variance: 3.0
+  - type: weibull
+    length: 1000
+    parameters:
+      shape: 2.0
+      scale: 1.0
+  - type: normal
+    length: 300
+    parameters:
+      mean: 2.0
+      variance: 1.0
+  - type: uniform
+    length: 600
+    parameters:
+      min: 0.0
+      max: 1.0
