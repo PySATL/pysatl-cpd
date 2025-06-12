@@ -11,7 +11,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from new_pysatl_cpd.types import StorageNamesRename, StorageNames
+from new_pysatl_cpd.types import StorageNames, StorageNamesRename
 
 
 class ReportBuilder(ABC):
