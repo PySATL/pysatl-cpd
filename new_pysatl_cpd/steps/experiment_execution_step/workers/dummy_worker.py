@@ -1,3 +1,14 @@
+"""
+Module contains dummy implementation of a worker class for testing and prototyping pipelines.
+
+The DummyWorker provides a minimal Worker implementation that performs no actual computation, serving as a
+placeholder for pipeline testing and development purposes.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional

@@ -1,3 +1,14 @@
+"""
+Module contains implementation of a pipeline for sequential execution of data processing steps, including data
+generation, experiment execution and report generation.
+
+The pipeline handles step compatibility verification, data storage management and metadata passing between steps.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from typing import Any, Optional
 
 from new_pysatl_cpd.logger import cpd_logger, log_exceptions
@@ -11,7 +22,6 @@ from new_pysatl_cpd.storages.savers.csv_saver.csv_saver import SaverCSV
 from new_pysatl_cpd.storages.savers.saver import Saver
 
 
-# TODO Storages
 class Pipeline:
     """Main pipeline class for executing a sequence of processing steps.
 
@@ -42,13 +52,13 @@ class Pipeline:
     """
 
     def __init__(
-        self,
-        steps: list[Step],
-        *,
-        generation_saver: Optional[Saver] = None,
-        generation_loader: Optional[Loader] = None,
-        result_saver: Optional[Saver] = None,
-        result_loader: Optional[Loader] = None,
+            self,
+            steps: list[Step],
+            *,
+            generation_saver: Optional[Saver] = None,
+            generation_loader: Optional[Loader] = None,
+            result_saver: Optional[Saver] = None,
+            result_loader: Optional[Loader] = None,
     ):
         """Initialize the pipeline with processing steps."""
         self.steps = steps

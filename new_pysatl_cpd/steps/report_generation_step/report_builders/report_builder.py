@@ -1,5 +1,17 @@
+"""
+Module contains abstract base class for report generation components in change point detection pipelines.
+
+The ReportBuilder class defines the core interface for building and transforming report data
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import ABC, abstractmethod
 from typing import Any, Optional
+
+from new_pysatl_cpd.types import StorageNamesRename, StorageNames
 
 
 class ReportBuilder(ABC):
@@ -23,7 +35,7 @@ class ReportBuilder(ABC):
     3. Final results delivered via :meth:`__call__`
     """
 
-    def __init__(self, builder_result_fields: Optional[set[str] | dict[str, str]] = None):
+    def __init__(self, builder_result_fields: Optional[StorageNames | StorageNamesRename] = None):
         self._builder_result_fields = builder_result_fields if builder_result_fields else set()
 
     def _filter_and_rename(self, report_builder_result: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:

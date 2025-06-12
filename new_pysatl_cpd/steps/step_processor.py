@@ -1,3 +1,23 @@
+"""
+Module contains abstract base class for all step processors in change point detection system.
+
+The StepProcessor class defines the core interface for:
+1. Data processing components (DataHandlers, Workers, Reporters)
+2. Input/output specifications
+3. Configuration handling
+4. Metadata passing between steps
+
+Purpose:
+Serves as base class for:
+- DataHandler (data generation)
+- Worker (experiment execution)
+- Reporter (report generation)
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import ABC
 from pathlib import Path
 from typing import Any, Optional

@@ -1,3 +1,11 @@
+"""
+Module contains implementation Dummy generator for example
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional

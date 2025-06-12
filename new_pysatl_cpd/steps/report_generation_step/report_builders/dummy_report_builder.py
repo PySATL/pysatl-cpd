@@ -1,3 +1,15 @@
+"""
+Module contains dummy implementation of a report builder for testing and prototyping report generation.
+
+The DummyReportBuilder provides a minimal ReportBuilder implementation that performs no actual report construction,
+serving as a placeholder for pipeline testing and development purposes. It demonstrates basic report
+structure with dummy calculations.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from typing import Any, Optional
 
 from new_pysatl_cpd.logger import cpd_logger

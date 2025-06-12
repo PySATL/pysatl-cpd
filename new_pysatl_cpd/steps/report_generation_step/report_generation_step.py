@@ -1,3 +1,13 @@
+"""
+Module contains concrete implementation of a report generation step for change point detection pipelines.
+
+The ReportGenerationStep class orchestrates the creation and visualization of analysis reports:
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from pathlib import Path
 from typing import Any, Optional
 
@@ -18,7 +28,8 @@ class ReportGenerationStep(Step):
     :param input_storage_names: Required input storage fields (set or dict for renaming)
     :param output_storage_names: Output storage fields (set or dict for renaming)
     :param input_step_names: Required input fields from previous steps (set or dict for renaming)
-    :param config: Path to configuration file
+    :param config: Path to configuration file (the config is optional. If available, it will be passed to
+    the StepProcessor and processed there. Makes it possible to additionally configure a specific StepProcessor)
 
     :ivar _reporter: The wrapped reporter instance
     :ivar _available_next_classes: Allowed subsequent step types
@@ -66,10 +77,6 @@ class ReportGenerationStep(Step):
             - All reporting output handled through Reporter's visualizer
         """
 
-        # TODO: load data
-
-        # REMOVE LATER: DUMMY REALISATION
-        # storage_input: dict[str, float] = dict()
         if self.loader is None:
             raise ValueError("Storage loader is not initialized")
 

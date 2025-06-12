@@ -1,3 +1,15 @@
+"""
+Module contains concrete implementation of an experiment execution step for change point detection pipelines.
+
+The ExperimentExecutionStep class manages the execution of computational workers, handling data loading from storage,
+worker execution, and result saving. It serves as the core component for running change point detection
+experiments in the pipeline workflow.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from pathlib import Path
 from typing import Any, Optional
 
@@ -19,7 +31,8 @@ class ExperimentExecutionStep(Step):
     :param output_storage_names: Output storage fields (set or dict for renaming)
     :param input_step_names: Required input fields from previous steps (set or dict for renaming)
     :param output_step_names: Output fields for next steps (set or dict for renaming)
-    :param config: Path to configuration file
+    :param config: Path to configuration file (the config is optional. If available, it will be passed to
+    the StepProcessor and processed there. Makes it possible to additionally configure a specific StepProcessor)
 
     :ivar _worker: The wrapped worker instance
     :ivar _available_next_classes: Allowed subsequent step types
@@ -46,14 +59,14 @@ class ExperimentExecutionStep(Step):
     """
 
     def __init__(
-        self,
-        worker: Worker,
-        name: str = "Step",
-        input_storage_names: Optional[set[str] | dict[str, str]] = None,
-        output_storage_names: Optional[set[str] | dict[str, str]] = None,
-        input_step_names: Optional[set[str] | dict[str, str]] = None,
-        output_step_names: Optional[set[str] | dict[str, str]] = None,
-        config: Optional[Path] = None,
+            self,
+            worker: Worker,
+            name: str = "Step",
+            input_storage_names: Optional[set[str] | dict[str, str]] = None,
+            output_storage_names: Optional[set[str] | dict[str, str]] = None,
+            input_step_names: Optional[set[str] | dict[str, str]] = None,
+            output_step_names: Optional[set[str] | dict[str, str]] = None,
+            config: Optional[Path] = None,
     ):
         super().__init__(
             name,
@@ -81,10 +94,6 @@ class ExperimentExecutionStep(Step):
             - Combines storage data and step metadata for worker execution
         """
 
-        # TODO: load data
-
-        # REMOVE LATER: DUMMY REALISATION
-        # storage_input: dict[str, float] = dict()
         if self.loader is None:
             raise ValueError("Storage loader is not initialized")
 

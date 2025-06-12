@@ -1,3 +1,14 @@
+"""
+Module contains abstract base class for data generation/reading components in change point detection pipelines.
+
+The DataHandler class provides core functionality for streaming data chunks through the processing pipeline,
+with required interfaces for concrete data generation implementations.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Any

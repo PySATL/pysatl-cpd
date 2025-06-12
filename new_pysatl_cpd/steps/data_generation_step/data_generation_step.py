@@ -1,3 +1,14 @@
+"""
+Module contains concrete implementation of a data generation step for change point detection pipelines.
+
+The DataGenerationStep class handles the generation and storage of synthetic data using a specified DataHandler, with
+built-in validation and automatic saving capabilities when configured.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from pathlib import Path
 from typing import Any, Optional
 
@@ -7,6 +18,7 @@ from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import
 )
 from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.step import Step
+from new_pysatl_cpd.types import StorageNames, StorageNamesRename
 
 
 class DataGenerationStep(Step):
@@ -21,7 +33,8 @@ class DataGenerationStep(Step):
     :param output_storage_names: Output storage fields (set or dict for renaming)
     :param input_step_names: Required input fields from previous steps (set or dict for renaming)
     :param output_step_names: Output fields for next steps (set or dict for renaming)
-    :param config: Path to configuration file
+    :param config: Path to configuration file (the config is optional. If available, it will be passed to
+    the StepProcessor and processed there. Makes it possible to additionally configure a specific StepProcessor)
 
     :ivar data_handler: Data generation component
     :ivar _available_next_classes: Allowed subsequent step types
@@ -35,14 +48,14 @@ class DataGenerationStep(Step):
     """
 
     def __init__(
-        self,
-        data_handler: DataHandler,
-        name: str = "Step",
-        input_storage_names: Optional[set[str]] = None,
-        output_storage_names: Optional[set[str] | dict[str, str]] = None,
-        input_step_names: Optional[set[str] | dict[str, str]] = None,
-        output_step_names: Optional[set[str] | dict[str, str]] = None,
-        config: Optional[Path] = None,
+            self,
+            data_handler: DataHandler,
+            name: str = "Step",
+            input_storage_names: Optional[StorageNames] = None,
+            output_storage_names: Optional[StorageNames | StorageNamesRename] = None,
+            input_step_names: Optional[StorageNames | StorageNamesRename] = None,
+            output_step_names: Optional[StorageNames | StorageNamesRename] = None,
+            config: Optional[Path] = None,
     ):
         super().__init__(
             name,

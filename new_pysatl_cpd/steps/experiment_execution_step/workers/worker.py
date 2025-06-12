@@ -1,3 +1,14 @@
+"""
+Module contains abstract base class for computational worker units in change point detection pipelines.
+
+The Worker class defines the core interface for processing units that execute computational tasks,
+providing requirements for concrete implementations that perform actual change point detection operations.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Any

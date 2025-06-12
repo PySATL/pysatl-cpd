@@ -26,7 +26,8 @@ class Reporter(StepProcessor):
     :param input_step_names: Required input fields from previous steps
     :param output_step_names: Output fields for next steps
     :param previous_step_data: Data dictionary from preceding steps
-    :param config: Path to configuration file
+    :param config: Path to configuration file (the config is optional. If available, it will be passed to
+    the StepProcessor and processed there. Makes it possible to additionally configure a specific StepProcessor)
 
     :ivar _report_builder: Report generation component
     :ivar _report_visualizer: Report visualization component
@@ -75,7 +76,7 @@ class Reporter(StepProcessor):
         .. note::
             - Coordinates between builder and visualizer components
         """
-        # TODO maybe something else
+
         report_builder_result = self._report_builder(*args, **kwargs)
         cpd_logger.debug(f"report builder: {report_builder_result}")
         return self._report_visualizer(report_builder_result)

@@ -1,3 +1,11 @@
+"""
+Module contains logger
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import logging
 from functools import wraps
 from logging import Logger

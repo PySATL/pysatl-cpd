@@ -1,3 +1,17 @@
+"""
+Module contains abstract base class for all pipeline steps in change point detection system.
+
+The Step class provides core functionality for:
+1. Data processing and transformation
+2. Input/output validation and field mapping
+3. Step chaining with type safety
+4. Storage integration (loading/saving)
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Optional
@@ -5,6 +19,7 @@ from typing import Any, Optional
 from new_pysatl_cpd.steps.step_processor import StepProcessor
 from new_pysatl_cpd.storages.loaders.loader import Loader
 from new_pysatl_cpd.storages.savers.saver import Saver
+from new_pysatl_cpd.types import StorageNames, StorageNamesRename
 
 
 class Step(ABC):
@@ -50,10 +65,10 @@ class Step(ABC):
     def __init__(
         self,
         name: str = "Step",
-        input_storage_names: Optional[set[str] | dict[str, str]] = None,
-        output_storage_names: Optional[set[str] | dict[str, str]] = None,
-        input_step_names: Optional[set[str] | dict[str, str]] = None,
-        output_step_names: Optional[set[str] | dict[str, str]] = None,
+        input_storage_names: Optional[StorageNames | dict[str, str]] = None,
+        output_storage_names: Optional[StorageNames | dict[str, str]] = None,
+        input_step_names: Optional[StorageNames | dict[str, str]] = None,
+        output_step_names: Optional[StorageNames | dict[str, str]] = None,
         config: Optional[Path] = None,
     ):
         self.name = name
@@ -123,7 +138,7 @@ class Step(ABC):
 
     @staticmethod
     def _filter_and_rename(
-        source_dict: dict[str, dict[Any, Any]], reference_dict: dict[str, str] | set[str]
+        source_dict: dict[str, dict[Any, Any]], reference_dict: StorageNamesRename | StorageNames
     ) -> dict[str, dict[Any, Any]]:
         """Filter and optionally rename dictionary fields based on reference.
 
@@ -273,7 +288,7 @@ class Step(ABC):
         :raises ValueError: If storages aren't properly configured
         """
         if not self._validate_storages():
-            raise ValueError(f"{self} ran without seting up DataBase. (Try to use this step in Pipeline)")
+            raise ValueError(f"{self} ran without setting up DataBase. (Try to use this step in Pipeline)")
         result = self.process(*args, **kwargs)
         return result
 

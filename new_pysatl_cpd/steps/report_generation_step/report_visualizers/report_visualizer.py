@@ -1,3 +1,15 @@
+"""
+Module contains abstract base class for report visualization components in change point detection pipelines.
+
+The ReportVisualizer class provides a framework for:
+1. Processing and filtering report data
+2. Generating visual representations of analysis results
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Optional

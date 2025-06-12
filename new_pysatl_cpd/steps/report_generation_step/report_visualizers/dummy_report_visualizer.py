@@ -1,3 +1,11 @@
+"""
+Module contains dummy implementation of a report visualizer for testing purposes.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from typing import Any, Optional
 
 from new_pysatl_cpd.logger import cpd_logger
