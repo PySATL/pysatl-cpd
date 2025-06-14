@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.report_generation_step.report_builders.report_builder import (
     ReportBuilder,
@@ -64,7 +65,7 @@ class Reporter(StepProcessor):
         self._report_builder = report_builder
         self._report_visualizer = report_visualizer
 
-    def create_report(self, *args: Any, **kwargs: Any) -> Optional[dict[str, dict[Any, Any]]]:
+    def create_report(self, *args: Any, **kwargs: Any) -> Optional[dict[str, StorageValues]]:
         """Execute the complete report generation and visualization pipeline.
 
         :param kwargs: Input data for report generation, typically including:

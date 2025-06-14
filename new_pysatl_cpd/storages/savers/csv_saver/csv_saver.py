@@ -1,6 +1,17 @@
+"""
+Module, that implements Saver, based of CSV.
+
+SaverCSV saves data into CSV files.
+"""
+
+__author__ = "Aleksei Ivanov"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 import csv
 from pathlib import Path
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.storages.savers.saver import Saver
 
 
@@ -11,13 +22,26 @@ class SaverCSV(Saver):
         self.directory = Path("experiment_storages") / "csv" / step_storages_name
         self.directory.mkdir(parents=True, exist_ok=True)
 
-    def __call__(self, storage_name: str, data: dict[str, float]) -> None:
+    def __call__(self, storage_name: str, data: StorageValues) -> None:
         """Saves data to experiment_storage/[step_storage_name]/[storage_name].csv with key,value from given dict"""
+        if isinstance(data, float | int | str):
+            storage_name += "_literal"
+            new_data = {0: data}
+        elif isinstance(data, list):
+            storage_name += "_list"
+            new_data = {}
+            for i in range(len(data)):
+                new_data[i] = data[i]
+        elif isinstance(data, dict):
+            new_data = data
+        else:
+            raise TypeError("wrong data type")
+
         filename = self.directory / f"{storage_name}.csv"
 
         with open(filename, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["key", "value"])
 
-            for key, value in data.items():
+            for key, value in new_data.items():
                 writer.writerow([key, value])

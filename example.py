@@ -8,7 +8,7 @@ from new_pysatl_cpd.steps.report_generation_step.report_generation_step import R
 from new_pysatl_cpd.steps.report_generation_step.report_visualizers.dummy_report_visualizer import DummyReportVisualizer
 from new_pysatl_cpd.steps.report_generation_step.reporters.dummy_reporter import DummyReporter
 
-# save to gen.data. storage B={1:3}, add A={1:7} to metadata (step output)
+# save to gen.data. storage B=2, add A=1 to metadata (step output)
 step_1 = DataGenerationStep(DummyGenerator(), name="DummyGeneration")
 # Get B as b, A as a from GenDataStorage. Save a+b as s to Result DB
 step_2 = ExperimentExecutionStep(
@@ -20,6 +20,7 @@ step_3 = ReportGenerationStep(
         DummyReportBuilder(1, 2, builder_result_fields={"a", "b", "c", "s"}),
         DummyReportVisualizer(builder_result_fields={"a", "b", "c", "s"}),
     ),
+    input_storage_names={"s"},
     name="ReportGeneration",
 )
 

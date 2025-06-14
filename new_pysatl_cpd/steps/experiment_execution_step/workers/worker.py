@@ -13,6 +13,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Any
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.steps.step_processor import StepProcessor
 
 
@@ -29,7 +30,7 @@ class Worker(StepProcessor):
     """
 
     @abstractmethod
-    def run(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, dict[Any, Any]]]:
+    def run(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, StorageValues]]:
         """Execute the worker's processing logic (must be implemented by subclasses).
 
         This is the main execution method that should:

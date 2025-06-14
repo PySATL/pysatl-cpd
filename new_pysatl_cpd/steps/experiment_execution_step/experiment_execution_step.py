@@ -13,6 +13,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.steps.experiment_execution_step.workers.worker import Worker
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from new_pysatl_cpd.steps.step import Step
@@ -59,14 +60,14 @@ class ExperimentExecutionStep(Step):
     """
 
     def __init__(
-            self,
-            worker: Worker,
-            name: str = "Step",
-            input_storage_names: Optional[set[str] | dict[str, str]] = None,
-            output_storage_names: Optional[set[str] | dict[str, str]] = None,
-            input_step_names: Optional[set[str] | dict[str, str]] = None,
-            output_step_names: Optional[set[str] | dict[str, str]] = None,
-            config: Optional[Path] = None,
+        self,
+        worker: Worker,
+        name: str = "Step",
+        input_storage_names: Optional[set[str] | dict[str, str]] = None,
+        output_storage_names: Optional[set[str] | dict[str, str]] = None,
+        input_step_names: Optional[set[str] | dict[str, str]] = None,
+        output_step_names: Optional[set[str] | dict[str, str]] = None,
+        config: Optional[Path] = None,
     ):
         super().__init__(
             name,
@@ -80,7 +81,7 @@ class ExperimentExecutionStep(Step):
         self._available_next_classes = [ExperimentExecutionStep, ReportGenerationStep]
         self._set_storage_data_from_processor(self._worker)
 
-    def process(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         """Execute the experimental workflow and process results.
 
         :param kwargs: Input parameters including:
@@ -103,7 +104,7 @@ class ExperimentExecutionStep(Step):
             else set(self.input_storage_names.keys())
         )
 
-        storage_input: dict[str, dict[Any, Any]] = self.loader(load_from_storage_names)
+        storage_input: dict[str, StorageValues] = self.loader(load_from_storage_names)
 
         renamed_storage_input = self._get_storage_input(storage_input)
         renamed_step_input = self._get_step_input(kwargs)

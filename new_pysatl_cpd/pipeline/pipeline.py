@@ -9,8 +9,9 @@ __author__ = "Artem Romanyuk"
 __copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from typing import Any, Optional
+from typing import Optional
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.logger import cpd_logger, log_exceptions
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
 from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
@@ -52,19 +53,19 @@ class Pipeline:
     """
 
     def __init__(
-            self,
-            steps: list[Step],
-            *,
-            generation_saver: Optional[Saver] = None,
-            generation_loader: Optional[Loader] = None,
-            result_saver: Optional[Saver] = None,
-            result_loader: Optional[Loader] = None,
+        self,
+        steps: list[Step],
+        *,
+        generation_saver: Optional[Saver] = None,
+        generation_loader: Optional[Loader] = None,
+        result_saver: Optional[Saver] = None,
+        result_loader: Optional[Loader] = None,
     ):
         """Initialize the pipeline with processing steps."""
         self.steps = steps
         self._generated_data_storage_fields: set[str] = set()
         self._result_storage_fields: set[str] = set()
-        self._meta_data: dict[str, dict[Any, Any]] = dict()
+        self._meta_data: dict[str, StorageValues] = dict()
         self._generated_data_saver: Optional[Saver] = (
             generation_saver if generation_saver is not None else SaverCSV("generation")
         )

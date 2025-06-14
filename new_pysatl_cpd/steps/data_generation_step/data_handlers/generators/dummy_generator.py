@@ -10,6 +10,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import DataHandler
 
@@ -31,9 +32,9 @@ class DummyGenerator(DataHandler):
             dict(),
             config,
         )
-        self._data_to_return: dict[str, dict[Any, Any]] = {"A": {1: 7}, "B": {1: 3}}
+        self._data_to_return: dict[str, StorageValues] = {"A": 1, "B": 2}
 
-    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, dict[Any, Any]]]:
+    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, StorageValues]]:
         cpd_logger.debug("Dummy generator get_data method")
         cpd_logger.info(f"Dummy generator generated: {self._data_to_return}")
         return [self._data_to_return]

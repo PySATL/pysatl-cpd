@@ -11,7 +11,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from new_pysatl_cpd.types import StorageNames, StorageNamesRename
+from new_pysatl_cpd.custom_types import StorageNames, StorageNamesRename, StorageValues
 
 
 class ReportBuilder(ABC):
@@ -38,7 +38,7 @@ class ReportBuilder(ABC):
     def __init__(self, builder_result_fields: Optional[StorageNames | StorageNamesRename] = None):
         self._builder_result_fields = builder_result_fields if builder_result_fields else set()
 
-    def _filter_and_rename(self, report_builder_result: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:
+    def _filter_and_rename(self, report_builder_result: dict[str, StorageValues]) -> dict[str, StorageValues]:
         """Apply field selection and optional renaming to report data.
 
         :param report_builder_result: Complete generated report data
@@ -63,7 +63,7 @@ class ReportBuilder(ABC):
         return filtered_result
 
     @abstractmethod
-    def _build(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def _build(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         """Generate report data (for example some metrics) (implemented by subclasses).
 
         :param kwargs: Input data for report generation
@@ -88,7 +88,7 @@ class ReportBuilder(ABC):
         """
         ...
 
-    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         """Execute the full report building.
 
         :param args: Positional arguments forwarded to _build

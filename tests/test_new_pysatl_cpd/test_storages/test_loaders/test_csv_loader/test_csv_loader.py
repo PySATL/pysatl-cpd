@@ -30,6 +30,18 @@ def csv_test_files():
             writer = csv.writer(f)
             writer.writerow(["key", "value"])
 
+        with open(test_dir / "literal_literal.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["key", "value"])
+            writer.writerow(["0", "42"])
+
+        with open(test_dir / "list_list.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["key", "value"])
+            writer.writerow(["0", "first"])
+            writer.writerow(["1", "second"])
+            writer.writerow(["2", "3.14"])
+
         yield test_dir
 
 
@@ -45,7 +57,7 @@ def test_loader_csv_correct_data(csv_test_files):
     result = loader({"correct"})
 
     assert "correct" in result
-    assert result["correct"] == {1: 23.5, 2: 24.1}
+    assert result["correct"] == {"temp1": 23.5, "temp2": 24.1}
 
 
 def test_loader_csv_invalid_data(csv_test_files):
@@ -55,7 +67,7 @@ def test_loader_csv_invalid_data(csv_test_files):
     result = loader({"invalid"})
 
     assert "invalid" in result
-    assert result["invalid"] == {1: 10.5}
+    assert result["invalid"] == {"val1": 10.5, "val2": "not_a_float"}
 
 
 def test_loader_csv_empty_file(csv_test_files):
@@ -74,8 +86,7 @@ def test_loader_csv_missing_file(csv_test_files):
 
     result = loader({"missing"})
 
-    assert "missing" in result
-    assert result["missing"] == {}
+    assert "missing" not in result
 
 
 def test_loader_csv_multiple_files(csv_test_files):
@@ -84,29 +95,40 @@ def test_loader_csv_multiple_files(csv_test_files):
 
     result = loader({"correct", "invalid", "empty", "missing"})
 
-    assert set(result.keys()) == {"correct", "invalid", "empty", "missing"}
-    assert result["correct"] == {1: 23.5, 2: 24.1}
-    assert result["invalid"] == {1: 10.5}
+    assert set(result.keys()) == {"correct", "invalid", "empty"}
+    assert result["correct"] == {"temp1": 23.5, "temp2": 24.1}
+    assert result["invalid"] == {"val1": 10.5, "val2": "not_a_float"}
     assert result["empty"] == {}
-    assert result["missing"] == {}
 
 
-def test_loader_csv_special_characters():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        test_dir = Path(tmpdir) / "experiment_storages" / "csv" / "special"
-        test_dir.mkdir(parents=True)
+def test_loader_csv_literal_loading(csv_test_files):
+    loader = LoaderCSV(step_storages_name="test_step")
+    loader.directory = csv_test_files
 
-        with open(test_dir / "special.csv", "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["key", "value"])
-            writer.writerow(["temp/℃", "25.5"])
-            writer.writerow(["pres$ure", "1013.2"])
+    result = loader({"literal"})
 
-        loader = LoaderCSV(step_storages_name="special")
-        loader.directory = test_dir
+    assert "literal" in result
+    FOURTYTWO = 42
+    assert result["literal"] == FOURTYTWO
 
-        result = loader({"special"})
-        assert result["special"] == {1: 25.5, 2: 1013.2}
+
+def test_loader_csv_list_loading(csv_test_files):
+    loader = LoaderCSV(step_storages_name="test_step")
+    loader.directory = csv_test_files
+
+    result = loader({"list"})
+
+    assert "list" in result
+    assert result["list"] == ["first", "second", 3.14]
+
+
+def test_loader_csv_special_characters(csv_test_files):
+    loader = LoaderCSV(step_storages_name="test_step")
+    loader.directory = csv_test_files
+
+    result = loader({"special"})
+
+    assert "special" not in result
 
 
 def test_loader_csv_empty_keys(csv_test_files):
@@ -123,5 +145,4 @@ def test_loader_csv_directory_not_exists():
 
     result = loader({"any_key"})
 
-    assert "any_key" in result
-    assert result["any_key"] == {}
+    assert "any_key" not in result

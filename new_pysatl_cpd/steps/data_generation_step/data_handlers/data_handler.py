@@ -13,6 +13,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Any
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.steps.step_processor import StepProcessor
 
 
@@ -30,7 +31,7 @@ class DataHandler(StepProcessor):
     """
 
     @abstractmethod
-    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, dict[Any, Any]]]:
+    def get_data(self, *args: Any, **kwargs: Any) -> Iterable[dict[str, StorageValues]]:
         """Generate and yield chunks of processed data (must be implemented by subclasses).
 
         This is the core data production method that should be implemented to:

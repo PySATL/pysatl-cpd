@@ -16,10 +16,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageNames, StorageNamesRename, StorageValues
 from new_pysatl_cpd.steps.step_processor import StepProcessor
 from new_pysatl_cpd.storages.loaders.loader import Loader
 from new_pysatl_cpd.storages.savers.saver import Saver
-from new_pysatl_cpd.types import StorageNames, StorageNamesRename
 
 
 class Step(ABC):
@@ -138,8 +138,8 @@ class Step(ABC):
 
     @staticmethod
     def _filter_and_rename(
-        source_dict: dict[str, dict[Any, Any]], reference_dict: StorageNamesRename | StorageNames
-    ) -> dict[str, dict[Any, Any]]:
+        source_dict: dict[str, StorageValues], reference_dict: StorageNamesRename | StorageNames
+    ) -> dict[str, StorageValues]:
         """Filter and optionally rename dictionary fields based on reference.
 
         :param source_dict: Input data dictionary
@@ -168,7 +168,7 @@ class Step(ABC):
             raise ValueError(f"{missed_fields}")
         return result
 
-    def _get_storage_input(self, input_data: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:
+    def _get_storage_input(self, input_data: dict[str, StorageValues]) -> dict[str, StorageValues]:
         """Input from storage for Step after renaming
 
         :param input_data: global input from storage
@@ -182,7 +182,7 @@ class Step(ABC):
                 f"Maybe step processor does not return the above mentioned fields"
             )
 
-    def _get_step_input(self, input_data: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:
+    def _get_step_input(self, input_data: dict[str, StorageValues]) -> dict[str, StorageValues]:
         """Input from previous step for current step after renaming
 
         :param input_data: global input from previous step
@@ -196,7 +196,7 @@ class Step(ABC):
                 f"Maybe step processor does not return the above mentioned fields"
             )
 
-    def _get_step_output(self, output_data: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:
+    def _get_step_output(self, output_data: dict[str, StorageValues]) -> dict[str, StorageValues]:
         """Output for storage from Step after renaming
 
         :param output_data: global output from Step
@@ -210,7 +210,7 @@ class Step(ABC):
                 f"Maybe step processor does not return the above mentioned fields"
             )
 
-    def _get_storage_output(self, output_data: dict[str, dict[Any, Any]]) -> dict[str, dict[Any, Any]]:
+    def _get_storage_output(self, output_data: dict[str, StorageValues]) -> dict[str, StorageValues]:
         """Output for next step from current step after renaming
 
         :param output_data: global output from current step
@@ -246,7 +246,7 @@ class Step(ABC):
         ...
 
     @abstractmethod
-    def process(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         """Execute the core processing logic of the step (must be implemented by subclasses).
 
         This is the main method where the step's functionality should be implemented.
@@ -280,7 +280,7 @@ class Step(ABC):
         """
         ...
 
-    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def __call__(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         """Execute the step with given inputs.
 
         :param kwargs: Input data for processing

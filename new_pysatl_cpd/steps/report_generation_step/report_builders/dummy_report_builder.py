@@ -12,6 +12,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.report_generation_step.report_builders.report_builder import ReportBuilder
 
@@ -31,7 +32,7 @@ class DummyReportBuilder(ReportBuilder):
         self.a = a
         self.b = b
 
-    def _build(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def _build(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         cpd_logger.debug(f"DummyReportBuilder build method ({kwargs})")
 
-        return {"a": {1: self.a}, "b": {1: self.b}, "c": {1: self.a + self.b}, "s": {1: kwargs["s"][1]}}
+        return {"a": self.a, "b": self.b, "c": self.a + self.b, "s": kwargs["s"]}

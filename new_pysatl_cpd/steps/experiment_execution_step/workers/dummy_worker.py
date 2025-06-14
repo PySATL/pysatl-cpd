@@ -13,6 +13,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.experiment_execution_step.workers.worker import Worker
 
@@ -38,7 +39,7 @@ class DummyWorker(Worker):
         )
         self._data_to_return = data_to_return if data_to_return else dict()
 
-    def run(self, a: dict[Any, Any], b: dict[Any, Any]) -> Iterable[dict[str, dict[Any, Any]]]:
+    def run(self, a: int, b: int) -> Iterable[dict[str, StorageValues]]:
         cpd_logger.debug("DummyWorker run method")
-        cpd_logger.debug(f"get for execution: a: {a[1]}, b: {b[1]} ")
-        return [{"s": {1: a[1] + b[1]}}]
+        cpd_logger.debug(f"get for execution: a: {a}, b: {b} ")
+        return [{"s": a + b}]

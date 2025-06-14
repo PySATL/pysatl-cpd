@@ -12,13 +12,13 @@ __license__ = "SPDX-License-Identifier: MIT"
 from pathlib import Path
 from typing import Any, Optional
 
+from new_pysatl_cpd.custom_types import StorageNames, StorageNamesRename, StorageValues
 from new_pysatl_cpd.logger import cpd_logger
 from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import (
     DataHandler,
 )
 from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.types import StorageNames, StorageNamesRename
 
 
 class DataGenerationStep(Step):
@@ -48,14 +48,14 @@ class DataGenerationStep(Step):
     """
 
     def __init__(
-            self,
-            data_handler: DataHandler,
-            name: str = "Step",
-            input_storage_names: Optional[StorageNames] = None,
-            output_storage_names: Optional[StorageNames | StorageNamesRename] = None,
-            input_step_names: Optional[StorageNames | StorageNamesRename] = None,
-            output_step_names: Optional[StorageNames | StorageNamesRename] = None,
-            config: Optional[Path] = None,
+        self,
+        data_handler: DataHandler,
+        name: str = "Step",
+        input_storage_names: Optional[StorageNames] = None,
+        output_storage_names: Optional[StorageNames | StorageNamesRename] = None,
+        input_step_names: Optional[StorageNames | StorageNamesRename] = None,
+        output_step_names: Optional[StorageNames | StorageNamesRename] = None,
+        config: Optional[Path] = None,
     ):
         super().__init__(
             name,
@@ -69,7 +69,7 @@ class DataGenerationStep(Step):
         self._available_next_classes = [DataGenerationStep, ExperimentExecutionStep]
         self._set_storage_data_from_processor(self.data_handler)
 
-    def process(self, *args: Any, **kwargs: Any) -> dict[str, dict[Any, Any]]:
+    def process(self, *args: Any, **kwargs: Any) -> dict[str, StorageValues]:
         """Generate and store data using the configured DataHandler.
 
         :param kwargs: Input parameters for data generation, including:
