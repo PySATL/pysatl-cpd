@@ -56,7 +56,13 @@ class DatasetSaver:
         # Save sample plot
         image_file: Path = sample_dir.joinpath(DatasetSaver.SAMPLE_IMAGE)
         plt.plot(sample)
-        plt.vlines(x=changepoints, ymin=sample.min(), ymax=sample.max(), colors="orange", ls="--")
+        plt.vlines(
+            x=changepoints,
+            ymin=sample.min(),
+            ymax=sample.max(),
+            colors="orange",
+            ls="--",
+        )
         plt.savefig(image_file)
         plt.close()
         # Save description

@@ -22,7 +22,13 @@ class KNNClassifier:
 
     def __init__(
         self,
-        metric: tp.Callable[[np.float64 | npt.NDArray[np.float64], np.float64 | npt.NDArray[np.float64]], float],
+        metric: tp.Callable[
+            [
+                np.float64 | npt.NDArray[np.float64],
+                np.float64 | npt.NDArray[np.float64],
+            ],
+            float,
+        ],
         k: int = 7,
         delta: float = 1e-12,
     ) -> None:

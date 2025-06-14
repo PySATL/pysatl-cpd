@@ -3,7 +3,9 @@ from typing import cast
 import numpy as np
 import numpy.typing as npt
 
-from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
+from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import (
+    DensityBasedAlgorithm,
+)
 
 
 class RulsifAlgorithm(DensityBasedAlgorithm):

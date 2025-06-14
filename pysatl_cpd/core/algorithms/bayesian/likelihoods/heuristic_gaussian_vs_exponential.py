@@ -8,11 +8,16 @@ from typing import Optional
 import numpy as np
 from numpy import typing as npt
 
-from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import ILikelihood, ILikelihoodWithPriorProbability
+from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import (
+    ILikelihood,
+    ILikelihoodWithPriorProbability,
+)
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.exponential_conjugate import (
     ExponentialConjugateWithPriorProbability,
 )
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import GaussianConjugateWithPriorProbability
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import (
+    GaussianConjugateWithPriorProbability,
+)
 
 
 class HeuristicGaussianVsExponential(ILikelihood):
