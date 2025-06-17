@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -125,7 +125,7 @@ class DispersionEntropyAlgorithm(OnlineAlgorithm):
         z_series = np.clip(z_series, 1, self._num_classes)
         return z_series
 
-    def _create_dispersion_patterns(self, z_series: npt.NDArray[np.int32]) -> list[tuple]:
+    def _create_dispersion_patterns(self, z_series: npt.NDArray[np.int32]) -> list[tuple[int, ...]]:
         N = len(z_series)
         patterns = []
 
@@ -140,22 +140,22 @@ class DispersionEntropyAlgorithm(OnlineAlgorithm):
 
         return patterns
 
-    def _calculate_pattern_probabilities(self, patterns: list[tuple]) -> dict[tuple, float]:
+    def _calculate_pattern_probabilities(self, patterns: list[tuple[int, ...]]) -> dict[tuple[int, ...], float]:
         if not patterns:
             return {}
 
-        pattern_counts = {}
+        pattern_counts: dict[tuple[int, ...], int] = {}
         for pattern in patterns:
             pattern_counts[pattern] = pattern_counts.get(pattern, 0) + 1
 
         total_patterns = len(patterns)
-        pattern_probs = {}
+        pattern_probs: dict[tuple[int, ...], float] = {}
         for pattern, count in pattern_counts.items():
             pattern_probs[pattern] = count / total_patterns
 
         return pattern_probs
 
-    def _calculate_shannon_entropy(self, pattern_probs: dict[tuple, float]) -> float:
+    def _calculate_shannon_entropy(self, pattern_probs: dict[tuple[int, ...], float]) -> float:
         if not pattern_probs:
             return 0.0
 
@@ -169,7 +169,7 @@ class DispersionEntropyAlgorithm(OnlineAlgorithm):
     def get_entropy_history(self) -> list[float]:
         return self._entropy_values.copy()
 
-    def get_current_parameters(self) -> dict:
+    def get_current_parameters(self) -> dict[str, int | float | bool]:
         return {
             "window_size": self._window_size,
             "embedding_dim": self._embedding_dim,
@@ -204,7 +204,7 @@ class DispersionEntropyAlgorithm(OnlineAlgorithm):
                 f"c^w ({self._num_classes}^{self._embedding_dim}) should be less than window_size ({self._window_size})"
             )
 
-    def get_pattern_distribution(self) -> dict[tuple, int]:
+    def get_pattern_distribution(self) -> dict[tuple[int, ...], int]:
         if len(self._buffer) < self._window_size:
             return {}
 
@@ -218,13 +218,13 @@ class DispersionEntropyAlgorithm(OnlineAlgorithm):
         z_series = self._discretize_to_classes(y_series)
         patterns = self._create_dispersion_patterns(z_series)
 
-        pattern_counts = {}
+        pattern_counts: dict[tuple[int, ...], int] = {}
         for pattern in patterns:
             pattern_counts[pattern] = pattern_counts.get(pattern, 0) + 1
 
         return pattern_counts
 
-    def analyze_complexity(self) -> dict:
+    def analyze_complexity(self) -> dict[str, Union[float, int]]:
         if len(self._buffer) < self._window_size:
             return {}
 

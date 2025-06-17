@@ -85,10 +85,12 @@ class ApproximateEntropyAlgorithm(OnlineAlgorithm):
 
         r = self._r
         if r is None:
-            std_dev = np.std(time_series)
+            std_dev = float(np.std(time_series))
             if std_dev == 0:
                 return 0.0
             r = self._r_factor * std_dev
+
+        assert r is not None
 
         phi_m = self._calculate_phi(time_series, self._m, r)
         phi_m_plus_1 = self._calculate_phi(time_series, self._m + 1, r)

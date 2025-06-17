@@ -1,8 +1,9 @@
 from collections import deque
-from typing import Optional
+from typing import Any, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
+from numpy.typing import NDArray
 from scipy import stats
 from scipy.integrate import quad
 
@@ -143,9 +144,10 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
             data_min, data_max = np.min(time_series), np.max(time_series)
             margin = (data_max - data_min) * 0.2
 
-            def integrand(x):
-                p_x = kde(x)[0] if np.isscalar(x) else kde(x)
-                return p_x**q
+            def integrand(x: Union[float, NDArray[np.float64]]) -> float:
+                x_array: NDArray[np.float64] = np.atleast_1d(x).astype(np.float64)
+                p_x = kde(x_array)[0]
+                return float(p_x**q)
 
             integral_result, _ = quad(
                 integrand, data_min - margin, data_max + margin, limit=100, epsabs=1e-8, epsrel=1e-8
@@ -153,9 +155,10 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
             v = 1e-10
             if abs(q - 1.0) < v:
 
-                def shannon_integrand(x):
-                    p_x = kde(x)[0] if np.isscalar(x) else kde(x)
-                    return p_x * np.log(p_x + 1e-10)
+                def shannon_integrand(x: Union[float, NDArray[np.float64]]) -> float:
+                    x_array: NDArray[np.float64] = np.atleast_1d(x).astype(np.float64)
+                    p_x = kde(x_array)[0]
+                    return float(p_x * np.log(p_x + 1e-10))
 
                 shannon_integral, _ = quad(
                     shannon_integrand, data_min - margin, data_max + margin, limit=100, epsabs=1e-8, epsrel=1e-8
@@ -180,9 +183,9 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
         p_uniform = 1.0 / n_states
 
         if abs(q - 1.0) < v:
-            return self._k_constant * np.log(n_states)
+            return float(self._k_constant * np.log(n_states))
         else:
-            return self._k_constant * (1.0 / (q - 1.0)) * (1.0 - n_states * (p_uniform**q))
+            return float(self._k_constant * (1.0 / (q - 1.0)) * (1.0 - n_states * (p_uniform**q)))
 
     def _combine_multi_q_entropies(self, entropies: dict[float, float]) -> float:
         weights = {}
@@ -245,7 +248,7 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
     def get_multi_q_history(self) -> dict[float, list[float]]:
         return {q: values.copy() for q, values in self._multi_entropy_values.items()}
 
-    def get_current_parameters(self) -> dict:
+    def get_current_parameters(self) -> dict[str, Any]:
         return {
             "window_size": self._window_size,
             "q_parameter": self._q_parameter,
@@ -268,7 +271,7 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
         normalize: Optional[bool] = None,
         multi_q: Optional[bool] = None,
     ) -> None:
-        def set_q_param(q):
+        def set_q_param(q: float) -> None:
             v = 1e-10
             if abs(q - 1.0) < v:
                 raise ValueError("q parameter cannot be 1")
@@ -276,12 +279,12 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
             if not self._multi_q:
                 self._q_values = [q]
 
-        def set_k_const(k):
+        def set_k_const(k: float) -> None:
             if k <= 0:
                 raise ValueError("k constant must be positive")
             self._k_constant = k
 
-        def set_num_bins_func(bins):
+        def set_num_bins_func(bins: int) -> None:
             if bins <= 1:
                 raise ValueError("Number of bins must be greater than 1")
             self._num_bins = bins
@@ -312,7 +315,7 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
             else:
                 self._q_values = [self._q_parameter]
 
-    def analyze_q_sensitivity(self) -> dict:
+    def analyze_q_sensitivity(self) -> dict[str, Any]:
         if len(self._buffer) < self._window_size:
             return {}
 
@@ -341,7 +344,7 @@ class TsallisEntropyAlgorithm(OnlineAlgorithm):
             "entropy_variance_across_q": np.var(list(q_entropies.values())) if q_entropies else 0,
         }
 
-    def get_complexity_metrics(self) -> dict:
+    def get_complexity_metrics(self) -> dict[str, Any]:
         if len(self._buffer) < self._window_size:
             return {}
 

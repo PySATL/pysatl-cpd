@@ -102,8 +102,8 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
     def _calculate_kl_divergence_histogram(
         self, ref_data: npt.NDArray[np.float64], curr_data: npt.NDArray[np.float64]
     ) -> float:
-        data_min = min(np.min(ref_data), np.min(curr_data))
-        data_max = max(np.max(ref_data), np.max(curr_data))
+        data_min = float(np.min(ref_data))
+        data_max = float(np.max(ref_data))
 
         margin = (data_max - data_min) * 0.01
         bin_edges = np.linspace(data_min - margin, data_max + margin, self._num_bins + 1)
@@ -120,10 +120,10 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
         ref_prob = ref_prob / np.sum(ref_prob)
         curr_prob = curr_prob / np.sum(curr_prob)
 
-        kl_pq = np.sum(ref_prob * np.log(ref_prob / curr_prob))
+        kl_pq = float(np.sum(ref_prob * np.log(ref_prob / curr_prob)))
 
         if self._symmetric:
-            kl_qp = np.sum(curr_prob * np.log(curr_prob / ref_prob))
+            kl_qp = float(np.sum(curr_prob * np.log(curr_prob / ref_prob)))
             return (kl_pq + kl_qp) / 2
         else:
             return kl_pq
@@ -131,28 +131,28 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
     def _calculate_kl_divergence_kde(
         self, ref_data: npt.NDArray[np.float64], curr_data: npt.NDArray[np.float64]
     ) -> float:
-        ref_kde = stats.gaussian_kde(ref_data)
-        curr_kde = stats.gaussian_kde(curr_data)
-
-        data_min = min(np.min(ref_data), np.min(curr_data))
-        data_max = max(np.max(ref_data), np.max(curr_data))
+        data_min = float(np.min(np.array([ref_data.min(), curr_data.min()])))
+        data_max = float(np.max(np.array([ref_data.max(), curr_data.max()])))
         margin = (data_max - data_min) * 0.1
         x_eval = np.linspace(data_min - margin, data_max + margin, 1000)
+
+        ref_kde = stats.gaussian_kde(ref_data)
+        curr_kde = stats.gaussian_kde(curr_data)
 
         ref_density = ref_kde(x_eval)
         curr_density = curr_kde(x_eval)
 
-        ref_density = ref_density + self._smoothing_factor
-        curr_density = curr_density + self._smoothing_factor
+        ref_density += self._smoothing_factor
+        curr_density += self._smoothing_factor
 
         dx = x_eval[1] - x_eval[0]
-        ref_density = ref_density / (np.sum(ref_density) * dx)
-        curr_density = curr_density / (np.sum(curr_density) * dx)
+        ref_density /= np.sum(ref_density) * dx
+        curr_density /= np.sum(curr_density) * dx
 
-        kl_pq = np.sum(ref_density * np.log(ref_density / curr_density)) * dx
+        kl_pq = float(np.sum(ref_density * np.log(ref_density / curr_density)) * dx)
 
         if self._symmetric:
-            kl_qp = np.sum(curr_density * np.log(curr_density / ref_density)) * dx
+            kl_qp = float(np.sum(curr_density * np.log(curr_density / ref_density)) * dx)
             return (kl_pq + kl_qp) / 2
         else:
             return kl_pq
@@ -166,7 +166,7 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
     def get_kl_history(self) -> list[float]:
         return self._kl_values.copy()
 
-    def get_current_parameters(self) -> dict:
+    def get_current_parameters(self) -> dict[str, float | int | bool]:
         return {
             "window_size": self._window_size,
             "reference_window_size": self._reference_window_size,
@@ -200,7 +200,7 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
         if smoothing_factor is not None:
             self._smoothing_factor = smoothing_factor
 
-    def get_distribution_comparison(self) -> dict:
+    def get_distribution_comparison(self) -> dict[str, float]:
         if len(self._reference_buffer) < self._reference_window_size or len(self._current_buffer) < self._window_size:
             return {}
 
@@ -225,7 +225,7 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
             "ks_pvalue": ks_pvalue,
         }
 
-    def analyze_distributions(self) -> dict:
+    def analyze_distributions(self) -> dict[str, float]:
         if len(self._reference_buffer) < self._reference_window_size or len(self._current_buffer) < self._window_size:
             return {}
 

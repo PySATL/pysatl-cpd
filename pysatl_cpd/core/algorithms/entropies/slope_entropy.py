@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Optional
+from typing import Any, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -141,7 +141,7 @@ class SlopeEntropyAlgorithm(OnlineAlgorithm):
     def get_entropy_history(self) -> list[float]:
         return self._entropy_values.copy()
 
-    def get_current_parameters(self) -> dict:
+    def get_current_parameters(self) -> dict[str, Any]:
         return {
             "window_size": self._window_size,
             "embedding_dim": self._embedding_dim,
@@ -196,7 +196,7 @@ class SlopeEntropyAlgorithm(OnlineAlgorithm):
 
         return pattern_probs
 
-    def analyze_slope_characteristics(self) -> dict:
+    def analyze_slope_characteristics(self) -> dict[str, Any]:
         if len(self._buffer) < self._window_size:
             return {}
 
@@ -232,7 +232,9 @@ class SlopeEntropyAlgorithm(OnlineAlgorithm):
             -2: f"Steep negative slope (< -{self._gamma})",
         }
 
-    def demonstrate_encoding(self, sample_data: list[float]) -> dict:
+    def demonstrate_encoding(
+        self, sample_data: list[float]
+    ) -> dict[str, Union[str, float, int, list[float], list[int], list[list[int]], dict[int, str]]]:
         if len(sample_data) < self._embedding_dim:
             return {"error": "Sample data too short"}
 

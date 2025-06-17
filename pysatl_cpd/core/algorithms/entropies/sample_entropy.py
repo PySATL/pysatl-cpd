@@ -95,21 +95,20 @@ class SampleEntropyAlgorithm(OnlineAlgorithm):
 
         r = self._r
         if r is None:
-            std_dev = np.std(time_series)
+            std_dev = float(np.std(time_series))
             if std_dev == 0:
                 return float("inf")
             r = self._r_factor * std_dev
 
+        assert r is not None
+
         B = self._count_matches(time_series, self._m, r)
         A = self._count_matches(time_series, self._m + 1, r)
 
-        if B == 0:
-            return float("inf")
-        if A == 0:
+        if B == 0 or A == 0:
             return float("inf")
 
-        sample_entropy = -np.log(A / B)
-        return float(sample_entropy)
+        return float(-np.log(A / B))
 
     def _count_matches(self, time_series: npt.NDArray[np.float64], m: int, r: float) -> int:
         N = len(time_series)

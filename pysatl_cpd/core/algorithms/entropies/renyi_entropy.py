@@ -112,7 +112,8 @@ class RenyiEntropyAlgorithm(OnlineAlgorithm):
 
         probabilities = []
         for i in range(1, len(bin_edges)):
-            count = bin_counts.get(i, 0)
+            key = np.int64(i)
+            count = bin_counts.get(key, 0)
             prob = count / total_count if total_count > 0 else 0.0
             probabilities.append(prob)
 
