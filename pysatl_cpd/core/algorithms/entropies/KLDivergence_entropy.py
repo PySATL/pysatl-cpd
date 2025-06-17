@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -102,8 +102,8 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
     def _calculate_kl_divergence_histogram(
         self, ref_data: npt.NDArray[np.float64], curr_data: npt.NDArray[np.float64]
     ) -> float:
-        data_min = float(np.min(ref_data))
-        data_max = float(np.max(ref_data))
+        data_min = float(np.min(np.array([ref_data.min(), curr_data.min()])))
+        data_max = float(np.max(np.array([ref_data.max(), curr_data.max()])))
 
         margin = (data_max - data_min) * 0.01
         bin_edges = np.linspace(data_min - margin, data_max + margin, self._num_bins + 1)
@@ -225,7 +225,7 @@ class KLDivergenceAlgorithm(OnlineAlgorithm):
             "ks_pvalue": ks_pvalue,
         }
 
-    def analyze_distributions(self) -> dict[str, float]:
+    def analyze_distributions(self) -> dict[str, Any]:
         if len(self._reference_buffer) < self._reference_window_size or len(self._current_buffer) < self._window_size:
             return {}
 
