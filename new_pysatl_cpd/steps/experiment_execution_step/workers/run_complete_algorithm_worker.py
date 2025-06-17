@@ -1,3 +1,13 @@
+"""
+Module contains basic CPD worker.
+
+Worker, that executes chosen CPD algorithm on a dataset with particular mode.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
@@ -11,6 +21,8 @@ from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
 
 
 class RunCompleteAlgorithmWorker(Worker):
+    """Basic worker. Applies CPD algorithm to dataset in to possible modes: detection or localization"""
+
     def __init__(
         self,
         algorithm: Algorithm,

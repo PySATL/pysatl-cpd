@@ -1,4 +1,8 @@
-""" """
+"""
+Module, that contains basic implementation of ReportVisualizer.
+
+ReportVisualizer, that prints located change points into txt file. Used in example.
+"""
 
 __author__ = "Artem Romanyuk"
 __copyright__ = "Copyright (c) 2025 PySATL project"

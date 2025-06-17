@@ -1,4 +1,8 @@
-""" """
+"""
+Module, that contains basic report builder for CPD results.
+
+ReportBuilder, that returns just detected/localized points in dataset. Used in example.
+"""
 
 __author__ = "Artem Romanyuk"
 __copyright__ = "Copyright (c) 2025 PySATL project"

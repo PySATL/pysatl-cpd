@@ -1,3 +1,13 @@
+"""
+Module contains implementation of a DataHandler.
+
+Basic generator for distributions from previous architecture. Used in example.
+"""
+
+__author__ = "Artem Romanyuk"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
@@ -8,6 +18,8 @@ from pysatl_cpd.generator.generator import ScipyDatasetGenerator
 
 
 class CpdGenerator(DataHandler):
+    """Generator, based on ScipyDatasetGenerator, used in example"""
+
     def __init__(
         self,
         name: str = "Step",
