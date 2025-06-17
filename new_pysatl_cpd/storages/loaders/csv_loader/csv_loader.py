@@ -22,66 +22,6 @@ class LoaderCSV(Loader):
     def __init__(self, step_storages_name: str = "generation"):
         self.directory = Path("experiment_storages") / "csv" / step_storages_name
 
-    # def __call__(self, data_keys: set[str]) -> dict[str, StorageValues]:
-    #     """Loads data from files, matching experiment_storage/[step_storage_name]/[data_keys].csv pattern"""
-    #     result = {}
-    #     for key in data_keys:
-    #         possible_filenames = [
-    #             self.directory / f"{key}.csv",
-    #             self.directory / f"{key}_list.csv",
-    #             self.directory / f"{key}_literal.csv",
-    #         ]
-    #
-    #         loaded_data: Optional[StorageValues] = None
-    #         actual_filename = None
-    #
-    #         for filename in possible_filenames:
-    #             if filename.exists():
-    #                 actual_filename = filename
-    #                 break
-    #
-    #         if actual_filename is None:
-    #             continue
-    #
-    #         with open(actual_filename) as f:
-    #             reader = csv.reader(f)
-    #             next(reader)
-    #
-    #             file_data = {}
-    #             for row in reader:
-    #                 if len(row) < 2:
-    #                     continue
-    #
-    #                 key_data, value = row[0], row[1]
-    #                 converted: int | str | float
-    #                 try:
-    #                     converted = int(value)
-    #                 except ValueError:
-    #                     try:
-    #                         converted = float(value)
-    #                     except ValueError:
-    #                         converted = value
-    #
-    #                 file_data[key_data] = converted
-    #             if actual_filename.name.endswith("_literal.csv"):
-    #                 loaded_data = file_data.get("0")
-    #             elif actual_filename.name.endswith("_list.csv"):
-    #                 result_list = []
-    #                 for _, v in file_data.items():
-    #                     result_list.append(v)
-    #                 if isinstance(result_list[0], int):
-    #                     loaded_data = cast(list[int], result_list)
-    #                 if isinstance(result_list[0], float):
-    #                     loaded_data = cast(list[float], result_list)
-    #                 if isinstance(result_list[0], str):
-    #                     loaded_data = cast(list[str], result_list)
-    #             else:
-    #                 loaded_data = file_data
-    #
-    #         if loaded_data is not None:
-    #             result[key] = loaded_data
-    #
-    #     return result
     def __call__(self, data_keys: set[str]) -> dict[str, StorageValues]:
         result = {}
         for key in data_keys:
@@ -133,8 +73,24 @@ class LoaderCSV(Loader):
     def _convert_to_list(self, file_data: dict[str, Union[int, float, str]]) -> list[str] | list[int] | list[float]:
         result_list = list(file_data.values())
         first_element = result_list[0] if result_list else None
-        if isinstance(first_element, int):
+        if self._is_int(first_element):
             return cast(list[int], result_list)
-        if isinstance(first_element, float):
+        if self._is_float(first_element):
             return cast(list[float], result_list)
         return cast(list[str], result_list)
+
+    @staticmethod
+    def _is_float(element: str) -> bool:
+        try:
+            float(element)
+            return True
+        except Exception:
+            return False
+
+    @staticmethod
+    def _is_int(element: str) -> bool:
+        try:
+            int(element)
+            return True
+        except Exception:
+            return False

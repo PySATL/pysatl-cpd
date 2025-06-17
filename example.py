@@ -1,28 +1,52 @@
+from pathlib import Path
+
 from new_pysatl_cpd.pipeline.pipeline import Pipeline
 from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
-from new_pysatl_cpd.steps.data_generation_step.data_handlers.generators.dummy_generator import DummyGenerator
+from new_pysatl_cpd.steps.data_generation_step.data_handlers.generators.cpd_generator import CpdGenerator
 from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
-from new_pysatl_cpd.steps.experiment_execution_step.workers.dummy_worker import DummyWorker
-from new_pysatl_cpd.steps.report_generation_step.report_builders.dummy_report_builder import DummyReportBuilder
+from new_pysatl_cpd.steps.experiment_execution_step.workers.run_complete_algorithm_worker import (
+    RunCompleteAlgorithmWorker,
+)
+from new_pysatl_cpd.steps.report_generation_step.report_builders.change_point_builder import CpBuilder
 from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
-from new_pysatl_cpd.steps.report_generation_step.report_visualizers.dummy_report_visualizer import DummyReportVisualizer
-from new_pysatl_cpd.steps.report_generation_step.reporters.dummy_reporter import DummyReporter
+from new_pysatl_cpd.steps.report_generation_step.report_visualizers.change_point_text_visualizer import CpTextVisualizer
+from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Reporter
+from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
+from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
+from pysatl_cpd.core.algorithms.bayesian.likelihoods.heuristic_gaussian_vs_exponential import (
+    HeuristicGaussianVsExponential,
+)
+from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
+from pysatl_cpd.core.algorithms.bayesian_algorithm import BayesianAlgorithm
 
-# save to gen.data. storage B=2, add A=1 to metadata (step output)
-step_1 = DataGenerationStep(DummyGenerator(), name="DummyGeneration")
-# Get B as b, A as a from GenDataStorage. Save a+b as s to Result DB
+# Generate data with example config and save as my_experiment_dataset
+generator = CpdGenerator(
+    name="cpd_generator", output_storage_names={"example"}, config=Path("examples/configs/test_config_exp.yml")
+)
+step_1 = DataGenerationStep(
+    data_handler=generator,
+    name="cpd_generation_test_config_exp_step",
+    output_storage_names={"example": "my_experiment_dataset"},
+)
+
+# Initialize BayesianAlgorithm and run with generated data
+algorithm = BayesianAlgorithm(
+    learning_steps=5,
+    likelihood=HeuristicGaussianVsExponential(),
+    hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
+    detector=ThresholdDetector(threshold=0.005),
+    localizer=ArgmaxLocalizer(),
+)
+algo_worker = RunCompleteAlgorithmWorker(algorithm=algorithm, name="run_bayesian_algorithm_worker")
 step_2 = ExperimentExecutionStep(
-    DummyWorker(), input_storage_names={"B": "b"}, input_step_names={"A": "a"}, name="DummyWorker"
+    worker=algo_worker, name="run_bayesian_algorithm_step", input_storage_names={"my_experiment_dataset": "dataset"}
 )
-# Generate Report with s from Result Storage
-step_3 = ReportGenerationStep(
-    DummyReporter(
-        DummyReportBuilder(1, 2, builder_result_fields={"a", "b", "c", "s"}),
-        DummyReportVisualizer(builder_result_fields={"a", "b", "c", "s"}),
-    ),
-    input_storage_names={"s"},
-    name="ReportGeneration",
-)
+
+# Generate text report with change points from Result Storage
+builder = CpBuilder()
+visualizer = CpTextVisualizer(file_name="my_experiment_change_points_report")
+reporter = Reporter(builder, visualizer, name="text_reporter")
+step_3 = ReportGenerationStep(reporter, name="ReportGeneration", input_storage_names={"change_points"})
 
 steps = [step_1, step_2, step_3]
 pipeline = Pipeline(steps)

@@ -47,7 +47,7 @@ class StepProcessor(ABC):
 
     def __init__(
         self,
-        name: str = "Step",
+        name: str = "StepProcessor",
         input_storage_names: Optional[set[str]] = None,
         output_storage_names: Optional[set[str]] = None,
         input_step_names: Optional[set[str]] = None,

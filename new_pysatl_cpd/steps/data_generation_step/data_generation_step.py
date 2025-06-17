@@ -91,7 +91,7 @@ class DataGenerationStep(Step):
             if self._saver:
                 for key in renamed_storage_output:
                     self._saver(key, renamed_storage_output[key])
-                cpd_logger.info(f"{self} saved data to Storage ({renamed_storage_output})")
+                cpd_logger.info(f"{self} saved data to Storage ({list(renamed_storage_output.keys())})")
         return renamed_step_output
 
     def _validate_storages(self) -> bool:

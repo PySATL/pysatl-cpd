@@ -79,5 +79,6 @@ class Reporter(StepProcessor):
         """
 
         report_builder_result = self._report_builder(*args, **kwargs)
+        cpd_logger.info(report_builder_result)
         cpd_logger.debug(f"report builder: {report_builder_result}")
         return self._report_visualizer(report_builder_result)

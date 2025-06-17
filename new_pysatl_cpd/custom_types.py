@@ -8,6 +8,8 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from typing import Any
 
+import numpy as np
+
 StorageNames = set[str]
 StorageNamesRename = dict[str, str]
-StorageValues = int | float | str | list[int] | list[str] | list[float] | dict[Any, Any]
+StorageValues = int | float | str | list[int | str | float] | tuple[int | str | float] | np.ndarray | dict[Any, Any]

@@ -11,6 +11,8 @@ __license__ = "SPDX-License-Identifier: MIT"
 import csv
 from pathlib import Path
 
+import numpy as np
+
 from new_pysatl_cpd.custom_types import StorageValues
 from new_pysatl_cpd.storages.savers.saver import Saver
 
@@ -27,7 +29,7 @@ class SaverCSV(Saver):
         if isinstance(data, float | int | str):
             storage_name += "_literal"
             new_data = {0: data}
-        elif isinstance(data, list):
+        elif isinstance(data, list | tuple | np.ndarray):
             storage_name += "_list"
             new_data = {}
             for i in range(len(data)):
@@ -35,7 +37,7 @@ class SaverCSV(Saver):
         elif isinstance(data, dict):
             new_data = data
         else:
-            raise TypeError("wrong data type")
+            raise TypeError(f"wrong data type ({type(data)})")
 
         filename = self.directory / f"{storage_name}.csv"
 

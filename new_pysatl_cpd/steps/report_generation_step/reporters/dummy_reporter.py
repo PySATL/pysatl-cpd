@@ -15,25 +15,24 @@ from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Repor
 
 
 class DummyReporter(Reporter):
-    class DummyReporter(Reporter):
-        def __init__(
-            self,
-            report_builder: ReportBuilder,
-            report_visualizer: ReportVisualizer,
-            name: str = "Step",
-            previous_step_data: Optional[dict[str, Any]] = None,
-            config: Optional[Path] = None,
-        ) -> None:
-            super().__init__(
-                report_builder,
-                report_visualizer,
-                name,
-                {"s"},
-                set(),
-                set(),
-                set(),
-                previous_step_data,
-                config,
-            )
-            self._report_builder = report_builder
-            self._report_visualizer = report_visualizer
+    def __init__(
+        self,
+        report_builder: ReportBuilder,
+        report_visualizer: ReportVisualizer,
+        name: str = "Step",
+        previous_step_data: Optional[dict[str, Any]] = None,
+        config: Optional[Path] = None,
+    ) -> None:
+        super().__init__(
+            report_builder,
+            report_visualizer,
+            name,
+            {"s"},
+            set(),
+            set(),
+            set(),
+            previous_step_data,
+            config,
+        )
+        self._report_builder = report_builder
+        self._report_visualizer = report_visualizer
