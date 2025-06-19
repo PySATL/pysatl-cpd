@@ -161,3 +161,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 /poetry.lock
+
+/new_pysatl_cpd/execution_logs
+/new_pysatl_cpd/results
+/experiment_storages

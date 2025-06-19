@@ -21,9 +21,15 @@ def set_seed():
 
 @pytest.fixture(
     params=[
-        (GaussianConjugate, {"pre_loc": 0, "pre_scale": 1, "post_loc": 5, "post_scale": 2}),
+        (
+            GaussianConjugate,
+            {"pre_loc": 0, "pre_scale": 1, "post_loc": 5, "post_scale": 2},
+        ),
         (ExponentialConjugate, {"pre_scale": 1 / 0.5, "post_scale": 1 / 2}),
-        (HeuristicGaussianVsExponential, {"pre_scale": 1 / 0.5, "post_loc": 5, "post_scale": 2}),
+        (
+            HeuristicGaussianVsExponential,
+            {"pre_scale": 1 / 0.5, "post_loc": 5, "post_scale": 2},
+        ),
     ],
     ids=["Gaussian", "Exponential", "HeuristicGaussianVsExponential"],
 )

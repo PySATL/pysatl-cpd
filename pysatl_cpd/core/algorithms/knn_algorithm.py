@@ -12,7 +12,9 @@ import numpy as np
 import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.abstract_algorithm import Algorithm
-from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import TestStatistic
+from pysatl_cpd.core.algorithms.classification.abstracts.istatistic_test import (
+    TestStatistic,
+)
 from pysatl_cpd.core.algorithms.knn.classifier import KNNClassifier
 
 
@@ -23,7 +25,13 @@ class KNNAlgorithm(Algorithm):
 
     def __init__(
         self,
-        distance_func: tp.Callable[[np.float64 | npt.NDArray[np.float64], np.float64 | npt.NDArray[np.float64]], float],
+        distance_func: tp.Callable[
+            [
+                np.float64 | npt.NDArray[np.float64],
+                np.float64 | npt.NDArray[np.float64],
+            ],
+            float,
+        ],
         test_statistic: TestStatistic,
         indent_coeff: float,
         k: int = 7,
