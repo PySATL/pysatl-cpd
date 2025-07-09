@@ -5,9 +5,10 @@ from hypothesis import strategies as st
 from benchmarking.logger import cpd_logger
 from benchmarking.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
 from benchmarking.steps.experiment_execution_step.workers.dummy_worker import DummyWorker
+from benchmarking.steps.step import Step
 from benchmarking.storages.loaders.default_loader import DefaultLoader
 from benchmarking.storages.savers.default_saver import DefaultSaver
-from tests.test_new_pysatl_cpd.test_steps.test_experiment_execution_step.test_workers.mock_worker import MockWorker
+from tests.test_benchmarking.test_steps.test_experiment_execution_step.test_workers.mock_worker import MockWorker
 
 
 class TestExperimentExecutionStep:
@@ -65,7 +66,6 @@ class TestExperimentExecutionStep:
     )
     def test_filter_and_rename(self, input_data, ref_type):
         # Test the static method _filter_and_rename from Step
-        from benchmarking.steps.step import Step
 
         if not input_data:
             return

@@ -7,20 +7,20 @@ from benchmarking.steps.report_generation_step.report_generation_step import Rep
 from benchmarking.steps.step import Step
 from benchmarking.storages.loaders.default_loader import DefaultLoader
 from benchmarking.storages.savers.default_saver import DefaultSaver
-from tests.test_new_pysatl_cpd.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import (
+from tests.test_benchmarking.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import (
     MockDataHandler,
 )
-from tests.test_new_pysatl_cpd.test_steps.test_experiment_execution_step.test_workers.mock_worker import MockWorker
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
+from tests.test_benchmarking.test_steps.test_experiment_execution_step.test_workers.mock_worker import MockWorker
+from tests.test_benchmarking.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
     MockReportBuilder,
 )
 
 # TODO remove ruff exception
 # ruff: noqa: E501
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_visualizers.mock_report_visualizer import (
+from tests.test_benchmarking.test_steps.test_report_generation_step.test_report_visualizers.mock_report_visualizer import (
     MockReportVisualizer,
 )
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_reporters.mock_reporter import MockReporter
+from tests.test_benchmarking.test_steps.test_report_generation_step.test_reporters.mock_reporter import MockReporter
 
 
 class TestPipeline:

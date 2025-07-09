@@ -3,8 +3,9 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from benchmarking.steps.data_generation_step.data_generation_step import DataGenerationStep
+from benchmarking.steps.step import Step
 from benchmarking.storages.savers.default_saver import DefaultSaver
-from tests.test_new_pysatl_cpd.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import (
+from tests.test_benchmarking.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import (
     MockDataHandler,
 )
 
@@ -52,7 +53,6 @@ class TestDataGenerationStep:
     )
     def test_filter_and_rename(self, input_data, ref_type):
         # Test the static method _filter_and_rename from Step
-        from benchmarking.steps.step import Step
 
         if not input_data:
             return

@@ -7,17 +7,18 @@ from benchmarking.steps.report_generation_step.report_builders.dummy_report_buil
 from benchmarking.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from benchmarking.steps.report_generation_step.report_visualizers.dummy_report_visualizer import DummyReportVisualizer
 from benchmarking.steps.report_generation_step.reporters.dummy_reporter import DummyReporter
+from benchmarking.steps.step import Step
 from benchmarking.storages.loaders.default_loader import DefaultLoader
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
+from tests.test_benchmarking.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
     MockReportBuilder,
 )
 
 # TODO remove ruff exception
 # ruff: noqa: E501
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_visualizers.mock_report_visualizer import (
+from tests.test_benchmarking.test_steps.test_report_generation_step.test_report_visualizers.mock_report_visualizer import (
     MockReportVisualizer,
 )
-from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_reporters.mock_reporter import MockReporter
+from tests.test_benchmarking.test_steps.test_report_generation_step.test_reporters.mock_reporter import MockReporter
 
 
 class TestReportGenerationStep:
@@ -76,8 +77,6 @@ class TestReportGenerationStep:
         ref_type=st.sampled_from(["set", "dict"]),
     )
     def test_filter_and_rename(self, input_data, ref_type):
-        from benchmarking.steps.step import Step
-
         if not input_data:
             return
         if ref_type == "set":
