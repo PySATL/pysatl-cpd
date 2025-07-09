@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from new_pysatl_cpd.storages.loaders.csv_loader.csv_loader import LoaderCSV
+from benchmarking.storages.loaders.csv_loader.csv_loader import LoaderCSV
 
 
 @pytest.fixture

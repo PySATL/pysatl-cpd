@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from new_pysatl_cpd.storages.savers.csv_saver.csv_saver import SaverCSV
+from benchmarking.storages.savers.csv_saver.csv_saver import SaverCSV
 
 
 @pytest.fixture

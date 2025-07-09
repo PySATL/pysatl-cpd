@@ -1,12 +1,12 @@
 import pytest
 
-from new_pysatl_cpd.pipeline.pipeline import Pipeline
-from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
-from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
-from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
-from new_pysatl_cpd.steps.step import Step
-from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
-from new_pysatl_cpd.storages.savers.default_saver import DefaultSaver
+from benchmarking.pipeline.pipeline import Pipeline
+from benchmarking.steps.data_generation_step.data_generation_step import DataGenerationStep
+from benchmarking.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
+from benchmarking.steps.report_generation_step.report_generation_step import ReportGenerationStep
+from benchmarking.steps.step import Step
+from benchmarking.storages.loaders.default_loader import DefaultLoader
+from benchmarking.storages.savers.default_saver import DefaultSaver
 from tests.test_new_pysatl_cpd.test_steps.test_data_generation_step.test_data_handlers.mock_data_handler import (
     MockDataHandler,
 )

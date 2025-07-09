@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
 
-from new_pysatl_cpd.steps.experiment_execution_step.workers.worker import Worker
+from benchmarking.steps.experiment_execution_step.workers.worker import Worker
 
 
 class MockWorker(Worker):

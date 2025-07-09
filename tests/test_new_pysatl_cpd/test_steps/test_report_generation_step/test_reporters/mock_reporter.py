@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Any, Optional
 
-from new_pysatl_cpd.steps.report_generation_step.report_builders.report_builder import ReportBuilder
-from new_pysatl_cpd.steps.report_generation_step.report_visualizers.report_visualizer import ReportVisualizer
-from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Reporter
+from benchmarking.steps.report_generation_step.report_builders.report_builder import ReportBuilder
+from benchmarking.steps.report_generation_step.report_visualizers.report_visualizer import ReportVisualizer
+from benchmarking.steps.report_generation_step.reporters.reporter import Reporter
 
 
 class MockReporter(Reporter):

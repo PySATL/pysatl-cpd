@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
 
-from new_pysatl_cpd.steps.data_generation_step.data_handlers.data_handler import DataHandler
+from benchmarking.steps.data_generation_step.data_handlers.data_handler import DataHandler
 
 
 class MockDataHandler(DataHandler):

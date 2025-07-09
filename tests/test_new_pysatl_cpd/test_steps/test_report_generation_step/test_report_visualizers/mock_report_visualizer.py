@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from new_pysatl_cpd.steps.report_generation_step.report_visualizers.report_visualizer import ReportVisualizer
+from benchmarking.steps.report_generation_step.report_visualizers.report_visualizer import ReportVisualizer
 
 
 class MockReportVisualizer(ReportVisualizer):
@@ -13,7 +13,7 @@ class MockReportVisualizer(ReportVisualizer):
 
     def __init__(
         self,
-        path_to_save: Path = Path("new_pysatl_cpd/results"),
+        path_to_save: Path = Path("benchmarking/results"),
         file_name: str = "report",
         builder_result_fields: Optional[set[str] | dict[str, str]] = None,
     ):

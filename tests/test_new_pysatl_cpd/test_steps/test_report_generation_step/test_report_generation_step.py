@@ -2,12 +2,12 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from new_pysatl_cpd.logger import cpd_logger
-from new_pysatl_cpd.steps.report_generation_step.report_builders.dummy_report_builder import DummyReportBuilder
-from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
-from new_pysatl_cpd.steps.report_generation_step.report_visualizers.dummy_report_visualizer import DummyReportVisualizer
-from new_pysatl_cpd.steps.report_generation_step.reporters.dummy_reporter import DummyReporter
-from new_pysatl_cpd.storages.loaders.default_loader import DefaultLoader
+from benchmarking.logger import cpd_logger
+from benchmarking.steps.report_generation_step.report_builders.dummy_report_builder import DummyReportBuilder
+from benchmarking.steps.report_generation_step.report_generation_step import ReportGenerationStep
+from benchmarking.steps.report_generation_step.report_visualizers.dummy_report_visualizer import DummyReportVisualizer
+from benchmarking.steps.report_generation_step.reporters.dummy_reporter import DummyReporter
+from benchmarking.storages.loaders.default_loader import DefaultLoader
 from tests.test_new_pysatl_cpd.test_steps.test_report_generation_step.test_report_builders.mock_report_builder import (
     MockReportBuilder,
 )
@@ -76,7 +76,7 @@ class TestReportGenerationStep:
         ref_type=st.sampled_from(["set", "dict"]),
     )
     def test_filter_and_rename(self, input_data, ref_type):
-        from new_pysatl_cpd.steps.step import Step
+        from benchmarking.steps.step import Step
 
         if not input_data:
             return

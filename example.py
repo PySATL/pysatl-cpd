@@ -1,16 +1,16 @@
 from pathlib import Path
 
-from new_pysatl_cpd.pipeline.pipeline import Pipeline
-from new_pysatl_cpd.steps.data_generation_step.data_generation_step import DataGenerationStep
-from new_pysatl_cpd.steps.data_generation_step.data_handlers.generators.cpd_generator import CpdGenerator
-from new_pysatl_cpd.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
-from new_pysatl_cpd.steps.experiment_execution_step.workers.run_complete_algorithm_worker import (
+from benchmarking.pipeline.pipeline import Pipeline
+from benchmarking.steps.data_generation_step.data_generation_step import DataGenerationStep
+from benchmarking.steps.data_generation_step.data_handlers.generators.cpd_generator import CpdGenerator
+from benchmarking.steps.experiment_execution_step.experiment_execution_step import ExperimentExecutionStep
+from benchmarking.steps.experiment_execution_step.workers.run_complete_algorithm_worker import (
     RunCompleteAlgorithmWorker,
 )
-from new_pysatl_cpd.steps.report_generation_step.report_builders.change_point_builder import CpBuilder
-from new_pysatl_cpd.steps.report_generation_step.report_generation_step import ReportGenerationStep
-from new_pysatl_cpd.steps.report_generation_step.report_visualizers.change_point_text_visualizer import CpTextVisualizer
-from new_pysatl_cpd.steps.report_generation_step.reporters.reporter import Reporter
+from benchmarking.steps.report_generation_step.report_builders.change_point_builder import CpBuilder
+from benchmarking.steps.report_generation_step.report_generation_step import ReportGenerationStep
+from benchmarking.steps.report_generation_step.report_visualizers.change_point_text_visualizer import CpTextVisualizer
+from benchmarking.steps.report_generation_step.reporters.reporter import Reporter
 from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.heuristic_gaussian_vs_exponential import (
