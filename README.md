@@ -44,6 +44,14 @@ Install dependencies:
 poetry install
 ```
 
+Or run ```create_user_venv.sh```
+
+```bash
+chmod +x create_user_venv.sh
+./create_user_venv.sh
+```
+
+
 ## Change point detection example:
 
 ```python
@@ -163,6 +171,13 @@ Install requirements
 
 ```bash
 poetry install --with dev
+```
+
+Or run ```create_dev_venv.sh```
+
+```bash
+chmod +x create_dev_venv.sh
+./create_dev_venv.sh
 ```
 
 ## Pre-commit
