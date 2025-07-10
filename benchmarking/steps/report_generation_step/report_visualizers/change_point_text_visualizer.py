@@ -8,6 +8,7 @@ __author__ = "Artem Romanyuk"
 __copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -33,6 +34,7 @@ class CpTextVisualizer(ReportVisualizer):
         path = self._path_to_save
         file_name = self._file_name
         cpd_logger.info(report_builder_result)
+        os.makedirs(path, exist_ok=True)
         with open(f"{path}/{file_name}.txt", "w", encoding="utf-8") as file:
             file.write(f"Located change points: {report_builder_result['change_points']}\n")
         return None
