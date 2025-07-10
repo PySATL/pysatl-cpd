@@ -1,79 +1,64 @@
-from typing import cast
+"""
+Module for implementation of CPD algorithm using RULSIF-based divergence estimation.
+"""
+
+__author__ = "Aleksandra Listkova"
+__copyright__ = "Copyright (c) 2025 Aleksandra Listkova"
+__license__ = "SPDX-License-Identifier: MIT"
 
 import numpy as np
 import numpy.typing as npt
+from scipy.linalg import solve
 
 from pysatl_cpd.core.algorithms.density.abstracts.density_based_algorithm import DensityBasedAlgorithm
 
 
 class RulsifAlgorithm(DensityBasedAlgorithm):
-    """Relative Unconstrained Least-Squares Importance Fitting (RULSIF)
-    algorithm for change point detection.
-
-    RULSIF estimates the density ratio between two distributions and uses
-    the importance weights for detecting changes in the data distribution.
-    """
-
-    def __init__(self, bandwidth: float, regularization_coef: float, threshold: float = 1.1):
-        """Initialize the RULSIF algorithm.
-
-        Args:
-            bandwidth (float): bandwidth parameter for density estimation.
-            regularization_coef (float): regularization parameter.
-            threshold (float, optional): threshold for detecting change points.
-            Defaults to 1.1.
+    def __init__(
+        self,
+        alpha: float = 0.1,
+        bandwidth: float = 1.0,
+        lambda_reg: float = 0.1,
+        threshold: float = 1.1,
+        min_window_size: int = 10,
+    ) -> None:
         """
-        self.bandwidth = bandwidth
-        self.regularization_coef = regularization_coef
-        self.threshold = threshold
+        Initializes RULSIF-based change point detector.
 
-    def _loss_function(self, density_ratio: npt.NDArray[np.float64], alpha: npt.NDArray[np.float64]) -> float:
-        """Loss function for RULSIF.
-
-        Args:
-            density_ratio (np.ndarray): estimated density ratio.
-            alpha (np.ndarray): coefficients for the density ratio.
-
-        Returns:
-            float: the computed loss value.
+        :param alpha: mixture coefficient (0-1) for reference/test densities
+        :param bandwidth: kernel bandwidth for density estimation
+        :param lambda_reg: L2 regularization strength
+        :param threshold: detection sensitivity threshold
+        :param min_window_size: minimum segment size requirement
+        :raises ValueError: if alpha is not in (0,1)
         """
-        return np.mean((density_ratio - 1) ** 2) + self.regularization_coef * np.sum(alpha**2)
+        super().__init__(min_window_size, threshold, bandwidth)
+        if not 0 < alpha < 1:
+            raise ValueError("Alpha must be between 0 and 1")
+        self.alpha = alpha
+        self.lambda_reg = lambda_reg
 
-    def detect(self, window: npt.NDArray[np.float64]) -> int:
-        """Detect the number of change points in the given data window
-        using RULSIF.
-
-        Args:
-            window (Iterable[float]): the data window to detect change points.
-
-        Returns:
-            int: the number of detected change points.
+    def _compute_scores(self, window: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """
-        window_sample = np.array(window)
-        weights = self._calculate_weights(
-            test_value=window_sample,
-            reference_value=window_sample,
-            bandwidth=self.bandwidth,
-            objective_function=self._loss_function,
-        )
+        Computes RULSIF-based change point scores for each position.
 
-        return np.count_nonzero(weights > self.threshold)
-
-    def localize(self, window: npt.NDArray[np.float64]) -> list[int]:
-        """Localize the change points in the given data window using RULSIF.
-
-        Args:
-            window (Iterable[float]): the data window to localize change points.
-
-        Returns:
-            List[int]: the indices of the detected change points.
+        :param window: input data window (1D array)
+        :return: array of divergence scores at each index
         """
-        window_sample = np.array(window)
-        weights = self._calculate_weights(
-            test_value=window_sample,
-            reference_value=window_sample,
-            bandwidth=self.bandwidth,
-            objective_function=self._loss_function,
-        )
-
-        return cast(list[int], np.where(weights > self.threshold)[0].tolist())
+        n_points = window.shape[0]
+        scores: npt.NDArray[np.float64] = np.zeros(n_points, dtype=np.float64)
+        for i in range(self.min_window_size, n_points - self.min_window_size):
+            ref = window[:i]
+            test = window[i:]
+            K_ref = self._kernel_density_estimation(ref, self.bandwidth)
+            K_test = self._kernel_density_estimation(test, self.bandwidth)
+            H = (
+                (1 - self.alpha) * (K_ref @ K_ref.T) / i
+                + self.alpha * (K_test @ K_test.T) / (n_points - i)
+                + self.lambda_reg * np.eye(K_ref.shape[0], dtype=np.float64)
+            )
+            h = K_test.mean(axis=1)
+            theta = solve(H, h, assume_a='pos')
+            density_ratio = theta @ K_test
+            scores[i] = np.mean((density_ratio - 1) ** 2)
+        return scores
