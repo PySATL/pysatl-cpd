@@ -44,7 +44,7 @@ Install dependencies:
 poetry install
 ```
 
-Or run ```create_user_venv.sh```
+Or run ```create_user_venv.sh``` (for linux)
 
 ```bash
 chmod +x create_user_venv.sh
@@ -173,7 +173,7 @@ Install requirements
 poetry install --with dev
 ```
 
-Or run ```create_dev_venv.sh```
+Or run ```create_dev_venv.sh``` (for linux)
 
 ```bash
 chmod +x create_dev_venv.sh
