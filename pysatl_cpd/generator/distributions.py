@@ -7,6 +7,7 @@ __copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
 import ast
+import math
 from enum import Enum
 from typing import Final, Protocol
 
@@ -104,7 +105,7 @@ class NormalDistribution(Distribution):
         }
 
     def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
-        return ss.norm(loc=self.mean, scale=self.variance).rvs(size=length)
+        return ss.norm(loc=self.mean, scale=math.sqrt(self.variance)).rvs(size=length)
 
     @classmethod
     def from_params(cls, params: dict[str, str]) -> "NormalDistribution":
