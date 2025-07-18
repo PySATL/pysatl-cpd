@@ -7,7 +7,6 @@ pip install poetry
 # Clone repository
 git clone https://github.com/PySATL/pysatl-cpd.git
 cd pysatl-cpd
-git checkout wrdxwrdxwrdx/rework-architecture
 
 # Create virtual environment
 if command -v python3 &>/dev/null; then
