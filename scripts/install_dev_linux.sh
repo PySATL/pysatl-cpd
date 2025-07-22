@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# Install dependencies
+pip install poetry
 
+# Create virtual environment
 if command -v python3 &>/dev/null; then
     PYTHON_CMD="python3"
 elif command -v python &>/dev/null; then
@@ -18,5 +21,5 @@ echo "Using $PYTHON_CMD for installing .venv"
 $PYTHON_CMD -m venv .venv
 source .venv/bin/activate
 pip install poetry
-poetry install
+poetry install --with-dev
 deactivate
