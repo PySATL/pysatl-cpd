@@ -1,0 +1,24 @@
+name: Package Installation
+
+on: [push, pull_request]
+
+jobs:
+  linux-installation:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+
+      - name: Install dependencies
+        run: pip install poetry
+
+      - name: Run installation script
+        run: |
+          chmod +x scripts/install_user_linux.sh
+          ./scripts/install_user_linux.sh
+
+      - name: Run example
+        run: poetry run python example.py
