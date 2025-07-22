@@ -197,7 +197,7 @@ chmod +x scripts/install_dev_linux.sh
 ### Windows
 
 ```shell
-/scripts/install_dev_windows.ps1
+./scripts/install_dev_windows.ps1
 ```
 
 
