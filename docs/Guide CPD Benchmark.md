@@ -130,11 +130,11 @@ poetry run python example.py
 
 If you saw a similar error when running the script:
 
-![](/home/iraedeus/trouble_1.png)
+![](figures/trouble_1.png)
 
 And then you get this error:
 
-![](/home/iraedeus/trouble_1_1.png)
+![](figures/trouble_1_1.png)
 
 Then try installing a lower version of the package:
 
