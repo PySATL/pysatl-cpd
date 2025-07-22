@@ -1,0 +1,24 @@
+name: Package Installation
+
+on: [push, pull_request]
+
+jobs:
+  windows-installation:
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+
+      - name: Install dependencies
+        run: pip install poetry
+
+      - name: Run installation script
+        run: |
+          ./scripts/install_user_windows.ps1
+          poetry add pyqt5-qt5==5.15.2
+
+      - name: Run example
+        run: poetry run python example.py
