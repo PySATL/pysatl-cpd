@@ -1,4 +1,4 @@
-# PySATL-CPD
+PySATL-CPD
 
 [status-shield]: https://img.shields.io/github/actions/workflow/status/PySATL/pysatl-cpd/.github/workflows/check.yaml?branch=main&event=push&style=for-the-badge&label=Checks
 [status-url]: https://github.com/PySATL/pysatl-cpd/blob/main/.github/workflows/check.yaml
@@ -28,28 +28,43 @@ At the moment, the module implements the following CPD algorithms:
 ## Requirements
 
 - Python 3.10+
+
 - Poetry 2.1.0+
+
+
 
 ## Installation
 
-Clone the repository:
+Clone repository:
 
-```bash
-git clone https://github.com/PySATL/pysatl-cpd
+```sh
+git clone https://github.com/PySATL/pysatl-cpd.git
 ```
 
-Install dependencies:
+
+
+### Linux
+
+Go to repository directory and run installation script:
 
 ```bash
-poetry install
+cd pysatl-cpd
+chmod +x scripts/install_user_linux.sh
+./install_user_linux.sh
 ```
 
-Or run ```create_user_venv.sh``` (for linux)
 
-```bash
-chmod +x create_user_venv.sh
-./create_user_venv.sh
+
+### Windows
+
+Go to repository directory and run installation script:
+
+```shell
+Set-Location pysatl-cpd
+./scripts/install_user_windows.ps1
 ```
+
+
 
 
 ## Change point detection example:
@@ -165,20 +180,27 @@ Located change points: [25, 201, 396]
 ```
 
 
+
 ## Development
 
-Install requirements
+If you want to contribute, you should create development environment as follows:
+
+### Linux
 
 ```bash
-poetry install --with dev
+chmod +x scripts/install_dev_linux.sh
+./install_dev_linux.sh
 ```
 
-Or run ```create_dev_venv.sh``` (for linux)
 
-```bash
-chmod +x create_dev_venv.sh
-./create_dev_venv.sh
+
+### Windows
+
+```shell
+/scripts/install_dev_windows.ps1
 ```
+
+
 
 ## Pre-commit
 
@@ -193,6 +215,8 @@ Starting manually:
 ```shell
 poetry run pre-commit run --all-files --color always --verbose --show-diff-on-failure
 ```
+
+
 
 ## License
 
