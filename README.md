@@ -49,8 +49,7 @@ Go to repository directory and run installation script:
 
 ```bash
 cd pysatl-cpd
-chmod +x scripts/install_user_linux.sh
-./install_user_linux.sh
+chmod +x scripts/install_user_linux.sh && ./scripts/install_user_linux.sh
 ```
 
 
@@ -188,8 +187,7 @@ If you want to contribute, you should create development environment as follows:
 ### Linux
 
 ```bash
-chmod +x scripts/install_dev_linux.sh
-./install_dev_linux.sh
+chmod +x scripts/install_dev_linux.sh && ./scripts/install_dev_linux.sh
 ```
 
 

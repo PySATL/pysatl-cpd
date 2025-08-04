@@ -17,8 +17,7 @@ jobs:
 
       - name: Run installation script
         run: |
-          chmod +x scripts/install_user_linux.sh
-          ./scripts/install_user_linux.sh
+          chmod +x scripts/install_user_linux.sh && ./scripts/install_user_linux.sh
 
       - name: Run example
         run: poetry run python example.py

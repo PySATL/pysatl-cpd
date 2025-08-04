@@ -18,8 +18,7 @@ Go to repository folder and run installation script:
 
 ```bash
 cd pysatl-cpd
-chmod +x scripts/install_user_linux.sh
-./install_user_linux.sh
+chmod +x scripts/install_user_linux.sh && ./scripts/install_user_linux.sh
 ```
 
 
@@ -39,17 +38,17 @@ Set-Location pysatl-cpd
 
 ### Available distributions
 
-| Распределение          | Название              | Параметры                                             |
-| ---------------------- | --------------------- | ----------------------------------------------------- |
-| Нормальное             | `normal`              | `mean`, `variance`                                    |
-| Экспоненциальное       | `exponential`         | `rate`                                                |
-| Вейбулла               | `weibull`             | `shape`, `scale`                                      |
-| Равномерное            | `uniform`             | `min`, `max`                                          |
-| Бета                   | `beta`                | `alpha`, `beta`                                       |
-| Гамма                  | `gamma`               | `alpha`, `beta`                                       |
-| t-Стьюдента            | `t`                   | `n`                                                   |
-| Логнормальное          | `lognorm`             | `s`                                                   |
-| Многомерное нормальное | `multivariate_normal` | `mean`, в виде списка-строки, например `"[0.5, 2.0]"` |
+| Распределение       | Название              | Параметры                                               |
+| ------------------- | --------------------- | ------------------------------------------------------- |
+| Normal              | `normal`              | `mean`, `variance`                                      |
+| Exponential         | `exponential`         | `rate`                                                  |
+| Weibull             | `weibull`             | `shape`, `scale`                                        |
+| Uniform             | `uniform`             | `min`, `max`                                            |
+| Beta                | `beta`                | `alpha`, `beta`                                         |
+| Gamma               | `gamma`               | `alpha`, `beta`                                         |
+| t-Student           | `t`                   | `n`                                                     |
+| Lognormal           | `lognorm`             | `s`                                                     |
+| Multivariate normal | `multivariate_normal` | `mean`, in the form of string of list, z `"[0.5, 2.0]"` |
 
 
 
