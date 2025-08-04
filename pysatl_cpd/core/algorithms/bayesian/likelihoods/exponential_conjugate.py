@@ -15,6 +15,8 @@ from numpy import typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian import ILikelihood, ILikelihoodWithPriorProbability
 
+__all__ = ["ExponentialConjugate", "ExponentialConjugateWithPriorProbability"]
+
 
 class ExponentialConjugate(ILikelihood):
     """

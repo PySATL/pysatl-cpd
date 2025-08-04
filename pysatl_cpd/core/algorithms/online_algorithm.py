@@ -2,34 +2,36 @@
 Module for online change point detection algorithm's interface.
 """
 
-__author__ = "Alexey Tatyanenko"
+__author__ = "Alexey Tatyanenko, Vladimir Kutuev"
 __copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
-from typing import Optional, Protocol
+from abc import ABC
+from typing import Generic, TypeVar
 
-import numpy as np
-import numpy.typing as npt
+__all__ = ["OnlineAlgorithm"]
+
+T = TypeVar("T")
 
 
-class OnlineAlgorithm(Protocol):
+class OnlineAlgorithm(ABC, Generic[T]):
     """
-    Protocol for online change point detection algorithm's interface.
+    An abstract class representing the interface of an algorithm for the online change point detection.
     """
 
-    def detect(self, observation: np.float64 | npt.NDArray[np.float64]) -> bool:
-        """
-        Method for a step of detection of a change point.
+    def process(self, observation: T) -> float:
+        """Method for a step of detection of a change point.
+
         :param observation: new observation of a time series.
-        :return: bool observation whether a change point was detected after processing the new observation.
+        :return: change point function value.
         """
-        ...
+        raise NotImplementedError
 
-    def localize(self, observation: np.float64 | npt.NDArray[np.float64]) -> Optional[int]:
-        """
-        Method for a step of localization of a change point.
-        :param observation: new observation of a time series
-        :return: absolute location of a change point, acquired after processing the new observation,
-        or None if there wasn't any.
-        """
-        ...
+    def reset(self) -> None:
+        """Clean up the internal state of the algorithm after the change has been detected."""
+        raise NotImplementedError
+
+
+class NoResetOnlineAlgorithm(OnlineAlgorithm[T]):
+    def reset(self) -> None:
+        return

@@ -30,18 +30,19 @@ class CpdCore:
         self.scrubber = scrubber
         self.algorithm = algorithm
 
-    def localize(self) -> list[int]:
+    def localize(self) -> list[tuple[int, int]]:
         """Find change points
 
         :return: list of change points
         """
-        change_points: list[int] = []
+        change_points: list[tuple[int, int]] = []
         for window in self.scrubber.__iter__():
             window_change_points = self.algorithm.localize(window.values)
-            change_points.extend(map(lambda i: window.indices[i], window_change_points))
+            time = max(window.indices)
+            change_points.extend(map(lambda i: (window.indices[i], time), window_change_points))
         return change_points
 
-    def detect(self) -> int:
+    def detect(self) -> list[tuple[int, int]]:
         """Count change points
 
         :return: number of change points

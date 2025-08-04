@@ -8,15 +8,11 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts import (
-    IDetector,
+    IChangePointFunction,
     IHazard,
     ILikelihood,
     ILikelihoodWithPriorProbability,
     ILocalizer,
-)
-from pysatl_cpd.core.algorithms.bayesian.detectors import (
-    DropDetector,
-    ThresholdDetector,
 )
 from pysatl_cpd.core.algorithms.bayesian.hazards import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods import (
@@ -28,21 +24,25 @@ from pysatl_cpd.core.algorithms.bayesian.likelihoods import (
     HeuristicGaussianVsExponential,
 )
 from pysatl_cpd.core.algorithms.bayesian.localizers import ArgmaxLocalizer
+from pysatl_cpd.core.algorithms.bayesian.test_statistics import (
+    DropCPF,
+    MaxRunLengthCPF,
+)
 
 __all__ = [
     "ArgmaxLocalizer",
     "ConstantHazard",
-    "DropDetector",
+    "DropCPF",
     "ExponentialConjugate",
     "ExponentialConjugateWithPriorProbability",
     "Gaussian",
     "GaussianConjugate",
     "GaussianConjugateWithPriorProbability",
     "HeuristicGaussianVsExponential",
-    "IDetector",
+    "IChangePointFunction",
     "IHazard",
     "ILikelihood",
     "ILikelihoodWithPriorProbability",
     "ILocalizer",
-    "ThresholdDetector",
+    "MaxRunLengthCPF",
 ]

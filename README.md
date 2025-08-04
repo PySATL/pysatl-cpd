@@ -78,26 +78,24 @@ from pysatl_cpd.online_cpd_solver import OnlineCpdSolver
 from pysatl_cpd.core.problem import CpdProblem
 
 # import algorithm
-from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
-from pysatl_cpd.core.algorithms.bayesian.likelihoods.gaussian_conjugate import GaussianConjugate
-from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
-from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
-from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
-
+from pysatl_cpd.core.algorithms import BayesianOnline
+from pysatl_cpd.core.algorithms.bayesian.likelihoods import GaussianConjugate
+from pysatl_cpd.core.algorithms.bayesian.hazards import ConstantHazard
+from pysatl_cpd.core.algorithms.bayesian.test_statistics import MaxRunLengthCPF
+from pysatl_cpd.core.algorithms.bayesian.localizers import ArgmaxLocalizer
 
 labeled_data = LabeledCpdData.generate_cp_datasets(Path("examples/configs/test_config_exp.yml"))["example"]
 
 # specify CPD algorithm with parameters
 algorithm = BayesianOnline(
-    learning_sample_size=5,
-    likelihood=GaussianConjugate(),
-    hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-    detector=ThresholdDetector(threshold=0.005),
-    localizer=ArgmaxLocalizer(),
+  learning_sample_size=5,
+  likelihood=GaussianConjugate(),
+  hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
+  cp_function=MaxRunLengthCPF(),
+  localizer=ArgmaxLocalizer(),
 )
 # make a solver object
 solver = OnlineCpdSolver(CpdProblem(True), algorithm, labeled_data)
-
 
 # then run algorithm
 cpd_results = solver.run()
@@ -131,7 +129,7 @@ from benchmarking.steps.report_generation_step.report_builders.change_point_buil
 from benchmarking.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from benchmarking.steps.report_generation_step.report_visualizers.change_point_text_visualizer import CpTextVisualizer
 from benchmarking.steps.report_generation_step.reporters.reporter import Reporter
-from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
+from pysatl_cpd.core.algorithms.bayesian.test_statistics.threshold import MaxRunLengthCPF
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.heuristic_gaussian_vs_exponential import (
   HeuristicGaussianVsExponential,
@@ -154,7 +152,7 @@ algorithm = BayesianAlgorithm(
   learning_steps=5,
   likelihood=HeuristicGaussianVsExponential(),
   hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-  detector=ThresholdDetector(threshold=0.005),
+  detector=MaxRunLengthCPF(threshold=0.005),
   localizer=ArgmaxLocalizer(),
 )
 algo_worker = RunCompleteAlgorithmWorker(algorithm=algorithm, name="run_bayesian_algorithm_worker")

@@ -6,24 +6,25 @@ __author__ = "Alexey Tatyanenko"
 __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
+
 import numpy as np
 import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms import Algorithm
-from pysatl_cpd.core.algorithms.bayesian.abstracts import IDetector, IHazard, ILikelihood, ILocalizer
-from pysatl_cpd.core.algorithms.bayesian.detectors import ThresholdDetector
+from pysatl_cpd.core.algorithms.bayesian.abstracts import IChangePointFunction, IHazard, ILikelihood, ILocalizer
 from pysatl_cpd.core.algorithms.bayesian.hazards import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods import GaussianConjugate
 from pysatl_cpd.core.algorithms.bayesian.localizers import ArgmaxLocalizer
+from pysatl_cpd.core.algorithms.bayesian.test_statistics import MaxRunLengthCPF
 
 
 class BayesianAlgorithm(Algorithm):
     """
     The class implementing Bayesian change point detection algorithm. It uses likelihood and hazard functions to update
-    Bayesian statistics and detector/localizer to detect/localize a change point. The algorithm consists of 3 repeating
+    Bayesian test_statistics and localizer to detect a change point. The algorithm consists of 3 repeating
     stages:
     1) Learning the likelihood's parameters;
-    2) Evaluation Bayesian statistics;
+    2) Evaluation Bayesian test_statistics;
     3) Processing a changepoint in case there's one.
     """
 
@@ -32,7 +33,7 @@ class BayesianAlgorithm(Algorithm):
         learning_steps: int = 50,
         likelihood: ILikelihood = GaussianConjugate(),
         hazard: IHazard = ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-        detector: IDetector = ThresholdDetector(threshold=0.04),
+        detector: IChangePointFunction = MaxRunLengthCPF,
         localizer: ILocalizer = ArgmaxLocalizer(),
     ):
         """
@@ -108,7 +109,7 @@ class BayesianAlgorithm(Algorithm):
 
     def __bayesian_stage(self, sample: npt.NDArray[np.float64]) -> None:
         """
-        Performs a Bayesian statistics (run lengths distribution) evaluating stage.
+        Performs a Bayesian test_statistics (run lengths distribution) evaluating stage.
         :param sample: an overall sample the model working with.
         """
         sample_size = len(sample)
@@ -147,18 +148,19 @@ class BayesianAlgorithm(Algorithm):
     def __bayesian_condition(self, sample_size: int) -> bool:
         """
         A helper function checking conditions (time boundaries, zero predictive probabilities case,
-        existence of detected change point) to continue Bayesian statistics evaluation.
+        existence of detected change point) to continue Bayesian test_statistics evaluation.
         :param sample_size: an overall size of the sample.
         """
         return (
             self.__time < sample_size - 1
+            and not self.__pred_probs_are_zero
             and not self.__pred_probs_are_zero
             and not self.__detector.detect(self.__growth_probs[: self.__gap_size + 1])
         )
 
     def __bayesian_update(self, observation: np.float64) -> None:
         """
-        Performs a Bayesian update of statistics (run lengths distribution).
+        Performs a Bayesian update of test_statistics (run lengths distribution).
         :param observation: an observation from a sample.
         """
         assert not self.__pred_probs_are_zero

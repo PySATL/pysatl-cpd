@@ -17,6 +17,8 @@ from scipy import stats
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts import ILikelihood, ILikelihoodWithPriorProbability
 
+__all__ = ["GaussianConjugate", "GaussianConjugateWithPriorProbability"]
+
 
 class GaussianConjugate(ILikelihood):
     """

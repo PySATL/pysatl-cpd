@@ -13,6 +13,8 @@ import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts import IHazard
 
+__all__ = ["ConstantHazard"]
+
 
 class ConstantHazard(IHazard):
     """

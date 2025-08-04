@@ -60,7 +60,7 @@ class KNNClassifier:
         """
         Calculates quality function in specified point.
 
-        :param time: index of point in the given sample to calculate statistics relative to it.
+        :param time: index of point in the given sample to calculate test_statistics relative to it.
         """
         assert self.__window is not None
         window_size = len(self.__window)
@@ -74,7 +74,7 @@ class KNNClassifier:
 
         if n <= k:
             # Unable to analyze sample due to its size.
-            # Returns negative number that will be less than the statistics in this case,
+            # Returns negative number that will be less than the test_statistics in this case,
             # but big enough not to spoil overall statistical picture.
             return -k
 
@@ -107,7 +107,7 @@ class KNNClassifier:
         if deviation == 0:
             # if the deviation is zero, it likely means that the time is 1 or the data is constant.
             # In this case we cannot detect any change-points.
-            # Thus, we can return negative number that will be less than the statistics in this case.
+            # Thus, we can return negative number that will be less than the test_statistics in this case.
             return -k
 
         statistics = -(random_variable_value - expectation) / deviation

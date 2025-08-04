@@ -11,12 +11,12 @@ from benchmarking.steps.report_generation_step.report_builders.change_point_buil
 from benchmarking.steps.report_generation_step.report_generation_step import ReportGenerationStep
 from benchmarking.steps.report_generation_step.report_visualizers.change_point_text_visualizer import CpTextVisualizer
 from benchmarking.steps.report_generation_step.reporters.reporter import Reporter
-from pysatl_cpd.core.algorithms.bayesian.detectors.threshold import ThresholdDetector
 from pysatl_cpd.core.algorithms.bayesian.hazards.constant import ConstantHazard
 from pysatl_cpd.core.algorithms.bayesian.likelihoods.heuristic_gaussian_vs_exponential import (
     HeuristicGaussianVsExponential,
 )
 from pysatl_cpd.core.algorithms.bayesian.localizers.argmax import ArgmaxLocalizer
+from pysatl_cpd.core.algorithms.bayesian.test_statistics.threshold import MaxRunLengthCPF
 from pysatl_cpd.core.algorithms.bayesian_algorithm import BayesianAlgorithm
 
 # Generate data with example config and save as my_experiment_dataset
@@ -34,7 +34,7 @@ algorithm = BayesianAlgorithm(
     learning_steps=5,
     likelihood=HeuristicGaussianVsExponential(),
     hazard=ConstantHazard(rate=1.0 / (1.0 - 0.5 ** (1.0 / 500))),
-    detector=ThresholdDetector(threshold=0.005),
+    detector=MaxRunLengthCPF(),
     localizer=ArgmaxLocalizer(),
 )
 algo_worker = RunCompleteAlgorithmWorker(algorithm=algorithm, name="run_bayesian_algorithm_worker")

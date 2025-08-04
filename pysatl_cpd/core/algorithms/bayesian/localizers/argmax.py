@@ -11,6 +11,8 @@ import numpy.typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian.abstracts import ILocalizer
 
+__all__ = ["ArgmaxLocalizer"]
+
 
 class ArgmaxLocalizer(ILocalizer):
     """

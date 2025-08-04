@@ -11,11 +11,13 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-from pysatl_cpd.core.algorithms.bayesian.abstracts import IDetector, IHazard, ILikelihood, ILocalizer
+from pysatl_cpd.core.algorithms.bayesian.abstracts import IChangePointFunction, IHazard, ILikelihood, ILocalizer
 from pysatl_cpd.core.algorithms.online_algorithm import OnlineAlgorithm
 
+__all__ = ["BayesianOnline"]
 
-class BayesianOnline(OnlineAlgorithm):
+
+class BayesianOnline(OnlineAlgorithm[np.float64]):
     """
     Class for Bayesian online change point detection algorithm.
     """
@@ -25,10 +27,10 @@ class BayesianOnline(OnlineAlgorithm):
         hazard: IHazard,
         likelihood: ILikelihood,
         learning_sample_size: int,
-        detector: IDetector,
-        localizer: ILocalizer,
+        cp_function: IChangePointFunction,
+        localizer: ILocalizer | None = None,
     ) -> None:
-        self.__detector = detector
+        self.__cpd_function = cp_function
         self.__hazard = hazard
         self.__likelihood = likelihood
         self.__localizer = localizer
@@ -41,23 +43,33 @@ class BayesianOnline(OnlineAlgorithm):
         self.__is_training: bool = True
         self.__run_length_probs: npt.NDArray[np.float64] = np.array([])
 
-        self.__was_change_point = False
         self.__change_point: Optional[int] = None
 
-    def clear(self) -> None:
+    def process(self, observation: np.float64) -> float:
         """
-        Clears the state of the algorithm's instance.
-        :return:
+        Universal method for processing of another observation of a time series.
+        :param observation: new observation of a time series.
+        :return: change point detection function value.
         """
-        self.__clear_training_data()
-        self.__data_history = []
-        self.__current_time = 0
+        if observation is npt.NDArray[np.float64]:
+            raise TypeError("Multivariate observations are not supported")
 
-        self.__is_training = True
-        self.__run_length_probs = np.array([])
+        self.__data_history.append(observation)
+        self.__current_time += 1
 
-        self.__was_change_point = False
-        self.__change_point = None
+        if self.__is_training:
+            self.__learn(observation)
+            return 0.0
+        else:
+            self.__bayesian_update(observation)
+            func_value = self.__cpd_function.calculate(self.__run_length_probs)
+            return func_value
+
+    def reset(self):
+        if self.__localizer is not None:
+            self.__handle_localization()
+        else:
+            self.__handle_detection()
 
     def __clear_training_data(self) -> None:
         """
@@ -75,7 +87,7 @@ class BayesianOnline(OnlineAlgorithm):
         self.__training_data.append(observation)
         if len(self.__training_data) == self.__learning_sample_size:
             self.__likelihood.clear()
-            self.__detector.clear()
+            self.__cpd_function.clear()
 
             self.__likelihood.learn(np.array(self.__training_data))
             self.__is_training = False
@@ -100,7 +112,6 @@ class BayesianOnline(OnlineAlgorithm):
 
         evidence = np.sum(new_probs)
         if evidence == 0.0:
-            self.__was_change_point = True
             self.__run_length_probs = np.zeros(self.__run_length_probs.shape[0])
             self.__run_length_probs[0] = 1.0
             return
@@ -118,6 +129,7 @@ class BayesianOnline(OnlineAlgorithm):
         algorithm, training it if possible and building corresponding run length distribution.
         :return:
         """
+        assert self.__localizer is not None, "Cannot handle localization if localizer is None"
         run_length = self.__localizer.localize(self.__run_length_probs)
         change_point_location = self.__current_time - run_length
         assert 0 <= change_point_location <= self.__current_time, (
@@ -130,7 +142,7 @@ class BayesianOnline(OnlineAlgorithm):
         self.__change_point = change_point_location
 
         self.__likelihood.clear()
-        self.__detector.clear()
+        self.__cpd_function.clear()
         self.__is_training = True
 
         observations_to_learn = min(len(self.__data_history), self.__learning_sample_size)
@@ -142,6 +154,7 @@ class BayesianOnline(OnlineAlgorithm):
 
         # Modeling run length probabilities on the rest data
         if len(self.__data_history) >= self.__learning_sample_size:
+            self.__is_training = False
             for observation in self.__data_history[self.__learning_sample_size :]:
                 self.__bayesian_update(observation)
 
@@ -153,61 +166,6 @@ class BayesianOnline(OnlineAlgorithm):
         self.__data_history = self.__data_history[-1:]
         self.__clear_training_data()
         self.__likelihood.clear()
-        self.__detector.clear()
+        self.__cpd_function.clear()
         self.__is_training = True
         self.__learn(self.__data_history[-1])
-
-    def __process_point(self, observation: np.float64, with_localization: bool) -> None:
-        """
-        Universal method for processing of another observation of a time series.
-        :param observation: new observation of a time series.
-        :param with_localization: whether the method was called for localization of a change point.
-        :return:
-        """
-        self.__data_history.append(observation)
-        self.__current_time += 1
-
-        if self.__is_training:
-            self.__learn(observation)
-        else:
-            self.__bayesian_update(observation)
-            detected = self.__detector.detect(self.__run_length_probs)
-
-            if not (self.__was_change_point or detected):
-                return
-
-            self.__was_change_point = True
-            if with_localization:
-                self.__handle_localization()
-            else:
-                self.__handle_detection()
-
-    def detect(self, observation: np.float64 | npt.NDArray[np.float64]) -> bool:
-        """
-        Performs a change point detection after processing another observation of a time series.
-        :param observation: new observation of a time series. Note: multivariate time series aren't supported for now.
-        :return: whether a change point was detected after processing the new observation.
-        """
-        if observation is npt.NDArray[np.float64]:
-            raise TypeError("Multivariate observations are not supported")
-
-        self.__process_point(np.float64(observation), False)
-        result = self.__was_change_point
-        self.__was_change_point = False
-        return result
-
-    def localize(self, observation: np.float64 | npt.NDArray[np.float64]) -> Optional[int]:
-        """
-        Performs a change point localization after processing another observation of a time series.
-        :param observation: new observation of a time series.
-        :return: absolute location of a change point, acquired after processing the new observation,
-        or None if there wasn't any.
-        """
-        if observation is npt.NDArray[np.float64]:
-            raise TypeError("Multivariate observations are not supported")
-
-        self.__process_point(np.float64(observation), True)
-        result = self.__change_point
-        self.__was_change_point = False
-        self.__change_point = None
-        return result

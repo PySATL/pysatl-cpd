@@ -7,7 +7,7 @@ __copyright__ = "Copyright (c) 2024 Alexey Tatyanenko"
 __license__ = "SPDX-License-Identifier: MIT"
 
 
-from pysatl_cpd.core.algorithms.bayesian.abstracts.idetector import IDetector
+from pysatl_cpd.core.algorithms.bayesian.abstracts.ichangepointfunction import IChangePointFunction
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ihazard import IHazard
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import (
     ILikelihood,
@@ -16,7 +16,7 @@ from pysatl_cpd.core.algorithms.bayesian.abstracts.ilikelihood import (
 from pysatl_cpd.core.algorithms.bayesian.abstracts.ilocalizer import ILocalizer
 
 __all__ = [
-    "IDetector",
+    "IChangePointFunction",
     "IHazard",
     "ILikelihood",
     "ILikelihoodWithPriorProbability",

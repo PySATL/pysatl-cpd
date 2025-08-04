@@ -11,13 +11,14 @@ import copy
 from typing import Optional
 
 import numpy as np
-from numpy import typing as npt
 
 from pysatl_cpd.core.algorithms.bayesian_online_algorithm import BayesianOnline
 from pysatl_cpd.core.algorithms.online_algorithm import OnlineAlgorithm
 
+__all__ = ["BayesianLinearHeuristic"]
 
-class BayesianLinearHeuristic(OnlineAlgorithm):
+
+class BayesianLinearHeuristic(OnlineAlgorithm[np.float64]):
     """An online change point detection algorithm, based on changing the main Bayesian online algorithm instance to the
     duplicating time after some time. Note: this heuristic, however makes an algorithm linear on big time series, leads
     to some information loss, which may lead to some unstability in output's correctness."""
@@ -38,7 +39,7 @@ class BayesianLinearHeuristic(OnlineAlgorithm):
                 "time_before_duplicate_start must be greater than duplicate_preparation_time, which must be positive"
             )
 
-        self.__original_algorithm = copy.deepcopy(algorithm)
+        self.__original_algorithm = algorithm
         self.__time_before_duplicate_start = time_before_duplicate_start
         self.__duplicate_preparation_time = duplicate_preparation_time
         self.__main_algorithm = copy.deepcopy(algorithm)
@@ -54,14 +55,11 @@ class BayesianLinearHeuristic(OnlineAlgorithm):
         """
         return self.__time - self.__last_algorithm_start_time
 
-    def _handle_duplicate_preparation(
-        self, observation: np.float64 | npt.NDArray[np.float64], method_name: str
-    ) -> None:
+    def _handle_duplicate_preparation(self, observation: np.float64) -> None:
         """
         Manages the creation and training, Bayesian modeling of the duplicating algorithm.
 
         :param observation: a new observation from a time series.
-        :param method_name: the method to call on the duplicating algorithm ('detect'/'localize').
         :return:
         """
         work_time = self.__work_time
@@ -74,56 +72,32 @@ class BayesianLinearHeuristic(OnlineAlgorithm):
         # Train the duplicating algorithm amd perform a Bayesian modeling during preparation period
         elif self.__time_before_duplicate_start < work_time < stage_end:
             if self.__duplicating_algorithm is not None:
-                getattr(self.__duplicating_algorithm, method_name)(observation)
+                self.__duplicating_algorithm.process(observation)
 
         # Switch to the prepared duplicating algorithm
         elif work_time == stage_end:
             assert self.__duplicating_algorithm is not None, "Duplicating algorithm must be initialized"
-            self.__main_algorithm = copy.deepcopy(self.__duplicating_algorithm)
+            self.__main_algorithm = self.__duplicating_algorithm
             self.__duplicating_algorithm = None
             self.__last_algorithm_start_time = self.__time - self.__duplicate_preparation_time
 
-    def detect(self, observation: np.float64 | npt.NDArray[np.float64]) -> bool:
+    def process(self, observation: np.float64) -> float:
         """
         Processes an observation and returns whether a change point was detected by a main algorithm.
         :param observation: a new observation from a time series. Note: only univariate data is supported for now.
-        :return: whether a change point was detected by a main algorithm.
+        :return: change point function value.
         """
-        if observation is npt.NDArray[np.float64]:
-            raise TypeError("Multivariate observations are not supported")
-        assert self.__main_algorithm is not None, "Main algorithm must be initialized"
 
         # Run main detection
-        if self.__main_algorithm.detect(observation):
-            self.__last_algorithm_start_time = self.__time
-            self.__duplicating_algorithm = None
-            self.__time += 1
-            return True
+        cpf = self.__main_algorithm.process(observation)
 
         # Manage duplicating algorithm training
-        self._handle_duplicate_preparation(observation, "detect")
+        self._handle_duplicate_preparation(observation)
         self.__time += 1
-        return False
+        return cpf
 
-    def localize(self, observation: np.float64 | npt.NDArray[np.float64]) -> Optional[int]:
-        """
-        Processes an observation and returns the change point if localized by the main algorithm.
-        :param observation: a new observation from a time series. Note: only univariate data is supported for now.
-        :return: a change point, if it was localized, None otherwise.
-        """
-        if observation is npt.NDArray[np.float64]:
-            raise TypeError("Multivariate observations are not supported")
-        assert self.__main_algorithm is not None, "Main algorithm must be initialized"
-
-        # Run main localization
-        if (result := self.__main_algorithm.localize(observation)) is not None:
-            change_point = self.__last_algorithm_start_time + result
-            self.__last_algorithm_start_time = change_point
-            self.__duplicating_algorithm = None
-            self.__time += 1
-            return change_point
-
-        # Manage duplicating algorithm training
-        self._handle_duplicate_preparation(observation, "localize")
+    def reset(self):
+        self.__main_algorithm.reset()
+        self.__last_algorithm_start_time = self.__time
+        self.__duplicating_algorithm = None
         self.__time += 1
-        return None

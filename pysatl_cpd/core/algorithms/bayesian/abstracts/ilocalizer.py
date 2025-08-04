@@ -12,6 +12,8 @@ from typing import Protocol
 import numpy as np
 import numpy.typing as npt
 
+__all__ = ["ILocalizer"]
+
 
 class ILocalizer(Protocol):
     """

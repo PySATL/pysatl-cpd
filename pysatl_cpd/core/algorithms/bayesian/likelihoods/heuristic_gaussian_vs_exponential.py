@@ -21,6 +21,8 @@ from pysatl_cpd.core.algorithms.bayesian.likelihoods import (
     GaussianConjugateWithPriorProbability,
 )
 
+__all__ = ["HeuristicGaussianVsExponential"]
+
 
 class HeuristicGaussianVsExponential(ILikelihood):
     """
