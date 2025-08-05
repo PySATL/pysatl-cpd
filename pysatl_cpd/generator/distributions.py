@@ -386,14 +386,17 @@ class LogNormDistribution(Distribution):
     Description of log normal distributionn with one parameter
     """
 
-    S_KEY: Final[str] = "s"
+    MU_KEY: Final[str] = "mu"
+    SIGMA_KEY: Final[str] = "sigma"
 
-    s: float
+    mu: float
+    sigma: float
 
-    def __init__(self, s_value: float) -> None:
-        if s_value <= 0:
-            raise ValueError("S parameter must be positive number")
-        self.s = s_value
+    def __init__(self, mu: float, sigma: float):
+        if sigma <= 0:
+            raise ValueError("Sigma parameter must be a positive number")
+        self.mu = mu
+        self.sigma = sigma
 
     @property
     def name(self) -> str:
@@ -402,19 +405,24 @@ class LogNormDistribution(Distribution):
     @property
     def params(self) -> dict[str, str]:
         return {
-            LogNormDistribution.S_KEY: str(self.s),
+            self.MU_KEY: str(self.mu),
+            self.SIGMA_KEY: str(self.sigma),
         }
 
     def scipy_sample(self, length: int) -> npt.NDArray[np.float64]:
-        return ss.lognorm(s=self.s).rvs(size=length)
+        return ss.lognorm(s=self.sigma, scale=np.exp(self.mu)).rvs(size=length)
 
     @classmethod
     def from_params(cls, params: dict[str, str]) -> "LogNormDistribution":
-        num_params = 1
+        num_params = 2
+
         if len(params) != num_params:
-            raise ValueError(f"Log normal distribution must have 1 parameter: {LogNormDistribution.S_KEY}")
-        s = float(params[LogNormDistribution.S_KEY])
-        return cls(s)
+            raise ValueError(f"Log normal distribution must have 2 parameters: '{cls.MU_KEY}', '{cls.SIGMA_KEY}'")
+
+        mu = float(params[cls.MU_KEY])
+        sigma = float(params[cls.SIGMA_KEY])
+
+        return cls(mu, sigma)
 
 
 class MultivariateNormalDistribution(Distribution):

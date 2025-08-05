@@ -59,9 +59,10 @@ class TestDistributions:
             (dstr.Distributions.T, {"n": "1", "x": "5"}, ValueError),
             (dstr.Distributions.T, {"n": "-1"}, ValueError),
             (dstr.Distributions.LOGNORM, {}, ValueError),
-            (dstr.Distributions.LOGNORM, {"S": "1"}, KeyError),
-            (dstr.Distributions.LOGNORM, {"s": "1", "x": "5"}, ValueError),
-            (dstr.Distributions.LOGNORM, {"s": "-1"}, ValueError),
+            (dstr.Distributions.LOGNORM, {"mu": "1"}, ValueError),
+            (dstr.Distributions.LOGNORM, {"mu": "0", "Sigma": "1"}, KeyError),
+            (dstr.Distributions.LOGNORM, {"mu": "0", "sigma": "1", "x": "5"}, ValueError),
+            (dstr.Distributions.LOGNORM, {"mu": "0", "sigma": "-1"}, ValueError),
             (dstr.Distributions.MULTIVARIATIVE_NORMAL, {}, ValueError),
             (
                 dstr.Distributions.MULTIVARIATIVE_NORMAL,
@@ -92,7 +93,7 @@ class TestDistributions:
             (dstr.Distributions.BETA, {"alpha": "1", "beta": "1"}),
             (dstr.Distributions.GAMMA, {"alpha": "1", "beta": "1"}),
             (dstr.Distributions.T, {"n": "1"}),
-            (dstr.Distributions.LOGNORM, {"s": "1"}),
+            (dstr.Distributions.LOGNORM, {"mu": "0", "sigma": "1"}),
             (dstr.Distributions.MULTIVARIATIVE_NORMAL, {"mean": "[0.0, 0.1]"}),
         ],
     )
