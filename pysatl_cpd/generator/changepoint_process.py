@@ -1,3 +1,9 @@
+"""Generates time series segments, each segment characterized by a length and distribution."""
+
+__author__ = "Danil Totmyanin"
+__copyright__ = "Copyright (c) 2025 PySATL project"
+__license__ = "SPDX-License-Identifier: MIT"
+
 from abc import ABC, abstractmethod
 from typing import Callable
 
@@ -9,40 +15,70 @@ from pysatl_cpd.generator.distributions import (
 
 
 class ChangepointProcess(ABC):
-    """
-    Abstract class for processes that generate change points (via segment lengths).
+    """Abstract base class for a changepoint process.
+
+    This class defines the interface for generating a sequence of data segments
+    separated by changepoints.
+
+    .. rubric:: Implementation Requirements
+
+    Subclasses must:
+
+    1. Implement the :meth:`generate_segments` method to define the generation logic.
     """
 
     @abstractmethod
     def generate_segments(self) -> tuple[list[Distribution], list[int]]:
-        """
-        Generates a list of distributions and their corresponding segment lengths.
+        """Generates the distributions and lengths of segments.
 
-        :return: A tuple of a list of distributions and a list of lengths.
+        This method should be implemented by subclasses to define the specific
+        logic for generating the sequence of data distributions and their
+        corresponding lengths that make up the time series.
+
+        :return: A tuple containing two lists:
+                 - A list of Distribution objects for each segment.
+                 - A list of integer lengths for each corresponding segment.
         """
         raise NotImplementedError
 
 
 class PoissonChangepointProcess(ChangepointProcess):
+    """Generates segments where changepoints occur based on a Poisson process.
+
+    In this model, the lengths of the segments between changepoints are sampled
+    from an exponential distribution, which is a characteristic of a Poisson process.
+
+    :param total_length: The total desired length of the time series.
+    :param cp_intensity_per_point: The probability of a changepoint at any given point,
+                                   used to determine the average segment length.
+    :param mean_sampler: A Distribution object used to sample the mean for each new segment.
+    :param distribution_factory: A callable that takes a mean and returns a configured
+                                 Distribution object for a segment.
+
+    :ivar _total_length: The total length of the time series to be generated.
+    :ivar _avg_segment_length: The average segment length, calculated as the inverse of
+                               cp_intensity_per_point.
+    :ivar _mean_sampler: The sampler for generating segment means.
+    :ivar _distribution_factory: The factory for creating segment distributions.
+    """
+
     def __init__(
         self,
         total_length: int,
-        cp_intensity: float,
+        cp_intensity_per_point: float,
         mean_sampler: Distribution,
         distribution_factory: Callable[[float], Distribution],
     ):
+        """Initializes the PoissonChangepointProcess.
+
+        :raises ValueError: If total_length or cp_intensity_per_point are not positive.
         """
-        :param total_length: The total desired length of the final dataset.
-        :param avg_segment_length: Average expected segment length (parameter `lambda` for Poisson).
-        :param mean_sampler: The distribution from which the average values for each segment will be generated
-        :param distribution_factory: Factory function that generates a Distribution object
-                                    for each segment based on the means returned by mean_sampler
-        """
-        if total_length <= 0 or cp_intensity <= 0:
+
+        if total_length <= 0 or cp_intensity_per_point <= 0:
             raise ValueError("Length and intensity must be positive")
 
         self._total_length = total_length
-        self._avg_segment_length = 1.0 / cp_intensity
+        self._avg_segment_length = 1.0 / cp_intensity_per_point
         self._mean_sampler = mean_sampler
         self._distribution_factory = distribution_factory
 
