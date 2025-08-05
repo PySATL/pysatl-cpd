@@ -54,7 +54,7 @@ class PoissonChangepointProcess(ChangepointProcess):
 
         current_length = 0
         while current_length < self._total_length:
-            segment_len = int(round(exp_dist.rvs(1)[0]))
+            segment_len = round(exp_dist.rvs(1)[0])
 
             if current_length + segment_len > self._total_length:
                 segment_len = self._total_length - current_length
