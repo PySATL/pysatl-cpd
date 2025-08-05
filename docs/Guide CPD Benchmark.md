@@ -38,7 +38,7 @@ Set-Location pysatl-cpd
 
 ### Available distributions
 
-| Распределение       | Название              | Параметры                                               |
+| Distribution        | Name                  | Parameters                                              |
 | ------------------- | --------------------- | ------------------------------------------------------- |
 | Normal              | `normal`              | `mean`, `variance`                                      |
 | Exponential         | `exponential`         | `rate`                                                  |
@@ -47,7 +47,7 @@ Set-Location pysatl-cpd
 | Beta                | `beta`                | `alpha`, `beta`                                         |
 | Gamma               | `gamma`               | `alpha`, `beta`                                         |
 | t-Student           | `t`                   | `n`                                                     |
-| Lognormal           | `lognorm`             | `s`                                                     |
+| Lognormal           | `lognorm`             | `mean`, `shape`                                         |
 | Multivariate normal | `multivariate_normal` | `mean`, in the form of string of list, z `"[0.5, 2.0]"` |
 
 
