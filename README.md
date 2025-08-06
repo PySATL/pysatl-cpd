@@ -45,22 +45,33 @@ git clone https://github.com/PySATL/pysatl-cpd.git
 
 ### Linux
 
-Go to repository directory and run installation script:
+Go to repository directory and run:
 
 ```bash
 cd pysatl-cpd
-chmod +x scripts/install_user_linux.sh && ./scripts/install_user_linux.sh
+poetry install
 ```
 
 
 
 ### Windows
 
-Go to repository directory and run installation script:
+#### Check if python and poetry in PATH (Optional)
+
+```shell
+py --version
+poetry --version
+```
+
+If python not in the PATH, reinstall it and make sure that you checked the box "Add Python to PATH"
+
+---
+
+Go to repository folder and runЖ
 
 ```shell
 Set-Location pysatl-cpd
-./scripts/install_user_windows.ps1
+poetry install
 ```
 
 
@@ -184,18 +195,8 @@ Located change points: [25, 201, 396]
 
 If you want to contribute, you should create development environment as follows:
 
-### Linux
-
 ```bash
-chmod +x scripts/install_dev_linux.sh && ./scripts/install_dev_linux.sh
-```
-
-
-
-### Windows
-
-```shell
-./scripts/install_dev_windows.ps1
+poetry install --with-dev
 ```
 
 

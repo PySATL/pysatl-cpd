@@ -2,43 +2,13 @@
 
 This guide is intended for those who plan to use the benchmarking of the pysatl-cpd project to analyze algorithms for finding change points.
 
-## Installation
-
-Clone repository:
-
-```bash
-git clone https://github.com/PySATL/pysatl-cpd.git
-```
-
-
-
-### Linux
-
-Go to repository folder and run installation script:
-
-```bash
-cd pysatl-cpd
-chmod +x scripts/install_user_linux.sh && ./scripts/install_user_linux.sh
-```
-
-
-
-### Windows
-
-Go to repository folder and run installation script
-
-```shell
-Set-Location pysatl-cpd
-./scripts/install_user_windows.ps1
-```
-
 
 
 ## Data Generation
 
 ### Available distributions
 
-| Распределение       | Название              | Параметры                                               |
+| Distribution        | Name                  | Parameters                                              |
 | ------------------- | --------------------- | ------------------------------------------------------- |
 | Normal              | `normal`              | `mean`, `variance`                                      |
 | Exponential         | `exponential`         | `rate`                                                  |
@@ -127,11 +97,7 @@ poetry run python example.py
 
 ### Import error: cannot import matplotlib
 
-If you saw a similar error when running the script:
-
-![](figures/trouble_1.png)
-
-And then you get this error:
+If you see this error when running benchmarking example:
 
 ![](figures/trouble_1_1.png)
 
