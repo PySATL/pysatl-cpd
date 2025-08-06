@@ -15,10 +15,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry
+          poetry add pyqt5-qt5==5.15.2
           poetry install
-
-      - name: Fix PyQT5
-        run: poetry add pyqt5-qt5==5.15.2
 
       - name: Run example
         run: poetry run python example.py
