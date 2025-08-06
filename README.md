@@ -1,4 +1,4 @@
-PySATL-CPD
+# PySATL-CPD
 
 [status-shield]: https://img.shields.io/github/actions/workflow/status/PySATL/pysatl-cpd/.github/workflows/check.yaml?branch=main&event=push&style=for-the-badge&label=Checks
 [status-url]: https://github.com/PySATL/pysatl-cpd/blob/main/.github/workflows/check.yaml
@@ -64,6 +64,16 @@ poetry --version
 ```
 
 If python not in the PATH, reinstall it and make sure that you checked the box "Add Python to PATH"
+
+If poetry not in the PATH, add it by running:
+
+```shell
+setx PATH "%PATH%;%APPDATA%\Python\Scripts"
+```
+
+After that, do not forget to restart the terminal.
+
+
 
 ---
 
