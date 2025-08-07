@@ -77,7 +77,7 @@ After that, do not forget to restart the terminal.
 
 ---
 
-Go to repository folder and runЖ
+Go to repository folder and run:
 
 ```shell
 Set-Location pysatl-cpd
