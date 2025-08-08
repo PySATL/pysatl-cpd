@@ -6,7 +6,7 @@ __author__ = "Loikov Vladislav"
 __copyright__ = "Copyright (c) 2025 PySATL project"
 __license__ = "SPDX-License-Identifier: MIT"
 
-
+from pysatl_cpd.generator.changepoint_process import ChangepointProcess, PoissonChangepointProcess
 from pysatl_cpd.generator.config_parser import (
     ConfigParser,
 )
@@ -38,6 +38,7 @@ from pysatl_cpd.generator.saver import (
 
 __all__ = [
     "BetaDistribution",
+    "ChangepointProcess",
     "ConfigParser",
     "DatasetDescriptionBuilder",
     "DatasetGenerator",
@@ -50,6 +51,7 @@ __all__ = [
     "LogNormDistribution",
     "MultivariateNormalDistribution",
     "NormalDistribution",
+    "PoissonChangepointProcess",
     "SampleDescription",
     "ScipyDatasetGenerator",
     "TDistribution",

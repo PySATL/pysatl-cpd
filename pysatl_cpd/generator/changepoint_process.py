@@ -6,10 +6,10 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from abc import ABC, abstractmethod
 from typing import Callable
-import numpy as np
 
-from numpy.random import Generator
+import numpy as np
 import scipy.stats as sc
+from numpy.random import Generator
 
 from pysatl_cpd.generator.distributions import (
     Distribution,
@@ -71,7 +71,7 @@ class PoissonChangepointProcess(ChangepointProcess):
         cp_intensity_per_point: float,
         mean_sampler: Distribution,
         distribution_factory: Callable[[float], Distribution],
-        random_state: int = 42
+        random_state: int = 42,
     ):
         """Initializes the PoissonChangepointProcess.
 
@@ -95,7 +95,6 @@ class PoissonChangepointProcess(ChangepointProcess):
 
         current_length = 0
         while current_length < self._total_length:
-
             remaining_length = self._total_length - current_length
             proposed_len = max(1, round(exp_dist.rvs(1, random_state=self.rng)[0]))
             segment_len = min(proposed_len, remaining_length)
