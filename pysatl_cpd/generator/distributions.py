@@ -9,7 +9,7 @@ __license__ = "SPDX-License-Identifier: MIT"
 import ast
 import math
 from enum import Enum
-from typing import Final, Protocol
+from typing import Final, Protocol, runtime_checkable
 
 import numpy as np
 import scipy.stats as ss
@@ -31,6 +31,7 @@ class Distributions(Enum):
         return self.value
 
 
+@runtime_checkable
 class Distribution(Protocol):
     """
     An interface for all distributions.
