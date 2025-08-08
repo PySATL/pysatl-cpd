@@ -17,7 +17,7 @@ This guide is intended for those who plan to use the benchmarking of the pysatl-
 | Beta                | `beta`                | `alpha`, `beta`                                         |
 | Gamma               | `gamma`               | `alpha`, `beta`                                         |
 | t-Student           | `t`                   | `n`                                                     |
-| Lognormal           | `lognorm`             | `s`                                                     |
+| Lognormal           | `lognorm`             | `mean`, `shape`                                         |
 | Multivariate normal | `multivariate_normal` | `mean`, in the form of string of list, z `"[0.5, 2.0]"` |
 
 

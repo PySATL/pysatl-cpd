@@ -50,7 +50,8 @@
     - type: lognorm
       length: 20
       parameters:
-        s: 1
+        mu: 0.0
+        sigma: 1.0
 - name: 20-multivariate_normal-0-1-no-change-point
   distributions:
     - type: multivariate_normal
