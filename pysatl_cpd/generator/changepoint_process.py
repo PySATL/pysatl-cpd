@@ -6,7 +6,9 @@ __license__ = "SPDX-License-Identifier: MIT"
 
 from abc import ABC, abstractmethod
 from typing import Callable
+import numpy as np
 
+from numpy.random import Generator
 import scipy.stats as sc
 
 from pysatl_cpd.generator.distributions import (
@@ -18,7 +20,7 @@ class ChangepointProcess(ABC):
     """Abstract base class for a changepoint process.
 
     This class defines the interface for generating a sequence of data segments
-    separated by changepoints.
+    separated by changepoints and characterized with its own distribution.
 
     .. rubric:: Implementation Requirements
 
@@ -31,7 +33,7 @@ class ChangepointProcess(ABC):
     def generate_segments(self) -> tuple[list[Distribution], list[int]]:
         """Generates the distributions and lengths of segments.
 
-        This method should be implemented by subclasses to define the specific
+        This method must be implemented by subclasses to define the specific
         logic for generating the sequence of data distributions and their
         corresponding lengths that make up the time series.
 
@@ -39,7 +41,6 @@ class ChangepointProcess(ABC):
                  - A list of Distribution objects for each segment.
                  - A list of integer lengths for each corresponding segment.
         """
-        raise NotImplementedError
 
 
 class PoissonChangepointProcess(ChangepointProcess):
@@ -54,12 +55,14 @@ class PoissonChangepointProcess(ChangepointProcess):
     :param mean_sampler: A Distribution object used to sample the mean for each new segment.
     :param distribution_factory: A callable that takes a mean and returns a configured
                                  Distribution object for a segment.
+    :param random_state: An integer required to reproduce the behavior of the class.
 
     :ivar _total_length: The total length of the time series to be generated.
     :ivar _avg_segment_length: The average segment length, calculated as the inverse of
                                cp_intensity_per_point.
     :ivar _mean_sampler: The sampler for generating segment means.
     :ivar _distribution_factory: The factory for creating segment distributions.
+    :ivar rng: Generator object for generating random variates.
     """
 
     def __init__(
@@ -68,6 +71,7 @@ class PoissonChangepointProcess(ChangepointProcess):
         cp_intensity_per_point: float,
         mean_sampler: Distribution,
         distribution_factory: Callable[[float], Distribution],
+        random_state: int = 42
     ):
         """Initializes the PoissonChangepointProcess.
 
@@ -81,6 +85,7 @@ class PoissonChangepointProcess(ChangepointProcess):
         self._avg_segment_length = 1.0 / cp_intensity_per_point
         self._mean_sampler = mean_sampler
         self._distribution_factory = distribution_factory
+        self.rng: Generator = np.random.default_rng(random_state)
 
     def generate_segments(self) -> tuple[list[Distribution], list[int]]:
         distributions: list[Distribution] = []
@@ -90,15 +95,13 @@ class PoissonChangepointProcess(ChangepointProcess):
 
         current_length = 0
         while current_length < self._total_length:
-            segment_len = round(exp_dist.rvs(1)[0])
 
-            if current_length + segment_len > self._total_length:
-                segment_len = self._total_length - current_length
-
+            remaining_length = self._total_length - current_length
+            proposed_len = max(1, round(exp_dist.rvs(1, random_state=self.rng)[0]))
+            segment_len = min(proposed_len, remaining_length)
             lengths.append(segment_len)
 
             mean_for_segment = self._mean_sampler.scipy_sample(1)[0]
-
             dist_for_segment = self._distribution_factory(mean_for_segment)
             distributions.append(dist_for_segment)
 
